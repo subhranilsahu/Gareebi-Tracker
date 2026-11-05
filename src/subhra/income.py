@@ -76,12 +76,3 @@ def save_income(income):
 
     except OSError:
         return False, "Something went wrong while saving income"
-
-income,error = add_income(5000,"Pocket Money","Monthly Allowance", "Cash")
-
-if error:
-    print(error)
-else:
-    success, message = save_income(income)
-
-    print(message)

@@ -1,0 +1,22 @@
+Gareebi Tracker
+
+Project Structure
+
+Gareebi Tracker/
+│
+├── src/
+│   ├── main.py
+│   ├── tracker.py
+│   └── income.py
+│   └── expenses.py
+│   └── reports.py
+│
+├── data/
+│   └── transactions.json
+│
+├── tests/
+│   └── test_tracker.py
+│
+├── README.md
+├── .gitignore
+└── requirements.txt

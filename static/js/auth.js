@@ -1,6 +1,7 @@
+
 /* ==========================================================================
-   GAREEBI TRACKER — AUTHENTICATION LOGIC (static/js/auth.js)
-   Handles password visibility toggling and client-side form validation.
+   GAREEBI TRACKER — AUTHENTICATION LOGIC
+   Handles password visibility, form validation and backend connection.
    ========================================================================== */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -8,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     /* --------------------------------------------------------------------------
        1. PASSWORD SHOW / HIDE TOGGLE
        -------------------------------------------------------------------------- */
+
     const togglePasswordButtons = document.querySelectorAll('.btn-toggle-password');
 
     togglePasswordButtons.forEach(button => {
@@ -26,11 +28,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+
     /* --------------------------------------------------------------------------
        2. VALIDATION HELPERS
        -------------------------------------------------------------------------- */
+
     function isValidEmail(email) {
-        // Standard email regex pattern check
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return emailRegex.test(email.trim());
     }
@@ -45,9 +48,11 @@ document.addEventListener('DOMContentLoaded', () => {
         errorElement.textContent = '';
     }
 
+
     /* --------------------------------------------------------------------------
        3. LOGIN FORM VALIDATION
        -------------------------------------------------------------------------- */
+
     const loginForm = document.getElementById('login-form');
 
     if (loginForm) {
@@ -56,15 +61,19 @@ document.addEventListener('DOMContentLoaded', () => {
         const emailError = document.getElementById('login-email-error');
         const passwordError = document.getElementById('login-password-error');
 
-        // Clear error as user types
-        emailInput.addEventListener('input', () => clearFieldError(emailInput, emailError));
-        passwordInput.addEventListener('input', () => clearFieldError(passwordInput, passwordError));
+        emailInput.addEventListener('input', () =>
+            clearFieldError(emailInput, emailError)
+        );
+
+        passwordInput.addEventListener('input', () =>
+            clearFieldError(passwordInput, passwordError)
+        );
 
         loginForm.addEventListener('submit', (event) => {
             event.preventDefault();
+
             let isValid = true;
 
-            // Email check
             if (!emailInput.value.trim()) {
                 setFieldError(emailInput, emailError, 'Email address is required.');
                 isValid = false;
@@ -73,50 +82,60 @@ document.addEventListener('DOMContentLoaded', () => {
                 isValid = false;
             }
 
-            // Password check
             if (!passwordInput.value) {
                 setFieldError(passwordInput, passwordError, 'Password is required.');
                 isValid = false;
             }
 
             if (isValid) {
-                // Front-end interface check passed.
-                // NOTE: When Subhranil hooks up Flask backend routes, we will dispatch
-                // a POST fetch request to /api/auth/login with the form data.
-                window.location.href = 'index.html';
+                alert('Login backend connection is our next step.');
             }
         });
     }
 
+
     /* --------------------------------------------------------------------------
-       4. SIGNUP FORM VALIDATION
+       4. SIGNUP FORM VALIDATION + BACKEND CONNECTION
        -------------------------------------------------------------------------- */
+
     const signupForm = document.getElementById('signup-form');
 
     if (signupForm) {
         const nameInput = document.getElementById('signup-name');
         const emailInput = document.getElementById('signup-email');
         const passwordInput = document.getElementById('signup-password');
+
         const nameError = document.getElementById('signup-name-error');
         const emailError = document.getElementById('signup-email-error');
         const passwordError = document.getElementById('signup-password-error');
 
-        // Clear errors on input
-        nameInput.addEventListener('input', () => clearFieldError(nameInput, nameError));
-        emailInput.addEventListener('input', () => clearFieldError(emailInput, emailError));
-        passwordInput.addEventListener('input', () => clearFieldError(passwordInput, passwordError));
+        const submitButton = signupForm.querySelector('button[type="submit"]');
 
-        signupForm.addEventListener('submit', (event) => {
+        // Clear errors as the user types
+        nameInput.addEventListener('input', () =>
+            clearFieldError(nameInput, nameError)
+        );
+
+        emailInput.addEventListener('input', () =>
+            clearFieldError(emailInput, emailError)
+        );
+
+        passwordInput.addEventListener('input', () =>
+            clearFieldError(passwordInput, passwordError)
+        );
+
+        signupForm.addEventListener('submit', async (event) => {
             event.preventDefault();
+
             let isValid = true;
 
-            // Full Name check
+            // Full name validation
             if (!nameInput.value.trim()) {
                 setFieldError(nameInput, nameError, 'Full name is required.');
                 isValid = false;
             }
 
-            // Email check
+            // Email validation
             if (!emailInput.value.trim()) {
                 setFieldError(emailInput, emailError, 'Email address is required.');
                 isValid = false;
@@ -125,7 +144,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 isValid = false;
             }
 
-            // Password strength check (minimum 8 characters)
+            // Password validation
             if (!passwordInput.value) {
                 setFieldError(passwordInput, passwordError, 'Password is required.');
                 isValid = false;
@@ -134,11 +153,51 @@ document.addEventListener('DOMContentLoaded', () => {
                 isValid = false;
             }
 
-            if (isValid) {
-                // Front-end registration check passed.
-                // NOTE: When Subhranil hooks up Flask backend routes, we will dispatch
-                // a POST fetch request to /api/auth/signup with the payload.
-                window.location.href = 'index.html';
+            // Stop if frontend validation fails
+            if (!isValid) {
+                return;
+            }
+
+            try {
+                // Prevent multiple submissions
+                submitButton.disabled = true;
+                submitButton.textContent = 'Creating Account...';
+
+                // Send signup details to Flask backend
+                const response = await fetch('/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        full_name: nameInput.value.trim(),
+                        email: emailInput.value.trim(),
+                        password: passwordInput.value
+                    })
+                });
+
+                const result = await response.json();
+
+                // Handle backend errors
+                if (!response.ok) {
+                    alert(result.error || 'Registration failed.');
+                    return;
+                }
+
+                // Registration successful
+                alert('Account created successfully! Please login.');
+
+                window.location.href = '/login';
+
+            } catch (error) {
+                // Handle network or server errors
+                console.error('Signup error:', error);
+                alert('Unable to connect to the server. Please try again.');
+
+            } finally {
+                // Restore button if still on signup page
+                submitButton.disabled = false;
+                submitButton.textContent = 'Create Account';
             }
         });
     }

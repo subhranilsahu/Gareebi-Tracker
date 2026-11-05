@@ -1,3 +1,4 @@
+
 from pathlib import Path
 from flask import Flask, request, session, jsonify, render_template
 from database import initialize_database
@@ -5,31 +6,38 @@ from auth import login_user, register_user
 
 import secrets
 
-# Create Flask application
 # Project ke main folder ka path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Flask ko templates aur static folders ka exact location batana
+# Flask application setup
 app = Flask(
     __name__,
     template_folder=str(BASE_DIR / "templates"),
     static_folder=str(BASE_DIR / "static")
 )
 
-# Generate a secret key for session security
+# Session security key
 app.secret_key = secrets.token_hex(32)
 
 # Initialize database
 initialize_database()
 
 
-# Display signup page
+# Landing page
+@app.route("/")
+@app.route("/landing.html")
+def landing_page():
+    return render_template("landing.html")
+
+
+# Signup page
 @app.route("/register", methods=["GET"])
+@app.route("/signup.html", methods=["GET"])
 def register_page():
-    return render_template("register.html")
+    return render_template("signup.html")
 
 
-# Signup API route
+# Signup API
 @app.route("/register", methods=["POST"])
 def register():
 
@@ -50,7 +58,14 @@ def register():
     return jsonify({"message": result}), 201
 
 
-# Login API route
+# Login page
+@app.route("/login", methods=["GET"])
+@app.route("/login.html", methods=["GET"])
+def login_page():
+    return render_template("login.html")
+
+
+# Login API
 @app.route("/login", methods=["POST"])
 def login():
 
@@ -73,7 +88,7 @@ def login():
     }), 200
 
 
-# Protected dashboard route
+# Protected dashboard API
 @app.route("/dashboard")
 def dashboard():
 
@@ -87,7 +102,7 @@ def dashboard():
     })
 
 
-# Logout route
+# Logout API
 @app.route("/logout", methods=["POST"])
 def logout():
 
@@ -96,6 +111,6 @@ def logout():
     return jsonify({"message": "Logged out successfully"})
 
 
-# Start application
+# Start Flask server
 if __name__ == "__main__":
     app.run(debug=True)

@@ -1,0 +1,9 @@
+[
+    {
+        "type": "income",
+        "amount": 5000.0,
+        "category": "Pocket Money",
+        "note": "Monthly Allowance",
+        "account": "Cash"
+    }
+]

@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<!-- Standard HTML5 document declaration -->
+<html lang="en">
+<head>
+    <!-- Character encoding for emojis (💸), currency symbols (₹), and international characters -->
+    <meta charset="UTF-8">
+
+    <!-- Responsive scaling for phones, tablets, and desktop displays -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Gareebi Tracker 💸 — Track Your Money Before It Tracks You</title>
+
+    <!-- Google Font: Inter (Weights 400 to 800) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- CSS Order: Global theme reset & variables first, then page-specific landing styles -->
+    <link rel="stylesheet" href="../static/css/global.css">
+    <link rel="stylesheet" href="../static/css/landing.css">
+</head>
+<body class="landing-body">
+
+    <!-- ===================================================================== -->
+    <!-- 1. GLASSMORPHIC NAVIGATION BAR                                       -->
+    <!-- Sticks to top, features brand logo, jump links, and Auth CTA buttons -->
+    <!-- ===================================================================== -->
+    <header class="navbar-wrapper">
+        <nav class="navbar container">
+            
+            <!-- Brand Logo & Name -->
+            <a href="landing.html" class="nav-brand">
+                <span class="brand-emoji">💸</span>
+                <span class="brand-text">Gareebi<span class="brand-accent">Tracker</span></span>
+            </a>
+
+            <!-- Anchor Navigation Links for Quick Scrolling -->
+            <div class="nav-links">
+                <a href="#features" class="nav-link">Features</a>
+                <a href="#why-us" class="nav-link">Why Us</a>
+                <a href="#how-it-works" class="nav-link">How It Works</a>
+            </div>
+
+            <!-- Authentication Actions: Two distinct pages for Log In & Sign Up -->
+            <div class="nav-actions">
+                <a href="login.html" class="btn btn-secondary nav-btn-login">Log In</a>
+                <a href="signup.html" class="btn btn-primary nav-btn-signup">Sign Up Free</a>
+            </div>
+            
+        </nav>
+    </header>
+
+    <!-- ===================================================================== -->
+    <!-- 2. HERO SECTION                                                      -->
+    <!-- Main value proposition, catchy tagline, and call to action          -->
+    <!-- ===================================================================== -->
+    <section class="hero-section container">
+        <div class="hero-content">
+            
+            <!-- Floating Pill Tag -->
+            <div class="hero-badge">
+                <span class="badge-dot"></span>
+                <span>The Personal Finance App for the Financially Aware</span>
+            </div>
+
+            <!-- Primary Headline -->
+            <h1 class="hero-title">
+                Track your money <br>
+                <span class="gradient-text">before it tracks you.</span>
+            </h1>
+
+            <!-- Subtitle -->
+            <p class="hero-subtitle">
+                Stop wondering where your monthly stipend or salary disappeared. Gareebi Tracker helps you manage 
+                expenses, multiple bank accounts, UPI spends, and emergency reserves without feeling like a boring spreadsheet.
+            </p>
+
+            <!-- Hero Call-To-Action Buttons -->
+            <div class="hero-cta-group">
+                <a href="signup.html" class="btn btn-primary btn-large">
+                    Get Started Free <span>→</span>
+                </a>
+                <a href="login.html" class="btn btn-secondary btn-large">
+                    Open Existing Account
+                </a>
+            </div>
+
+            <p class="hero-footnote">⚡ Zero complicated finance jargon. 100% free and open-source.</p>
+
+        </div>
+
+        <!-- Hero Visual Mockup: A preview representation of the dashboard -->
+        <div class="hero-preview-wrapper">
+            <div class="hero-preview-card">
+                
+                <!-- Card Mockup Top Bar -->
+                <div class="mockup-header">
+                    <div class="mockup-dots">
+                        <span class="dot red"></span>
+                        <span class="dot yellow"></span>
+                        <span class="dot green"></span>
+                    </div>
+                    <span class="mockup-title">dashboard_preview.tsx</span>
+                    <span class="mockup-status">Live Liquid Balance</span>
+                </div>
+
+                <!-- Preview Metric Counters -->
+                <div class="mockup-grid">
+                    <div class="mockup-stat">
+                        <span class="stat-label">Total Balance</span>
+                        <h3 class="stat-num">₹14,250.00</h3>
+                        <span class="stat-sub positive">+₹5,000 this month</span>
+                    </div>
+                    <div class="mockup-stat">
+                        <span class="stat-label">Physical Cash Left</span>
+                        <h3 class="stat-num text-danger">₹240.00</h3>
+                        <span class="stat-sub text-danger">⚠️ Low cash alert</span>
+                    </div>
+                    <div class="mockup-stat">
+                        <span class="stat-label">Financial Status</span>
+                        <h3 class="stat-num status-quote">"Broke but Aware"</h3>
+                        <span class="stat-sub">Discipline: 82%</span>
+                    </div>
+                </div>
+
+                <!-- Preview Transaction Stream -->
+                <div class="mockup-transactions">
+                    <div class="mockup-row">
+                        <span class="tx-badge income">Income</span>
+                        <span class="tx-desc">Freelance Project Milestone</span>
+                        <span class="tx-amt income">+₹8,000.00</span>
+                    </div>
+                    <div class="mockup-row">
+                        <span class="tx-badge expense">Expense</span>
+                        <span class="tx-desc">Midnight Swiggy & Snacks</span>
+                        <span class="tx-amt expense">-₹430.00</span>
+                    </div>
+                    <div class="mockup-row">
+                        <span class="tx-badge expense">Expense</span>
+                        <span class="tx-desc">Hostel Wi-Fi Contribution</span>
+                        <span class="tx-amt expense">-₹350.00</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- 3. FEATURE HIGHLIGHTS (Bento Grid)                                   -->
+    <!-- Shows the core capabilities of the app in clean, modern card blocks  -->
+    <!-- ===================================================================== -->
+    <section class="features-section container" id="features">
+        <div class="section-header">
+            <h2 class="section-title">Built for Real-World Spending</h2>
+            <p class="section-subtitle">No multi-page tax calculations. Just clean, rapid financial control.</p>
+        </div>
+
+        <div class="bento-grid">
+            
+            <!-- Feature Card 1 -->
+            <div class="bento-card bento-span-2">
+                <div class="bento-icon">💳</div>
+                <h3 class="bento-title">Multi-Account Liquidity Management</h3>
+                <p class="bento-desc">
+                    Keep your primary bank account, UPI wallets, and hostel drawer cash completely separate. 
+                    Know exactly what is liquid before you scan that next QR code.
+                </p>
+                <div class="bento-pill-row">
+                    <span class="pill">HDFC / SBI Banks</span>
+                    <span class="pill">Google Pay / Paytm</span>
+                    <span class="pill">Cash in Hand</span>
+                </div>
+            </div>
+
+            <!-- Feature Card 2 -->
+            <div class="bento-card">
+                <div class="bento-icon">⚡</div>
+                <h3 class="bento-title">Instant Logging</h3>
+                <p class="bento-desc">
+                    Log an income or expense in under 5 seconds with zero friction. Tag categories and notes seamlessly.
+                </p>
+            </div>
+
+            <!-- Feature Card 3 -->
+            <div class="bento-card">
+                <div class="bento-icon">📊</div>
+                <h3 class="bento-title">Smart Visual Analytics</h3>
+                <p class="bento-desc">
+                    Track cash flow trajectories and category percentages to see what eats your budget every weekend.
+                </p>
+            </div>
+
+            <!-- Feature Card 4 -->
+            <div class="bento-card bento-span-2">
+                <div class="bento-icon">🎯</div>
+                <h3 class="bento-title">Tasteful Gen-Z Reality Checks</h3>
+                <p class="bento-desc">
+                    Humorous, grounded financial mood tracking. Because sometimes you just need to know if you're 
+                    "Spending like an NPC" or actually staying on budget.
+                </p>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- 4. WHY GAREEBI TRACKER (Comparison / Value Proposition)              -->
+    <!-- ===================================================================== -->
+    <section class="why-section container" id="why-us">
+        <div class="why-card">
+            <div class="why-header">
+                <h2 class="section-title">Why Ditch Your Excel Sheet?</h2>
+                <p class="section-subtitle">Excel is for corporate accounting. Gareebi Tracker is for your daily survival.</p>
+            </div>
+
+            <div class="comparison-grid">
+                
+                <!-- The Old Painful Way -->
+                <div class="comparison-column old-way">
+                    <h4 class="comp-col-title">The Typical Struggle ❌</h4>
+                    <ul class="comp-list">
+                        <li>Clunky spreadsheet templates you stop opening after day 3.</li>
+                        <li>Over-complicated budgeting apps with paid premium subscriptions.</li>
+                        <li>No clue how much physical cash you have compared to bank UPI.</li>
+                        <li>"Salary aayi, responsibilities le gayi" without any record.</li>
+                    </ul>
+                </div>
+
+                <!-- The Gareebi Tracker Way -->
+                <div class="comparison-column new-way">
+                    <h4 class="comp-col-title">The Gareebi Tracker Way ✅</h4>
+                    <ul class="comp-list">
+                        <li>Ultra-fast, distraction-free dark interface inspired by modern SaaS.</li>
+                        <li>Dedicated accounts view for Banks, UPI, and Physical Cash.</li>
+                        <li>100% Free, privacy-first, and built by developers who understand the struggle.</li>
+                        <li>Real-time calculations so your net balance is always accurate.</li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- 5. FINAL CALL TO ACTION (CTA)                                        -->
+    <!-- ===================================================================== -->
+    <section class="cta-section container">
+        <div class="cta-box">
+            <h2 class="cta-title">Ready to take control of your wallet?</h2>
+            <p class="cta-subtitle">Create your free account today and start tracking your money properly.</p>
+            <div class="cta-btn-group">
+                <a href="signup.html" class="btn btn-primary btn-large">Create Free Account →</a>
+                <a href="login.html" class="btn btn-secondary btn-large">Sign In</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- 6. FOOTER                                                            -->
+    <!-- ===================================================================== -->
+    <footer class="footer-wrapper">
+        <div class="container footer-content">
+            <div class="footer-brand">
+                <span class="brand-emoji">💸</span>
+                <span class="brand-text">Gareebi Tracker</span>
+                <p class="footer-tagline">Track your money before it tracks you.</p>
+            </div>
+
+            <div class="footer-links">
+                <a href="login.html">Log In</a>
+                <a href="signup.html">Sign Up</a>
+                <a href="#features">Features</a>
+                <a href="https://github.com" target="_blank" rel="noopener">GitHub</a>
+            </div>
+        </div>
+        <div class="container footer-bottom">
+            <p>&copy; 2026 Gareebi Tracker. Crafted with care by Abhigyan & Subhranil.</p>
+        </div>
+    </footer>
+
+    <!-- Landing page interaction script -->
+    <script src="../static/js/landing.js"></script>
+</body>
+</html>

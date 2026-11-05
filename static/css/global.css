@@ -1,0 +1,137 @@
+/* ==========================================================================
+   GAREEBI TRACKER — GLOBAL DESIGN TOKENS & RESET (static/css/global.css)
+   Shared across landing.html, login.html, signup.html, dashboard.html, etc.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. DESIGN TOKENS (CSS Variables)
+   -------------------------------------------------------------------------- */
+:root {
+    /* Palette: Obsidian, Deep Charcoal, and Glass */
+    --bg-page: #08090c;               /* Deepest background tone */
+    --bg-surface: #101217;            /* Base surface for cards */
+    --bg-surface-elevated: #161922;   /* Hover states and floating elements */
+    --bg-glass: rgba(16, 18, 23, 0.75); /* Translucent navigation and popups */
+
+    /* Thin borders & dividers */
+    --border-subtle: rgba(255, 255, 255, 0.08); /* Crisp, quiet 1px lines */
+    --border-hover: rgba(255, 255, 255, 0.20);  /* Highlighted border state */
+
+    /* Typography Hierarchy */
+    --text-primary: #f5f6f8;          /* Bright white for titles and active links */
+    --text-secondary: #9aa1b2;        /* Neutral gray for body paragraphs */
+    --text-muted: #5e6473;            /* Darker muted tone for footnotes & timestamps */
+
+    /* Accent Colors */
+    --accent-blue: #3b82f6;           /* Electric blue for primary actions */
+    --accent-blue-hover: #2563eb;
+    --accent-blue-glow: rgba(59, 130, 246, 0.35);
+
+    --income-green: #10b981;          /* Positive figures & income */
+    --income-glow: rgba(16, 185, 129, 0.2);
+
+    --expense-red: #ef4444;           /* Negative figures & expenses */
+    --expense-glow: rgba(239, 68, 68, 0.2);
+
+    /* Typography & Sizing */
+    --font-main: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 18px;
+    --radius-full: 9999px;
+
+    /* Micro-interaction transitions */
+    --transition-fast: 0.16s ease;
+    --transition-smooth: 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* --------------------------------------------------------------------------
+   2. UNIVERSAL RESET
+   -------------------------------------------------------------------------- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    background-color: var(--bg-page);
+    color: var(--text-primary);
+    font-family: var(--font-main);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+}
+
+/* --------------------------------------------------------------------------
+   3. REUSABLE CONTAINER & BUTTON SYSTEM
+   -------------------------------------------------------------------------- */
+.container {
+    width: 100%;
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+}
+
+/* Button Foundation */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.65rem 1.25rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    font-family: inherit;
+    text-decoration: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    border: none;
+    transition: all var(--transition-fast);
+}
+
+/* Primary Electric Blue Button */
+.btn-primary {
+    background-color: var(--accent-blue);
+    color: #ffffff;
+    box-shadow: 0 4px 14px var(--accent-blue-glow);
+}
+
+.btn-primary:hover {
+    background-color: var(--accent-blue-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px var(--accent-blue-glow);
+}
+
+/* Secondary Ghost / Surface Button */
+.btn-secondary {
+    background-color: var(--bg-surface);
+    color: var(--text-primary);
+    border: 1px solid var(--border-subtle);
+}
+
+.btn-secondary:hover {
+    background-color: var(--bg-surface-elevated);
+    border-color: var(--border-hover);
+    transform: translateY(-1px);
+}
+
+/* Larger CTA Buttons */
+.btn-large {
+    padding: 0.85rem 1.75rem;
+    font-size: 1rem;
+    border-radius: var(--radius-md);
+}
+
+/* Status / Category Color Helpers */
+.text-danger {
+    color: var(--expense-red);
+}
+
+.text-success {
+    color: var(--income-green);
+}

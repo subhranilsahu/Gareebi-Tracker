@@ -1,7 +1,8 @@
 
+# Import Flask and render_template
 from flask import Flask, render_template
 
-# Configure Flask template and static folders
+# Create Flask application
 app = Flask(
     __name__,
     template_folder="../templates",
@@ -9,9 +10,11 @@ app = Flask(
 )
 
 
-# Home page
+# Homepage route
 @app.route("/")
-def home():
+def dashboard():
+
+    # Display the existing HTML dashboard
     return render_template("index.html")
 
 

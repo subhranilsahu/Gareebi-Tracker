@@ -2,35 +2,76 @@ Gareebi Tracker
 
 PROJECT-STRUCTURE
 
+==============================================================================
+GAREEBI TRACKER 💸 — OFFICIAL PROJECT STRUCTURE & ARCHITECTURE
+Tagline: Track your money before it tracks you.
+==============================================================================
+
 gareebi-tracker/
 │
-├── src/                        # 🔒 [OWNER: Subhranil | Backend Only] — Abhigyan: Read-only (do not edit)
-│   ├── main.py                 # [Subhranil] Flask app runner & API route definitions
-│   ├── tracker.py              # [Subhranil] Core balance & transaction manager
-│   ├── income.py               # [Subhranil] Income dictionary & total calculation logic
-│   ├── expenses.py             # [Subhranil] Expense dictionary & total calculation logic
-│   └── reports.py              # [Subhranil] Monthly summaries & spending analytics
+├── src/                               # [Backend - Subhranil] Python & Flask logic
+│   ├── main.py                        # Flask server entry point & routing
+│   ├── tracker.py                     # Financial calculations & business logic
+│   ├── income.py                      # Income modules
+│   ├── expenses.py                    # Expense modules
+│   └── reports.py                     # Analytics & report generators
 │
-├── templates/                  # 🔒 [OWNER: Abhigyan | Frontend Only] — Subhranil: Read-only (except Jinja/Flask routing if agreed)
-│   ├── index.html              # [Abhigyan] Main dashboard UI & summary cards
-│   ├── transactions.html       # [Abhigyan] Income/expense forms & transaction table
-│   └── accounts.html           # [Abhigyan] Bank & wallet account management view
+├── templates/                         # [Frontend - Abhigyan] HTML templates (Served via Flask)
+│   ├── landing.html                   # Public landing page (Hero, Features, CTAs)
+│   ├── login.html                     # User authentication: Sign In interface
+│   ├── signup.html                    # User authentication: Registration interface
+│   ├── dashboard.html                 # Core app dashboard (Balances, Quick logs)
+│   ├── profile.html                   # User profile, financial personality & Gen-Z humor
+│   └── transactions.html              # Full transaction ledger, filters & history
 │
-├── static/                     # 🔒 [OWNER: Abhigyan | Frontend Only] — Subhranil: Do not edit
+├── static/                            # [Frontend - Abhigyan] Static assets
 │   ├── css/
-│   │   └── style.css           # [Abhigyan] Dark theme, Flexbox/Grid layout, & styling
+│   │   ├── global.css                 # Global CSS variables, resets, fonts, base theme
+│   │   ├── landing.css                # Landing page styles (Hero, Bento cards, Nav)
+│   │   ├── auth.css                   # Shared styles for login.html & signup.html forms
+│   │   ├── dashboard.css              # Main dashboard grid, cards, stats
+│   │   ├── profile.css                # Profile card, status tags, badges
+│   │   └── transactions.css           # Ledger tables, filtering bars, transaction rows
+│   │
 │   ├── js/
-│   │   └── app.js              # [Abhigyan] Frontend interactivity & fetch() API calls
+│   │   ├── landing.js                 # Landing page interactions, smooth scrolls, sticky nav
+│   │   ├── auth.js                    # Form validation, show/hide password, client checks
+│   │   ├── dashboard.js               # Dashboard DOM updates, stat summaries, modal triggers
+│   │   ├── profile.js                 # Profile interactive states & quote generator
+│   │   └── transactions.js            # Table searching, filtering (Income/Expense), pagination
+│   │
 │   └── assets/
-│       └── .gitkeep            # [Abhigyan] Icons, images, and static visual assets
+│       ├── images/                    # Illustrations, preview screenshots, hero assets
+│       └── icons/                     # SVG icons (wallet, bank, lock, eye, trending)
 │
-├── data/                       # 🤝 [OWNER: Subhranil | Shared Read]
-│   └── transactions.json       # [Subhranil: Read/Write via Python | Abhigyan: Inspect structure only]
+├── data/                              # [Data Layer] Local JSON files / SQLite DB
+│   └── transactions.json              # Transaction records
 │
-├── tests/                      # 🔒 [OWNER: Subhranil | Backend QA]
-│   └── test_tracker.py         # [Subhranil] Unit tests for Python functions
-│
-├── important.txt               # 🤝 [SHARED: Both] Team rules, API contracts, & notes (Coordinate before editing)
-├── README.md                   # 🤝 [SHARED: Both] Project documentation (Coordinate before editing)
-├── .gitignore                  # 🤝 [SHARED: Both] Ignored files (__pycache__, .venv, .DS_Store)
-└── requirements.txt            # 🔒 [OWNER: Subhranil] Python dependencies (Flask, pytest, etc.)
+├── tests/                             # Unit tests for Python backend
+├── project-structure.txt              # This architecture document
+├── important.txt                      # Project notes & team agreements
+├── README.md                          # Project documentation for GitHub portfolio
+└── requirements.txt                   # Python packages (Flask, etc.)
+
+==============================================================================
+RESPONSIBILITY SPLIT & ACCESS RULES
+==============================================================================
+1. Abhigyan (Frontend Lead):
+   - Scope: templates/*, static/*
+   - Tools: HTML5, CSS3 (Modern Flexbox/Grid), JavaScript (ES6+ Vanilla)
+   - Goal: Build responsive, accessible, dark-themed, sleek UI.
+
+2. Subhranil (Backend Lead):
+   - Scope: src/*, data/*, tests/*, requirements.txt
+   - Tools: Python 3.10+, Flask, JSON storage
+   - Goal: API endpoints, session authentication, data validation, calculation engines.
+
+==============================================================================
+PAGE-BY-PAGE ROADMAP
+==============================================================================
+1. Landing Page (landing.html): First impression, product value, links to login/signup.
+2. Authentication (login.html & signup.html): Clean credential input, client validation.
+3. Dashboard (dashboard.html): High-level wealth & spending cockpit.
+4. Profile (profile.html): Account details with tasteful Gen-Z financial humor.
+5. Transactions (transactions.html): Deep-dive audit ledger of all expenses & incomes.
+==============================================================================

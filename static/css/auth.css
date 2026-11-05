@@ -1,0 +1,237 @@
+/* ==========================================================================
+   GAREEBI TRACKER — AUTHENTICATION STYLES (static/css/auth.css)
+   Shared styles for login.html and signup.html
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. PAGE WRAPPER & CENTERING
+   -------------------------------------------------------------------------- */
+.auth-body {
+    background-color: var(--bg-page);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2.5rem 1.5rem;
+}
+
+.auth-container {
+    width: 100%;
+    max-width: 440px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Back Link to Landing */
+.auth-back-link {
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 0.88rem;
+    font-weight: 500;
+    margin-bottom: 1.5rem;
+    transition: color var(--transition-fast);
+}
+
+.auth-back-link:hover {
+    color: var(--text-primary);
+}
+
+/* --------------------------------------------------------------------------
+   2. AUTHENTICATION CARD
+   -------------------------------------------------------------------------- */
+.auth-card {
+    width: 100%;
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    padding: 2.5rem 2.25rem;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+    transition: border-color var(--transition-smooth);
+}
+
+.auth-card:hover {
+    border-color: var(--border-hover);
+}
+
+/* Card Header */
+.auth-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.auth-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 1.25rem;
+}
+
+.auth-brand .brand-emoji {
+    font-size: 1.35rem;
+}
+
+.auth-brand .brand-accent {
+    color: var(--accent-blue);
+}
+
+.auth-title {
+    font-size: 1.65rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.4rem;
+}
+
+.auth-subtitle {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+/* --------------------------------------------------------------------------
+   3. FORM CONTROLS & INPUTS
+   -------------------------------------------------------------------------- */
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+}
+
+.label-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.form-label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.forgot-link {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+}
+
+.forgot-link:hover {
+    color: var(--accent-blue);
+    text-decoration: underline;
+}
+
+/* Inputs */
+.form-input {
+    width: 100%;
+    background-color: var(--bg-surface-elevated);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    padding: 0.8rem 1rem;
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.form-input:focus {
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 0 3px var(--accent-blue-glow);
+}
+
+/* Invalid State */
+.form-input.is-invalid {
+    border-color: var(--expense-red);
+    box-shadow: 0 0 0 3px var(--expense-glow);
+}
+
+/* Password input wrapper with toggle button */
+.input-password-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-password-wrapper .form-input {
+    padding-right: 2.75rem;
+}
+
+.btn-toggle-password {
+    position: absolute;
+    right: 0.75rem;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0.25rem;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    display: grid;
+    place-items: center;
+    opacity: 0.6;
+    transition: opacity var(--transition-fast);
+}
+
+.btn-toggle-password:hover {
+    opacity: 1;
+}
+
+/* Error Message Below Inputs */
+.field-error-msg {
+    font-size: 0.78rem;
+    color: var(--expense-red);
+    min-height: 1.1rem;
+    display: block;
+}
+
+/* Submit Button */
+.btn-auth-submit {
+    width: 100%;
+    padding: 0.85rem;
+    font-size: 0.95rem;
+    border-radius: var(--radius-sm);
+    margin-top: 0.25rem;
+}
+
+/* --------------------------------------------------------------------------
+   4. CARD FOOTER & DISCLAIMER
+   -------------------------------------------------------------------------- */
+.auth-footer {
+    text-align: center;
+    margin-top: 1.75rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-subtle);
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+}
+
+.auth-switch-link {
+    color: var(--accent-blue);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.auth-switch-link:hover {
+    text-decoration: underline;
+}
+
+.auth-disclaimer {
+    margin-top: 1.5rem;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-align: center;
+}

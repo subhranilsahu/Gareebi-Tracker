@@ -1,1 +1,247 @@
-w
+<!DOCTYPE html>
+<!-- Standard HTML5 document declaration -->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transactions — Gareebi Tracker 💸</title>
+
+    <!-- Google Font: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Stylesheets: Global variables first, then dedicated transaction styling -->
+    <link rel="stylesheet" href="../static/css/global.css">
+    <link rel="stylesheet" href="../static/css/transactions.css">
+</head>
+<body class="transactions-body">
+
+    <div class="app-shell">
+
+        <!-- ================================================================= -->
+        <!-- 1. SIDEBAR NAVIGATION                                             -->
+        <!-- Note: .nav-item.active is set to Transactions                     -->
+        <!-- ================================================================= -->
+        <aside class="sidebar">
+            <div class="sidebar-top">
+                <a href="dashboard.html" class="sidebar-brand">
+                    <span class="brand-emoji">💸</span>
+                    <span class="brand-text">Gareebi<span class="brand-accent">Tracker</span></span>
+                </a>
+
+                <nav class="sidebar-nav">
+                    <a href="dashboard.html" class="nav-item">
+                        <span class="nav-icon">📊</span>
+                        <span>Dashboard</span>
+                    </a>
+                    <!-- Active link for transactions view -->
+                    <a href="transactions.html" class="nav-item active">
+                        <span class="nav-icon">💳</span>
+                        <span>Transactions</span>
+                    </a>
+                    <a href="accounts.html" class="nav-item">
+                        <span class="nav-icon">🏦</span>
+                        <span>Accounts</span>
+                    </a>
+                    <a href="profile.html" class="nav-item">
+                        <span class="nav-icon">👤</span>
+                        <span>Profile & Humor</span>
+                    </a>
+                </nav>
+            </div>
+
+            <!-- User Badge / Footer -->
+            <div class="sidebar-footer">
+                <div class="user-pill">
+                    <div class="user-avatar">AD</div>
+                    <div class="user-meta">
+                        <span class="user-name">Abhigyan Das</span>
+                        <span class="user-role">Student Tier</span>
+                    </div>
+                </div>
+                <a href="landing.html" class="btn-logout" title="Sign Out">↪</a>
+            </div>
+        </aside>
+
+        <!-- ================================================================= -->
+        <!-- 2. MAIN TRANSACTIONS CONTENT                                      -->
+        <!-- ================================================================= -->
+        <main class="transactions-main">
+
+            <!-- Page Header -->
+            <header class="transactions-header">
+                <div>
+                    <h1 class="page-title">Transaction Ledger</h1>
+                    <p class="page-subtitle">Complete audit history of your income and outflows.</p>
+                </div>
+                <button type="button" class="btn btn-primary" id="btn-open-modal">
+                    <span>+</span> Log Transaction
+                </button>
+            </header>
+
+            <!-- Quick Ledger Summary Stats -->
+            <section class="ledger-stats-grid">
+                <div class="card stat-card">
+                    <span class="stat-label">Total Outflows (Filtered)</span>
+                    <h3 class="stat-value text-danger font-tabular" id="summary-total-expense">-₹0.00</h3>
+                </div>
+                <div class="card stat-card">
+                    <span class="stat-label">Total Earnings (Filtered)</span>
+                    <h3 class="stat-value text-success font-tabular" id="summary-total-income">+₹0.00</h3>
+                </div>
+                <div class="card stat-card">
+                    <span class="stat-label">Total Entries Found</span>
+                    <h3 class="stat-value font-tabular" id="summary-total-count">0</h3>
+                </div>
+            </section>
+
+            <!-- Filtering, Search & Control Toolbar -->
+            <section class="card filter-card">
+                <div class="filter-toolbar">
+                    
+                    <!-- Search Input -->
+                    <div class="search-wrap">
+                        <span class="search-icon">🔍</span>
+                        <input 
+                            type="text" 
+                            id="tx-search-input" 
+                            class="search-input" 
+                            placeholder="Search description, category, or note..."
+                        >
+                    </div>
+
+                    <!-- Type Filter Tabs (All / Expense / Income) -->
+                    <div class="filter-type-tabs">
+                        <button type="button" class="type-filter-btn active" data-filter="all">All</button>
+                        <button type="button" class="type-filter-btn" data-filter="expense">Expenses</button>
+                        <button type="button" class="type-filter-btn" data-filter="income">Income</button>
+                    </div>
+
+                    <!-- Account Dropdown Selector -->
+                    <div class="account-filter-wrap">
+                        <select id="tx-account-filter" class="form-select filter-select">
+                            <option value="all">All Accounts</option>
+                            <option value="HDFC Bank">HDFC Bank</option>
+                            <option value="UPI / Wallet">UPI / Wallet</option>
+                            <option value="Physical Cash">Physical Cash</option>
+                        </select>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- Transactions Table View -->
+            <section class="card table-card">
+                <div class="table-wrap">
+                    <table class="ledger-table">
+                        <thead>
+                            <tr>
+                                <th>Type</th>
+                                <th>Category</th>
+                                <th>Description / Note</th>
+                                <th>Account</th>
+                                <th>Date</th>
+                                <th class="text-right">Amount (₹)</th>
+                                <th class="text-center">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ledger-body">
+                            <!-- Populated dynamically via static/js/transactions.js -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Empty State Message when no search results match -->
+                <div class="empty-state" id="empty-state" style="display: none;">
+                    <span class="empty-icon">📭</span>
+                    <h4 class="empty-title">No transactions found</h4>
+                    <p class="empty-desc">Try clearing your search query or switching your active filters.</p>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- ================================================================= -->
+    <!-- 3. MODAL: LOG TRANSACTION POPUP                                   -->
+    <!-- ================================================================= -->
+    <div class="modal-overlay" id="tx-modal" aria-hidden="true">
+        <div class="modal-box">
+            
+            <div class="modal-head">
+                <h3 class="modal-title">New Entry</h3>
+                <button type="button" class="btn-modal-close" id="modal-close-btn">&times;</button>
+            </div>
+
+            <form id="ledger-form" class="modal-form">
+                
+                <input type="hidden" id="entry-type" value="expense">
+
+                <!-- Type Selector (Expense / Income) -->
+                <div class="type-toggle-group">
+                    <button type="button" class="toggle-choice active" id="modal-tab-expense">Expense</button>
+                    <button type="button" class="toggle-choice" id="modal-tab-income">Income</button>
+                </div>
+
+                <!-- Amount -->
+                <div class="form-row">
+                    <label for="entry-amount" class="form-label">Amount (₹)</label>
+                    <input 
+                        type="number" 
+                        id="entry-amount" 
+                        class="form-input font-tabular" 
+                        placeholder="0.00" 
+                        step="0.01" 
+                        required
+                    >
+                </div>
+
+                <!-- Category -->
+                <div class="form-row">
+                    <label for="entry-category" class="form-label">Category</label>
+                    <input 
+                        type="text" 
+                        id="entry-category" 
+                        class="form-input" 
+                        placeholder="e.g. Swiggy, Wi-Fi Bill, Project Stipend" 
+                        required
+                    >
+                </div>
+
+                <!-- Account -->
+                <div class="form-row">
+                    <label for="entry-account" class="form-label">Account Used</label>
+                    <select id="entry-account" class="form-select" required>
+                        <option value="HDFC Bank">HDFC Bank</option>
+                        <option value="UPI / Wallet">UPI / Wallet</option>
+                        <option value="Physical Cash">Physical Cash</option>
+                    </select>
+                </div>
+
+                <!-- Note -->
+                <div class="form-row">
+                    <label for="entry-note" class="form-label">Note / Remark (Optional)</label>
+                    <input 
+                        type="text" 
+                        id="entry-note" 
+                        class="form-input" 
+                        placeholder="What was this spent on?"
+                    >
+                </div>
+
+                <!-- Modal Actions -->
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" id="modal-cancel-btn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save to Ledger</button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+    <!-- Script Hook -->
+    <script src="../static/js/transactions.js"></script>
+</body>
+</html>

@@ -1,7 +1,7 @@
+
 /* ==========================================================================
-   GAREEBI TRACKER — DASHBOARD LOGIC (static/js/dashboard.js)
-   Handles modal triggers, transaction logging, in-memory ledger rendering,
-   and dynamic metric calculations.
+   GAREEBI TRACKER — DASHBOARD LOGIC
+   Handles transactions, database connection, metrics and logout.
    ========================================================================== */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -9,14 +9,13 @@ document.addEventListener('DOMContentLoaded', () => {
     /* --------------------------------------------------------------------------
        1. DOM REFERENCES
        -------------------------------------------------------------------------- */
-    // Modal & Buttons
+
     const modal = document.getElementById('transaction-modal');
     const btnQuickIncome = document.getElementById('btn-quick-income');
     const btnQuickExpense = document.getElementById('btn-quick-expense');
     const modalCloseBtn = document.getElementById('modal-close-btn');
     const modalCancelBtn = document.getElementById('modal-cancel-btn');
 
-    // Modal Form Elements
     const txForm = document.getElementById('dashboard-tx-form');
     const txTypeInput = document.getElementById('tx-type');
     const tabExpense = document.getElementById('tab-expense');
@@ -26,50 +25,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const txAccount = document.getElementById('tx-account');
     const txNote = document.getElementById('tx-note');
 
-    // Metrics Containers
     const metricBalance = document.getElementById('metric-balance');
     const metricIncome = document.getElementById('metric-income');
     const metricExpense = document.getElementById('metric-expense');
     const metricSavings = document.getElementById('metric-savings');
 
-    // Table Body
     const tableBody = document.getElementById('transactions-table-body');
 
     /* --------------------------------------------------------------------------
-       2. IN-MEMORY TRANSACTIONS STATE
-       Mirrors Subhranil's Python dictionary structure:
-       { type, amount, category, note, account, date }
+       2. TRANSACTIONS STATE
        -------------------------------------------------------------------------- */
-    let transactions = [
-        {
-            type: 'income',
-            amount: 15000.00,
-            category: 'Stipend / Freelance',
-            note: 'Monthly development milestone',
-            account: 'HDFC Bank',
-            date: 'Nov 05, 2026'
-        },
-        {
-            type: 'expense',
-            amount: 450.00,
-            category: 'Food & Dining',
-            note: 'Hostel mess night snack',
-            account: 'UPI / Wallet',
-            date: 'Nov 04, 2026'
-        },
-        {
-            type: 'expense',
-            amount: 300.00,
-            category: 'Transit & Petrol',
-            note: 'Metro card recharge',
-            account: 'Physical Cash',
-            date: 'Nov 03, 2026'
-        }
-    ];
+
+    let transactions = [];
+
 
     /* --------------------------------------------------------------------------
        3. MODAL CONTROLS
        -------------------------------------------------------------------------- */
+
     function openModal(type = 'expense') {
         setType(type);
         modal.classList.add('open');
@@ -85,6 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function setType(type) {
         txTypeInput.value = type;
+
         if (type === 'income') {
             tabIncome.classList.add('active');
             tabExpense.classList.remove('active');
@@ -96,98 +70,177 @@ document.addEventListener('DOMContentLoaded', () => {
 
     btnQuickIncome.addEventListener('click', () => openModal('income'));
     btnQuickExpense.addEventListener('click', () => openModal('expense'));
+
     modalCloseBtn.addEventListener('click', closeModal);
     modalCancelBtn.addEventListener('click', closeModal);
 
-    // Click outside modal box
     modal.addEventListener('click', (e) => {
         if (e.target === modal) closeModal();
     });
 
-    // Escape key listener
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' && modal.classList.contains('open')) {
             closeModal();
         }
     });
 
-    // Toggle choices inside modal
     tabExpense.addEventListener('click', () => setType('expense'));
     tabIncome.addEventListener('click', () => setType('income'));
 
+
     /* --------------------------------------------------------------------------
-       4. CURRENCY FORMATTER (INR: ₹)
+       4. CURRENCY FORMATTER
        -------------------------------------------------------------------------- */
+
     function formatINR(val) {
-        return '₹' + val.toLocaleString('en-IN', {
+        return '₹' + Number(val).toLocaleString('en-IN', {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2
         });
     }
 
+
     /* --------------------------------------------------------------------------
        5. METRIC COMPUTATIONS
        -------------------------------------------------------------------------- */
+
     function updateMetrics() {
+
         let totalIncome = 0;
         let totalExpense = 0;
 
         transactions.forEach(t => {
-            if (t.type === 'income') totalIncome += t.amount;
-            else totalExpense += t.amount;
+            if (t.type === 'income') {
+                totalIncome += Number(t.amount);
+            } else {
+                totalExpense += Number(t.amount);
+            }
         });
 
         const netBalance = totalIncome - totalExpense;
-        // Assume 15% auto-allocated to emergency reserve
         const savingsStash = netBalance > 0 ? netBalance * 0.15 : 0;
 
         metricIncome.textContent = '+' + formatINR(totalIncome);
         metricExpense.textContent = '-' + formatINR(totalExpense);
-        metricBalance.textContent = (netBalance < 0 ? '-' : '') + formatINR(Math.abs(netBalance));
+
+        metricBalance.textContent =
+            (netBalance < 0 ? '-' : '') + formatINR(Math.abs(netBalance));
+
         metricSavings.textContent = formatINR(savingsStash);
     }
+
 
     /* --------------------------------------------------------------------------
        6. TABLE RENDERING
        -------------------------------------------------------------------------- */
+
     function renderTable() {
+
         tableBody.innerHTML = '';
 
-        // Display newest transactions first
-        const recent = [...transactions].reverse();
+        transactions.forEach(tx => {
 
-        recent.forEach(tx => {
             const tr = document.createElement('tr');
             const isIncome = tx.type === 'income';
 
-            tr.innerHTML = `
-                <td><span class="tx-badge ${isIncome ? 'income' : 'expense'}">${isIncome ? 'Income' : 'Expense'}</span></td>
-                <td style="font-weight: 500; color: var(--text-primary);">${tx.category}</td>
-                <td style="color: var(--text-muted);">${tx.note || '—'}</td>
-                <td><span class="account-chip">${tx.account}</span></td>
-                <td style="color: var(--text-muted);">${tx.date}</td>
-                <td class="text-right font-tabular ${isIncome ? 'text-success' : 'text-danger'}" style="font-weight: 600;">
-                    ${isIncome ? '+' : '-'}${formatINR(tx.amount)}
-                </td>
-            `;
+            const typeCell = document.createElement('td');
+            const badge = document.createElement('span');
+
+            badge.className = `tx-badge ${isIncome ? 'income' : 'expense'}`;
+            badge.textContent = isIncome ? 'Income' : 'Expense';
+            typeCell.appendChild(badge);
+
+            const categoryCell = document.createElement('td');
+            categoryCell.style.cssText =
+                'font-weight: 500; color: var(--text-primary);';
+            categoryCell.textContent = tx.category;
+
+            const noteCell = document.createElement('td');
+            noteCell.style.color = 'var(--text-muted)';
+            noteCell.textContent = tx.note || '—';
+
+            const accountCell = document.createElement('td');
+            const accountChip = document.createElement('span');
+            accountChip.className = 'account-chip';
+            accountChip.textContent = tx.account;
+            accountCell.appendChild(accountChip);
+
+            const dateCell = document.createElement('td');
+            dateCell.style.color = 'var(--text-muted)';
+            dateCell.textContent = tx.date;
+
+            const amountCell = document.createElement('td');
+            amountCell.className =
+                `text-right font-tabular ${isIncome ? 'text-success' : 'text-danger'}`;
+            amountCell.style.fontWeight = '600';
+            amountCell.textContent =
+                `${isIncome ? '+' : '-'}${formatINR(tx.amount)}`;
+
+            tr.append(
+                typeCell,
+                categoryCell,
+                noteCell,
+                accountCell,
+                dateCell,
+                amountCell
+            );
+
             tableBody.appendChild(tr);
         });
     }
 
+
     /* --------------------------------------------------------------------------
-       7. FORM SUBMIT HANDLER
+       7. FETCH TRANSACTIONS FROM DATABASE
        -------------------------------------------------------------------------- */
-    txForm.addEventListener('submit', (e) => {
+
+    async function loadTransactions() {
+
+        try {
+
+            const response = await fetch('/transactions');
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error(result.error || 'Could not load transactions.');
+            }
+
+            transactions = result.transactions;
+
+            renderTable();
+            updateMetrics();
+
+        } catch (error) {
+
+            console.error('Transaction loading error:', error);
+            alert('Could not load transactions. Please refresh the page.');
+
+        }
+    }
+
+
+    /* --------------------------------------------------------------------------
+       8. SAVE TRANSACTION TO DATABASE
+       -------------------------------------------------------------------------- */
+
+    txForm.addEventListener('submit', async (e) => {
+
         e.preventDefault();
 
         const amount = parseFloat(txAmount.value);
+
         if (isNaN(amount) || amount <= 0) {
             alert('Please enter a valid amount.');
             return;
         }
 
         const now = new Date();
-        const dateStr = now.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
+
+        const dateStr = now.toLocaleDateString('en-US', {
+            month: 'short',
+            day: '2-digit',
+            year: 'numeric'
+        });
 
         const newTx = {
             type: txTypeInput.value,
@@ -198,21 +251,88 @@ document.addEventListener('DOMContentLoaded', () => {
             date: dateStr
         };
 
-        // Add to local state
-        transactions.push(newTx);
+        const submitBtn = txForm.querySelector('[type="submit"]');
 
-        // Update UI
-        renderTable();
-        updateMetrics();
+        try {
 
-        // Close and reset
-        closeModal();
+            if (submitBtn) submitBtn.disabled = true;
+
+            const response = await fetch('/transactions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(newTx)
+            });
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error(result.error || 'Transaction could not be saved.');
+            }
+
+            newTx.id = result.transaction_id;
+
+            // Update UI only after successful database save
+            transactions.unshift(newTx);
+
+            renderTable();
+            updateMetrics();
+
+            closeModal();
+
+        } catch (error) {
+
+            console.error('Transaction saving error:', error);
+            alert(error.message);
+
+        } finally {
+
+            if (submitBtn) submitBtn.disabled = false;
+
+        }
     });
 
+
     /* --------------------------------------------------------------------------
-       8. INITIALIZATION
+       9. LOGOUT
        -------------------------------------------------------------------------- */
-    renderTable();
-    updateMetrics();
+
+    const logoutBtn = document.getElementById('btn-logout');
+
+    if (logoutBtn) {
+
+        logoutBtn.addEventListener('click', async () => {
+
+            try {
+
+                const response = await fetch('/logout', {
+                    method: 'POST'
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    window.location.href = result.redirect || '/';
+                } else {
+                    alert('Logout failed. Please try again.');
+                }
+
+            } catch (error) {
+
+                console.error('Logout error:', error);
+                alert('Something went wrong. Please try again.');
+
+            }
+
+        });
+    }
+
+
+    /* --------------------------------------------------------------------------
+       10. INITIALIZATION
+       -------------------------------------------------------------------------- */
+
+    loadTransactions();
 
 });

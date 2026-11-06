@@ -25,14 +25,14 @@
         <aside class="sidebar">
             <div class="sidebar-top">
                 <!-- Brand Anchor pointing back to landing or dashboard -->
-                <a href="dashboard.html" class="sidebar-brand">
+                <a href="{{ url_for('dashboard') }}"> class="sidebar-brand">
                     <span class="brand-emoji">💸</span>
                     <span class="brand-text">Gareebi<span class="brand-accent">Tracker</span></span>
                 </a>
 
                 <!-- Navigation Links -->
                 <nav class="sidebar-nav">
-                    <a href="dashboard.html" class="nav-item active">
+                    <a href="{{ url_for('dashboard') }}" class="nav-item active">
                         <span class="nav-icon">📊</span>
                         <span>Dashboard</span>
                     </a>
@@ -56,11 +56,11 @@
                 <div class="user-pill">
                     <div class="user-avatar">AD</div>
                     <div class="user-meta">
-                        <span class="user-name">Abhigyan Das</span>
+                        <span class="user-name">{{ user_name }}</span>
                         <span class="user-role">Student Tier</span>
                     </div>
                 </div>
-                <a href="landing.html" class="btn-logout" title="Sign Out">↪</a>
+                <button type="button" class="btn-logout" id="btn-logout" title="Sign Out">↪</button>
             </div>
         </aside>
 

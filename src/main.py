@@ -35,7 +35,7 @@ app = Flask(
 )
 
 # Session security key
-app.secret_key = secrets.token_hex(32)
+app.secret_key = "gareebi-tracker-dev-secret-key-2026"
 
 # Persistent session configuration (30 days)
 app.config["SESSION_PERMANENT"] = True
@@ -308,4 +308,4 @@ def logout():
 
 # Start Flask server
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="127.0.0.1", port=5000, debug=True)

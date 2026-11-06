@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile & Settings: Gareebi Tracker</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="../static/css/global.css">
+    <link rel="stylesheet" href="../static/css/profile.css">
+</head>
+<body class="profile-body">
+
+    <div class="app-shell">
+
+        <!-- Sidebar Navigation (Accounts Removed) -->
+        <aside class="sidebar">
+            <div class="sidebar-top">
+                <a href="dashboard.html" class="sidebar-brand">
+                    <span class="brand-text">Gareebi<span class="brand-accent"> Tracker</span></span>
+                </a>
+
+                <nav class="sidebar-nav">
+                    <a href="dashboard.html" class="nav-item">
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="transactions.html" class="nav-item">
+                        <span>Transactions</span>
+                    </a>
+                    <a href="profile.html" class="nav-item active">
+                        <span>Profile & Settings</span>
+                    </a>
+                </nav>
+            </div>
+
+            <div class="sidebar-footer">
+                <div class="user-pill">
+                    <div class="user-avatar" id="sidebar-avatar">AD</div>
+                    <div class="user-meta">
+                        <span class="user-name" id="sidebar-name">Abhigyan Das</span>
+                        <span class="user-role" id="sidebar-role">Student Account</span>
+                    </div>
+                </div>
+                <a href="landing.html" class="btn-logout" title="Sign Out">Sign Out</a>
+            </div>
+        </aside>
+
+        <!-- Main Profile & Settings Surface -->
+        <main class="profile-main">
+
+            <header class="profile-header">
+                <div>
+                    <h1 class="page-title">Profile & Settings</h1>
+                    <p class="page-subtitle">Manage personal identity, local storage state, and ledger preferences.</p>
+                </div>
+                <div class="header-status">
+                    <span class="status-indicator-dot"></span>
+                    <span class="status-indicator-text">Session Active: Local Cache Synced</span>
+                </div>
+            </header>
+
+            <!-- User Identity Banner -->
+            <section class="card persona-hero-card">
+                <div class="persona-layout">
+                    <div class="avatar-container">
+                        <div class="avatar-large" id="profile-large-avatar">AD</div>
+                    </div>
+
+                    <div class="persona-details">
+                        <div class="persona-title-row">
+                            <h2 class="user-fullname" id="profile-display-name">Abhigyan Das</h2>
+                            <span class="persona-tag" id="profile-tier-badge">Tier: Student Account</span>
+                        </div>
+                        <p class="user-handle" id="profile-handle">@dasabhigyan &bull; Enrolled August 2026</p>
+
+                        <div class="meta-pills-row">
+                            <span class="meta-pill">Client Storage: Active</span>
+                            <span class="meta-pill">Telemetry: Disabled</span>
+                            <span class="meta-pill">Default Currency: INR (₹)</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Settings & Configuration Grid -->
+            <div class="settings-grid">
+                
+                <!-- General Profile Form -->
+                <section class="card settings-card">
+                    <div class="card-head-simple">
+                        <h3 class="section-title">General Preferences</h3>
+                        <p class="section-subtitle">Personal details configured for your local browser session.</p>
+                    </div>
+
+                    <form id="profile-form" class="settings-form">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="prof-name" class="form-label">Display name</label>
+                                <input type="text" id="prof-name" class="form-input" value="Abhigyan Das" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="prof-email" class="form-label">Email address</label>
+                                <input type="email" id="prof-email" class="form-input" value="abhigyan@example.com" disabled>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="prof-currency" class="form-label">Primary currency</label>
+                                <select id="prof-currency" class="form-select">
+                                    <option value="INR" selected>INR (₹): Indian Rupee</option>
+                                    <option value="USD">USD ($): US Dollar</option>
+                                    <option value="EUR">EUR (€): Euro</option>
+                                    <option value="GBP">GBP (£): British Pound</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="prof-persona" class="form-label">Classification tier</label>
+                                <select id="prof-persona" class="form-select">
+                                    <option value="Student Account" selected>Student Account</option>
+                                    <option value="Active Ledger">Active Ledger</option>
+                                    <option value="Minimalist Tier">Minimalist Tier</option>
+                                    <option value="Hostel Reserve">Hostel Reserve</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="settings-actions">
+                            <span class="save-status" id="save-status-msg"></span>
+                            <button type="submit" class="btn btn-primary">Save preferences</button>
+                        </div>
+                    </form>
+                </section>
+
+                <!-- Data Management & Ledger Actions -->
+                <section class="card data-card">
+                    <div class="card-head-simple">
+                        <h3 class="section-title">Data & Storage Management</h3>
+                        <p class="section-subtitle">Direct controls over your local browser ledger and cache.</p>
+                    </div>
+
+                    <div class="data-actions-list">
+                        <div class="data-action-row">
+                            <div class="action-info">
+                                <h4 class="action-title">Export Ledger Data</h4>
+                                <p class="action-desc">Download a backup JSON export containing your entire transaction history.</p>
+                            </div>
+                            <button type="button" class="btn btn-secondary" id="btn-export-json">Export JSON</button>
+                        </div>
+
+                        <div class="data-action-row">
+                            <div class="action-info">
+                                <h4 class="action-title">Reset Demo Entries</h4>
+                                <p class="action-desc">Restore the default starter transaction entries across the dashboard and ledger.</p>
+                            </div>
+                            <button type="button" class="btn btn-secondary" id="btn-reset-demo">Reset to Default</button>
+                        </div>
+
+                        <div class="data-action-row danger-row">
+                            <div class="action-info">
+                                <h4 class="action-title text-danger">Clear All Ledger Records</h4>
+                                <p class="action-desc">Permanently wipe all cached ledger transactions and reset balances to zero.</p>
+                            </div>
+                            <button type="button" class="btn btn-danger-outline" id="btn-clear-data">Purge Ledger</button>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+
+        </main>
+    </div>
+
+    <script src="../static/js/profile.js"></script>
+</body>
+</html>

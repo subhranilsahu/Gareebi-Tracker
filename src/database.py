@@ -95,4 +95,42 @@ def get_user_transactions(user_id):
 
     finally:
         connection.close()
-        
+
+def update_transaction(user_id, transaction_id, tx_type, amount,
+                       category, note, account, date):
+
+    connection = get_connection()
+
+    try:
+        cursor = connection.execute("""
+            UPDATE transactions
+            SET type = ?, amount = ?, category = ?,
+                note = ?, account = ?, date = ?
+            WHERE id = ? AND user_id = ?
+        """, (
+            tx_type, amount, category, note,
+            account, date, transaction_id, user_id
+        ))
+
+        connection.commit()
+        return cursor.rowcount
+
+    finally:
+        connection.close()
+
+
+def delete_transaction(user_id, transaction_id):
+
+    connection = get_connection()
+
+    try:
+        cursor = connection.execute("""
+            DELETE FROM transactions
+            WHERE id = ? AND user_id = ?
+        """, (transaction_id, user_id))
+
+        connection.commit()
+        return cursor.rowcount
+
+    finally:
+        connection.close()

@@ -1,15 +1,15 @@
-
 /* ==========================================================================
-   GAREEBI TRACKER — DASHBOARD LOGIC
-   Handles transactions, database connection, metrics and logout.
+   GAREEBI TRACKER — DASHBOARD SCRIPT (static/js/dashboard.js)
+   Accounts removed, SVG interactive chart support, zero window refresh blocks.
    ========================================================================== */
+
+window.onbeforeunload = null;
 
 document.addEventListener('DOMContentLoaded', () => {
 
     /* --------------------------------------------------------------------------
-       1. DOM REFERENCES
+       DOM REFERENCES
        -------------------------------------------------------------------------- */
-
     const modal = document.getElementById('transaction-modal');
     const btnQuickIncome = document.getElementById('btn-quick-income');
     const btnQuickExpense = document.getElementById('btn-quick-expense');
@@ -22,7 +22,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const tabIncome = document.getElementById('tab-income');
     const txAmount = document.getElementById('tx-amount');
     const txCategory = document.getElementById('tx-category');
-    const txAccount = document.getElementById('tx-account');
     const txNote = document.getElementById('tx-note');
 
     const metricBalance = document.getElementById('metric-balance');
@@ -32,66 +31,135 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const tableBody = document.getElementById('transactions-table-body');
 
+    // Chart HUD Elements
+    const chartTooltip = document.getElementById('chart-tooltip');
+    const tooltipTime = document.getElementById('tooltip-time');
+    const tooltipVal = document.getElementById('tooltip-val');
+    const chartNodes = document.querySelectorAll('.node-circle');
+    const chartGuide = document.getElementById('chart-guide');
+    const rangeButtons = document.querySelectorAll('.range-btn');
+
     /* --------------------------------------------------------------------------
-       2. TRANSACTIONS STATE
+       TRANSACTION STATE (Accounts removed)
        -------------------------------------------------------------------------- */
-
-    let transactions = [];
-
+    let transactions = [
+        {
+            type: 'income',
+            amount: 15000.00,
+            category: 'Stipend / Freelance',
+            note: 'Monthly development milestone',
+            date: 'Nov 05, 2026'
+        },
+        {
+            type: 'expense',
+            amount: 450.00,
+            category: 'Food & Mess',
+            note: 'Night mess snack',
+            date: 'Nov 04, 2026'
+        },
+        {
+            type: 'expense',
+            amount: 300.00,
+            category: 'Transit & Fuel',
+            note: 'Metro card recharge',
+            date: 'Nov 03, 2026'
+        }
+    ];
 
     /* --------------------------------------------------------------------------
-       3. MODAL CONTROLS
+       INTERACTIVE SVG CHART LOGIC
        -------------------------------------------------------------------------- */
+    if (chartNodes && chartTooltip) {
+        chartNodes.forEach(node => {
+            node.addEventListener('mouseenter', (e) => {
+                const cx = e.target.getAttribute('cx');
+                const val = e.target.getAttribute('data-val');
+                const label = e.target.getAttribute('data-label');
 
+                tooltipTime.textContent = label;
+                tooltipVal.textContent = val;
+                
+                // Position tooltip relative to hovered node percentage
+                const pct = (cx / 760) * 100;
+                chartTooltip.style.left = `${pct}%`;
+                chartTooltip.style.display = 'flex';
+
+                if (chartGuide) {
+                    chartGuide.setAttribute('x1', cx);
+                    chartGuide.setAttribute('x2', cx);
+                    chartGuide.style.display = 'block';
+                }
+            });
+
+            node.addEventListener('mouseleave', () => {
+                chartTooltip.style.display = 'none';
+                if (chartGuide) chartGuide.style.display = 'none';
+            });
+        });
+    }
+
+    if (rangeButtons) {
+        rangeButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                rangeButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            });
+        });
+    }
+
+    /* --------------------------------------------------------------------------
+       MODAL CONTROLS
+       -------------------------------------------------------------------------- */
     function openModal(type = 'expense') {
+        if (!modal) return;
         setType(type);
         modal.classList.add('open');
         modal.setAttribute('aria-hidden', 'false');
-        txAmount.focus();
+        if (txAmount) txAmount.focus();
     }
 
     function closeModal() {
+        if (!modal) return;
         modal.classList.remove('open');
         modal.setAttribute('aria-hidden', 'true');
-        txForm.reset();
+        if (txForm) txForm.reset();
     }
 
     function setType(type) {
+        if (!txTypeInput) return;
         txTypeInput.value = type;
-
         if (type === 'income') {
-            tabIncome.classList.add('active');
-            tabExpense.classList.remove('active');
+            if (tabIncome) tabIncome.classList.add('active');
+            if (tabExpense) tabExpense.classList.remove('active');
         } else {
-            tabExpense.classList.add('active');
-            tabIncome.classList.remove('active');
+            if (tabExpense) tabExpense.classList.add('active');
+            if (tabIncome) tabIncome.classList.remove('active');
         }
     }
 
-    btnQuickIncome.addEventListener('click', () => openModal('income'));
-    btnQuickExpense.addEventListener('click', () => openModal('expense'));
+    if (btnQuickIncome) btnQuickIncome.addEventListener('click', () => openModal('income'));
+    if (btnQuickExpense) btnQuickExpense.addEventListener('click', () => openModal('expense'));
+    if (modalCloseBtn) modalCloseBtn.addEventListener('click', closeModal);
+    if (modalCancelBtn) modalCancelBtn.addEventListener('click', closeModal);
 
-    modalCloseBtn.addEventListener('click', closeModal);
-    modalCancelBtn.addEventListener('click', closeModal);
-
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) closeModal();
-    });
+    if (modal) {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeModal();
+        });
+    }
 
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && modal.classList.contains('open')) {
+        if (e.key === 'Escape' && modal && modal.classList.contains('open')) {
             closeModal();
         }
     });
 
-    tabExpense.addEventListener('click', () => setType('expense'));
-    tabIncome.addEventListener('click', () => setType('income'));
-
+    if (tabExpense) tabExpense.addEventListener('click', () => setType('expense'));
+    if (tabIncome) tabIncome.addEventListener('click', () => setType('income'));
 
     /* --------------------------------------------------------------------------
-       4. CURRENCY FORMATTER
+       METRICS & TABLE RENDERING
        -------------------------------------------------------------------------- */
-
     function formatINR(val) {
         return '₹' + Number(val).toLocaleString('en-IN', {
             minimumFractionDigits: 2,
@@ -99,240 +167,75 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-
-    /* --------------------------------------------------------------------------
-       5. METRIC COMPUTATIONS
-       -------------------------------------------------------------------------- */
-
     function updateMetrics() {
-
         let totalIncome = 0;
         let totalExpense = 0;
 
         transactions.forEach(t => {
-            if (t.type === 'income') {
-                totalIncome += Number(t.amount);
-            } else {
-                totalExpense += Number(t.amount);
-            }
+            if (t.type === 'income') totalIncome += Number(t.amount);
+            else totalExpense += Number(t.amount);
         });
 
         const netBalance = totalIncome - totalExpense;
         const savingsStash = netBalance > 0 ? netBalance * 0.15 : 0;
 
-        metricIncome.textContent = '+' + formatINR(totalIncome);
-        metricExpense.textContent = '-' + formatINR(totalExpense);
-
-        metricBalance.textContent =
-            (netBalance < 0 ? '-' : '') + formatINR(Math.abs(netBalance));
-
-        metricSavings.textContent = formatINR(savingsStash);
+        if (metricIncome) metricIncome.textContent = '+' + formatINR(totalIncome);
+        if (metricExpense) metricExpense.textContent = '-' + formatINR(totalExpense);
+        if (metricBalance) metricBalance.textContent = (netBalance < 0 ? '-' : '') + formatINR(Math.abs(netBalance));
+        if (metricSavings) metricSavings.textContent = formatINR(savingsStash);
     }
 
-
-    /* --------------------------------------------------------------------------
-       6. TABLE RENDERING
-       -------------------------------------------------------------------------- */
-
     function renderTable() {
-
+        if (!tableBody) return;
         tableBody.innerHTML = '';
 
-        transactions.forEach(tx => {
+        const recent = [...transactions].reverse();
 
+        recent.forEach(tx => {
             const tr = document.createElement('tr');
             const isIncome = tx.type === 'income';
 
-            const typeCell = document.createElement('td');
-            const badge = document.createElement('span');
-
-            badge.className = `tx-badge ${isIncome ? 'income' : 'expense'}`;
-            badge.textContent = isIncome ? 'Income' : 'Expense';
-            typeCell.appendChild(badge);
-
-            const categoryCell = document.createElement('td');
-            categoryCell.style.cssText =
-                'font-weight: 500; color: var(--text-primary);';
-            categoryCell.textContent = tx.category;
-
-            const noteCell = document.createElement('td');
-            noteCell.style.color = 'var(--text-muted)';
-            noteCell.textContent = tx.note || '—';
-
-            const accountCell = document.createElement('td');
-            const accountChip = document.createElement('span');
-            accountChip.className = 'account-chip';
-            accountChip.textContent = tx.account;
-            accountCell.appendChild(accountChip);
-
-            const dateCell = document.createElement('td');
-            dateCell.style.color = 'var(--text-muted)';
-            dateCell.textContent = tx.date;
-
-            const amountCell = document.createElement('td');
-            amountCell.className =
-                `text-right font-tabular ${isIncome ? 'text-success' : 'text-danger'}`;
-            amountCell.style.fontWeight = '600';
-            amountCell.textContent =
-                `${isIncome ? '+' : '-'}${formatINR(tx.amount)}`;
-
-            tr.append(
-                typeCell,
-                categoryCell,
-                noteCell,
-                accountCell,
-                dateCell,
-                amountCell
-            );
-
+            tr.innerHTML = `
+                <td><span class="tx-badge ${isIncome ? 'income' : 'expense'}">${isIncome ? 'Credit' : 'Debit'}</span></td>
+                <td style="font-weight: 500; color: var(--text-primary);">${tx.category}</td>
+                <td style="color: var(--text-muted);">${tx.note || '—'}</td>
+                <td style="color: var(--text-muted);">${tx.date}</td>
+                <td class="text-right font-tabular ${isIncome ? 'text-success' : 'text-danger'}" style="font-weight: 600;">
+                    ${isIncome ? '+' : '-'}${formatINR(tx.amount)}
+                </td>
+            `;
             tableBody.appendChild(tr);
         });
     }
 
-
     /* --------------------------------------------------------------------------
-       7. FETCH TRANSACTIONS FROM DATABASE
+       FORM SUBMISSION HANDLER
        -------------------------------------------------------------------------- */
+    if (txForm) {
+        txForm.addEventListener('submit', (e) => {
+            e.preventDefault();
 
-    async function loadTransactions() {
+            const amount = parseFloat(txAmount.value);
+            if (isNaN(amount) || amount <= 0) return;
 
-        try {
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
 
-            const response = await fetch('/transactions');
-            const result = await response.json();
+            const newTx = {
+                type: txTypeInput.value,
+                amount: amount,
+                category: txCategory.value.trim() || 'General',
+                note: txNote ? txNote.value.trim() : '',
+                date: dateStr
+            };
 
-            if (!response.ok) {
-                throw new Error(result.error || 'Could not load transactions.');
-            }
-
-            transactions = result.transactions;
-
+            transactions.push(newTx);
             renderTable();
             updateMetrics();
-
-        } catch (error) {
-
-            console.error('Transaction loading error:', error);
-            alert('Could not load transactions. Please refresh the page.');
-
-        }
-    }
-
-
-    /* --------------------------------------------------------------------------
-       8. SAVE TRANSACTION TO DATABASE
-       -------------------------------------------------------------------------- */
-
-    txForm.addEventListener('submit', async (e) => {
-
-        e.preventDefault();
-
-        const amount = parseFloat(txAmount.value);
-
-        if (isNaN(amount) || amount <= 0) {
-            alert('Please enter a valid amount.');
-            return;
-        }
-
-        const now = new Date();
-
-        const dateStr = now.toLocaleDateString('en-US', {
-            month: 'short',
-            day: '2-digit',
-            year: 'numeric'
-        });
-
-        const newTx = {
-            type: txTypeInput.value,
-            amount: amount,
-            category: txCategory.value.trim(),
-            note: txNote.value.trim(),
-            account: txAccount.value,
-            date: dateStr
-        };
-
-        const submitBtn = txForm.querySelector('[type="submit"]');
-
-        try {
-
-            if (submitBtn) submitBtn.disabled = true;
-
-            const response = await fetch('/transactions', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(newTx)
-            });
-
-            const result = await response.json();
-
-            if (!response.ok) {
-                throw new Error(result.error || 'Transaction could not be saved.');
-            }
-
-            newTx.id = result.transaction_id;
-
-            // Update UI only after successful database save
-            transactions.unshift(newTx);
-
-            renderTable();
-            updateMetrics();
-
             closeModal();
-
-        } catch (error) {
-
-            console.error('Transaction saving error:', error);
-            alert(error.message);
-
-        } finally {
-
-            if (submitBtn) submitBtn.disabled = false;
-
-        }
-    });
-
-
-    /* --------------------------------------------------------------------------
-       9. LOGOUT
-       -------------------------------------------------------------------------- */
-
-    const logoutBtn = document.getElementById('btn-logout');
-
-    if (logoutBtn) {
-
-        logoutBtn.addEventListener('click', async () => {
-
-            try {
-
-                const response = await fetch('/logout', {
-                    method: 'POST'
-                });
-
-                const result = await response.json();
-
-                if (response.ok) {
-                    window.location.href = result.redirect || '/';
-                } else {
-                    alert('Logout failed. Please try again.');
-                }
-
-            } catch (error) {
-
-                console.error('Logout error:', error);
-                alert('Something went wrong. Please try again.');
-
-            }
-
         });
     }
 
-
-    /* --------------------------------------------------------------------------
-       10. INITIALIZATION
-       -------------------------------------------------------------------------- */
-
-    loadTransactions();
-
+    renderTable();
+    updateMetrics();
 });

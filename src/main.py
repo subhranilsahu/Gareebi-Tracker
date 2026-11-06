@@ -1,4 +1,3 @@
-
 from pathlib import Path
 from datetime import timedelta
 
@@ -15,7 +14,9 @@ from flask import (
 from database import (
     initialize_database,
     add_transaction,
-    get_user_transactions
+    get_user_transactions,
+    update_transaction,
+    delete_transaction
 )
 
 from auth import login_user, register_user
@@ -49,11 +50,9 @@ initialize_database()
 @app.route("/landing.html")
 def landing_page():
 
-
     print("LANDING PAGE REQUEST RECEIVED")
     print("SESSION:", dict(session))
     print("USER AGENT:", request.headers.get("User-Agent"))
-
 
     if "user_id" in session:
         return redirect(url_for("dashboard"))
@@ -90,7 +89,6 @@ def register():
 
         return jsonify({"error": result}), 400
 
-    # Automatically log in after successful signup
     success, user = login_user(email, password)
 
     if success:
@@ -164,6 +162,7 @@ def save_transaction():
 
     tx_type = data.get("type")
     amount = data.get("amount")
+
     category = data.get("category", "").strip()
     note = data.get("note", "").strip()
     account = data.get("account", "").strip()
@@ -185,7 +184,9 @@ def save_transaction():
         return jsonify({"error": "Please enter a valid amount."}), 400
 
     if not category or not account or not date:
-        return jsonify({"error": "Category, account and date are required."}), 400
+        return jsonify({
+            "error": "Category, account and date are required."
+        }), 400
 
     transaction_id = add_transaction(
         session["user_id"],
@@ -214,6 +215,82 @@ def fetch_transactions():
 
     return jsonify({
         "transactions": transactions
+    }), 200
+
+
+# Edit transaction API
+@app.route("/transactions/<int:transaction_id>", methods=["PUT"])
+def edit_transaction(transaction_id):
+
+    if "user_id" not in session:
+        return jsonify({"error": "Please login first."}), 401
+
+    data = request.get_json(silent=True) or {}
+
+    tx_type = data.get("type")
+    amount = data.get("amount")
+
+    category = data.get("category", "").strip()
+    note = data.get("note", "").strip()
+    account = data.get("account", "").strip()
+    date = data.get("date", "").strip()
+
+    if tx_type not in ("income", "expense"):
+        return jsonify({"error": "Invalid transaction type."}), 400
+
+    try:
+        if isinstance(amount, bool):
+            raise ValueError
+
+        amount = float(amount)
+
+        if amount <= 0:
+            raise ValueError
+
+    except (TypeError, ValueError):
+        return jsonify({"error": "Invalid amount."}), 400
+
+    if not category or not account or not date:
+        return jsonify({
+            "error": "Required fields are missing."
+        }), 400
+
+    updated = update_transaction(
+        session["user_id"],
+        transaction_id,
+        tx_type,
+        amount,
+        category,
+        note,
+        account,
+        date
+    )
+
+    if not updated:
+        return jsonify({"error": "Transaction not found."}), 404
+
+    return jsonify({
+        "message": "Transaction updated successfully."
+    }), 200
+
+
+# Delete transaction API
+@app.route("/transactions/<int:transaction_id>", methods=["DELETE"])
+def remove_transaction(transaction_id):
+
+    if "user_id" not in session:
+        return jsonify({"error": "Please login first."}), 401
+
+    deleted = delete_transaction(
+        session["user_id"],
+        transaction_id
+    )
+
+    if not deleted:
+        return jsonify({"error": "Transaction not found."}), 404
+
+    return jsonify({
+        "message": "Transaction deleted successfully."
     }), 200
 
 

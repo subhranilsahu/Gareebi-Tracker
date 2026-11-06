@@ -1,15 +1,14 @@
 <!DOCTYPE html>
-<!-- Standard HTML5 document declaration -->
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign Up — Gareebi Tracker 💸</title>
+    <title>Create Account: Gareebi Tracker</title>
 
     <!-- Google Font: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- Stylesheets: Global variables first, then dedicated Auth styling -->
     <link rel="stylesheet" href="../static/css/global.css">
@@ -17,26 +16,23 @@
 </head>
 <body class="auth-body">
 
-    <!-- ===================================================================== -->
-    <!-- AUTHENTICATION WRAPPER (Centered Card Container)                       -->
-    <!-- ===================================================================== -->
+    <!-- Authentication Wrapper -->
     <main class="auth-container">
         
         <!-- Back Navigation to Landing Page -->
         <a href="landing.html" class="auth-back-link">
-            <span>←</span> Back to home
+            <span aria-hidden="true">&larr;</span> Back to home
         </a>
 
         <div class="auth-card">
             
             <!-- Card Branding Header -->
             <div class="auth-header">
-                <a href="landing.html" class="auth-brand">
-                    <span class="brand-emoji">💸</span>
-                    <span class="brand-text">Gareebi<span class="brand-accent">Tracker</span></span>
+                <a href="landing.html" class="auth-brand" aria-label="Gareebi Tracker home">
+                    <span class="brand-text">Gareebi<span class="brand-accent"> Tracker</span></span>
                 </a>
-                <h1 class="auth-title">Create an account</h1>
-                <p class="auth-subtitle">Start taking control of your daily cash & bank balance.</p>
+                <h1 class="auth-title">Create account</h1>
+                <p class="auth-subtitle">Initialize your personal ledger across bank and cash reserves.</p>
             </div>
 
             <!-- Registration Form -->
@@ -44,7 +40,7 @@
                 
                 <!-- Full Name Field -->
                 <div class="form-group">
-                    <label for="signup-name" class="form-label">Full Name</label>
+                    <label for="signup-name" class="form-label">Full name</label>
                     <input 
                         type="text" 
                         id="signup-name" 
@@ -59,20 +55,20 @@
 
                 <!-- Email Field -->
                 <div class="form-group">
-                    <label for="signup-email" class="form-label">Email Address</label>
+                    <label for="signup-email" class="form-label">Email address</label>
                     <input 
                         type="email" 
                         id="signup-email" 
                         name="email" 
                         class="form-input" 
-                        placeholder="you@example.com" 
+                        placeholder="name@example.com" 
                         autocomplete="email"
                         required
                     >
                     <span class="field-error-msg" id="signup-email-error"></span>
                 </div>
 
-                <!-- Password Field with Show/Hide Toggle -->
+                <!-- Password Field with Accessible SVG Toggle -->
                 <div class="form-group">
                     <label for="signup-password" class="form-label">Password</label>
                     <div class="input-password-wrapper">
@@ -86,7 +82,10 @@
                             required
                         >
                         <button type="button" class="btn-toggle-password" aria-label="Toggle password visibility">
-                            <span class="toggle-icon">👁️</span>
+                            <svg class="toggle-icon-svg" viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
                         </button>
                     </div>
                     <span class="field-error-msg" id="signup-password-error"></span>
@@ -94,19 +93,17 @@
 
                 <!-- Submit Button -->
                 <button type="submit" class="btn btn-primary btn-auth-submit">
-                    Create Account
+                    Register account
                 </button>
 
             </form>
 
             <!-- Card Footer Switcher -->
             <div class="auth-footer">
-                <p>Already have an account? <a href="login.html" class="auth-switch-link">Log in</a></p>
+                <p>Already have an account? <a href="login.html" class="auth-switch-link">Sign in</a></p>
             </div>
 
         </div>
-
-        <p class="auth-disclaimer">⚡ Zero spam. Your credentials stay strictly private.</p>
 
     </main>
 

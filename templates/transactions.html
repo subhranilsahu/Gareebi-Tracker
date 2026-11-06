@@ -1,15 +1,14 @@
 <!DOCTYPE html>
-<!-- Standard HTML5 document declaration -->
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Transactions — Gareebi Tracker 💸</title>
+    <title>Transactions: Gareebi Tracker</title>
 
     <!-- Google Font: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- Stylesheets: Global variables first, then dedicated transaction styling -->
     <link rel="stylesheet" href="../static/css/global.css">
@@ -21,32 +20,25 @@
 
         <!-- ================================================================= -->
         <!-- 1. SIDEBAR NAVIGATION                                             -->
-        <!-- Note: .nav-item.active is set to Transactions                     -->
         <!-- ================================================================= -->
         <aside class="sidebar">
             <div class="sidebar-top">
                 <a href="dashboard.html" class="sidebar-brand">
-                    <span class="brand-emoji">💸</span>
-                    <span class="brand-text">Gareebi<span class="brand-accent">Tracker</span></span>
+                    <span class="brand-text">Gareebi<span class="brand-accent"> Tracker</span></span>
                 </a>
 
                 <nav class="sidebar-nav">
                     <a href="dashboard.html" class="nav-item">
-                        <span class="nav-icon">📊</span>
                         <span>Dashboard</span>
                     </a>
-                    <!-- Active link for transactions view -->
                     <a href="transactions.html" class="nav-item active">
-                        <span class="nav-icon">💳</span>
                         <span>Transactions</span>
                     </a>
                     <a href="accounts.html" class="nav-item">
-                        <span class="nav-icon">🏦</span>
                         <span>Accounts</span>
                     </a>
                     <a href="profile.html" class="nav-item">
-                        <span class="nav-icon">👤</span>
-                        <span>Profile & Humor</span>
+                        <span>Profile & Settings</span>
                     </a>
                 </nav>
             </div>
@@ -57,10 +49,10 @@
                     <div class="user-avatar">AD</div>
                     <div class="user-meta">
                         <span class="user-name">Abhigyan Das</span>
-                        <span class="user-role">Student Tier</span>
+                        <span class="user-role">Student Account</span>
                     </div>
                 </div>
-                <a href="landing.html" class="btn-logout" title="Sign Out">↪</a>
+                <a href="landing.html" class="btn-logout" title="Sign Out">Sign Out</a>
             </div>
         </aside>
 
@@ -73,10 +65,10 @@
             <header class="transactions-header">
                 <div>
                     <h1 class="page-title">Transaction Ledger</h1>
-                    <p class="page-subtitle">Complete audit history of your income and outflows.</p>
+                    <p class="page-subtitle">Complete audit history of credits, debits, and account settlements.</p>
                 </div>
                 <button type="button" class="btn btn-primary" id="btn-open-modal">
-                    <span>+</span> Log Transaction
+                    Log transaction
                 </button>
             </header>
 
@@ -91,7 +83,7 @@
                     <h3 class="stat-value text-success font-tabular" id="summary-total-income">+₹0.00</h3>
                 </div>
                 <div class="card stat-card">
-                    <span class="stat-label">Total Entries Found</span>
+                    <span class="stat-label">Entries Found</span>
                     <h3 class="stat-value font-tabular" id="summary-total-count">0</h3>
                 </div>
             </section>
@@ -100,9 +92,12 @@
             <section class="card filter-card">
                 <div class="filter-toolbar">
                     
-                    <!-- Search Input -->
+                    <!-- Search Input with SVG Icon -->
                     <div class="search-wrap">
-                        <span class="search-icon">🔍</span>
+                        <svg class="search-icon-svg" viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
                         <input 
                             type="text" 
                             id="tx-search-input" 
@@ -152,11 +147,10 @@
                     </table>
                 </div>
 
-                <!-- Empty State Message when no search results match -->
+                <!-- Empty State Message -->
                 <div class="empty-state" id="empty-state" style="display: none;">
-                    <span class="empty-icon">📭</span>
                     <h4 class="empty-title">No transactions found</h4>
-                    <p class="empty-desc">Try clearing your search query or switching your active filters.</p>
+                    <p class="empty-desc">Adjust your search query or reset active filters to view ledger records.</p>
                 </div>
             </section>
 
@@ -171,7 +165,7 @@
             
             <div class="modal-head">
                 <h3 class="modal-title">New Entry</h3>
-                <button type="button" class="btn-modal-close" id="modal-close-btn">&times;</button>
+                <button type="button" class="btn-modal-close" id="modal-close-btn" aria-label="Close dialog">&times;</button>
             </div>
 
             <form id="ledger-form" class="modal-form">
@@ -211,7 +205,7 @@
 
                 <!-- Account -->
                 <div class="form-row">
-                    <label for="entry-account" class="form-label">Account Used</label>
+                    <label for="entry-account" class="form-label">Account</label>
                     <select id="entry-account" class="form-select" required>
                         <option value="HDFC Bank">HDFC Bank</option>
                         <option value="UPI / Wallet">UPI / Wallet</option>
@@ -221,19 +215,19 @@
 
                 <!-- Note -->
                 <div class="form-row">
-                    <label for="entry-note" class="form-label">Note / Remark (Optional)</label>
+                    <label for="entry-note" class="form-label">Note (Optional)</label>
                     <input 
                         type="text" 
                         id="entry-note" 
                         class="form-input" 
-                        placeholder="What was this spent on?"
+                        placeholder="Entry description"
                     >
                 </div>
 
                 <!-- Modal Actions -->
                 <div class="modal-actions">
                     <button type="button" class="btn btn-secondary" id="modal-cancel-btn">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Save to Ledger</button>
+                    <button type="submit" class="btn btn-primary">Save to ledger</button>
                 </div>
 
             </form>

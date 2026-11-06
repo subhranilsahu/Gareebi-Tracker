@@ -1,15 +1,14 @@
 <!DOCTYPE html>
-<!-- Standard HTML5 document declaration -->
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Log In — Gareebi Tracker 💸</title>
+    <title>Log In: Gareebi Tracker</title>
 
     <!-- Google Font: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- Stylesheets: Global variables first, then dedicated Auth styling -->
     <link rel="stylesheet" href="../static/css/global.css">
@@ -17,26 +16,23 @@
 </head>
 <body class="auth-body">
 
-    <!-- ===================================================================== -->
-    <!-- AUTHENTICATION WRAPPER (Centered Card Container)                       -->
-    <!-- ===================================================================== -->
+    <!-- Authentication Wrapper -->
     <main class="auth-container">
         
         <!-- Back Navigation to Landing Page -->
         <a href="landing.html" class="auth-back-link">
-            <span>←</span> Back to home
+            <span aria-hidden="true">&larr;</span> Back to home
         </a>
 
         <div class="auth-card">
             
             <!-- Card Branding Header -->
             <div class="auth-header">
-                <a href="landing.html" class="auth-brand">
-                    <span class="brand-emoji">💸</span>
-                    <span class="brand-text">Gareebi<span class="brand-accent">Tracker</span></span>
+                <a href="landing.html" class="auth-brand" aria-label="Gareebi Tracker home">
+                    <span class="brand-text">Gareebi<span class="brand-accent"> Tracker</span></span>
                 </a>
                 <h1 class="auth-title">Welcome back</h1>
-                <p class="auth-subtitle">Log in to check your balances and recent spends.</p>
+                <p class="auth-subtitle">Sign in to check your balances and recent activity.</p>
             </div>
 
             <!-- Login Form -->
@@ -44,24 +40,23 @@
                 
                 <!-- Email Field -->
                 <div class="form-group">
-                    <label for="login-email" class="form-label">Email Address</label>
+                    <label for="login-email" class="form-label">Email address</label>
                     <input 
                         type="email" 
                         id="login-email" 
                         name="email" 
                         class="form-input" 
-                        placeholder="you@example.com" 
+                        placeholder="name@example.com" 
                         autocomplete="email"
                         required
                     >
                     <span class="field-error-msg" id="login-email-error"></span>
                 </div>
 
-                <!-- Password Field with Show/Hide Toggle -->
+                <!-- Password Field with Accessible SVG Toggle -->
                 <div class="form-group">
                     <div class="label-row">
                         <label for="login-password" class="form-label">Password</label>
-                        <a href="#" class="forgot-link" tabindex="-1">Forgot?</a>
                     </div>
                     <div class="input-password-wrapper">
                         <input 
@@ -74,7 +69,10 @@
                             required
                         >
                         <button type="button" class="btn-toggle-password" aria-label="Toggle password visibility">
-                            <span class="toggle-icon">👁️</span>
+                            <svg class="toggle-icon-svg" viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
                         </button>
                     </div>
                     <span class="field-error-msg" id="login-password-error"></span>
@@ -82,19 +80,17 @@
 
                 <!-- Submit Button -->
                 <button type="submit" class="btn btn-primary btn-auth-submit">
-                    Sign In to Dashboard
+                    Sign in to ledger
                 </button>
 
             </form>
 
             <!-- Card Footer Switcher -->
             <div class="auth-footer">
-                <p>Don't have an account yet? <a href="signup.html" class="auth-switch-link">Sign up</a></p>
+                <p>Do not have an account? <a href="signup.html" class="auth-switch-link">Create account</a></p>
             </div>
 
         </div>
-
-        <p class="auth-disclaimer">⚡ Track your money before it tracks you.</p>
 
     </main>
 

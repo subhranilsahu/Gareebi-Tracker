@@ -1,16 +1,27 @@
 /* ==========================================================================
-   GAREEBI TRACKER — TITANIUM SILVER LANDING STYLES (static/css/landing.css)
+   GAREEBI TRACKER — TITANIUM SILVER LANDING (static/css/landing.css)
    ========================================================================== */
 
-.landing-body {
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
     width: 100%;
     max-width: 100%;
     overflow-x: hidden;
 }
 
-/* --------------------------------------------------------------------------
-   1. NAVIGATION BAR
-   -------------------------------------------------------------------------- */
+.landing-body {
+    background-color: var(--bg-base, #101113);
+    color: var(--text-secondary, #D6D8DC);
+    font-family: var(--font-sans, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+}
+
 .navbar-wrapper {
     position: sticky;
     top: 0;
@@ -18,9 +29,9 @@
     width: 100%;
     z-index: 1000;
     background-color: rgba(16, 17, 19, 0.85);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border-bottom: 1px solid var(--border-subtle);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border-subtle, #25282E);
 }
 
 .navbar {
@@ -28,51 +39,51 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 1rem;
+    gap: 1.5rem;
 }
 
 .nav-brand {
-    font-size: 0.95rem;
+    font-size: 1rem;
     font-weight: 600;
-    letter-spacing: -0.01em;
-    color: var(--text-primary);
+    letter-spacing: -0.015em;
+    color: var(--text-primary, #F2F3F5);
+    text-decoration: none;
     white-space: nowrap;
 }
 
 .nav-brand .brand-accent {
-    color: var(--text-muted);
+    color: var(--text-muted, #777D86);
     font-weight: 400;
 }
 
 .nav-links {
     display: flex;
     align-items: center;
-    gap: 1.5rem;
+    gap: 1.75rem;
 }
 
 .nav-link {
     font-size: 0.85rem;
-    color: var(--text-muted);
+    color: var(--text-muted, #777D86);
     font-weight: 500;
-    transition: color var(--transition-fast);
+    text-decoration: none;
+    transition: color 0.12s ease;
 }
 
 .nav-link:hover {
-    color: var(--text-primary);
+    color: var(--text-primary, #F2F3F5);
 }
 
 .nav-actions {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.65rem;
     flex-shrink: 0;
 }
 
-/* --------------------------------------------------------------------------
-   2. HERO SECTION
-   -------------------------------------------------------------------------- */
+/* Hero Section */
 .hero-section {
-    padding: 4.5rem 1.5rem 3rem;
+    padding: 4.5rem 1.5rem 3.5rem;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -80,7 +91,7 @@
 }
 
 .hero-content {
-    max-width: 720px;
+    max-width: 760px;
     width: 100%;
 }
 
@@ -88,43 +99,45 @@
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    background-color: var(--bg-surface);
-    border: 1px solid var(--border-strong);
+    background-color: var(--bg-surface, #17191C);
+    border: 1px solid var(--border-strong, #30343A);
     padding: 0.35rem 0.85rem;
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-sm, 4px);
     font-size: 0.78rem;
-    color: var(--text-muted);
-    margin-bottom: 1.25rem;
+    color: var(--text-muted, #777D86);
+    margin-bottom: 1.5rem;
 }
 
 .badge-dot {
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background-color: var(--color-income);
+    background-color: var(--color-income, #34D399);
 }
 
 .hero-title {
-    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-size: clamp(2.2rem, 5vw, 3.4rem);
     font-weight: 600;
     letter-spacing: -0.035em;
     line-height: 1.15;
-    color: var(--text-primary);
+    color: var(--text-primary, #F2F3F5);
     margin-bottom: 1.25rem;
 }
 
 .gradient-text {
-    color: var(--text-muted);
-    font-weight: 400;
     display: block;
+    color: var(--text-muted, #777D86);
+    font-weight: 400;
 }
 
 .hero-subtitle {
     font-size: 1.05rem;
-    color: var(--text-secondary);
+    color: var(--text-secondary, #D6D8DC);
     line-height: 1.6;
     margin-bottom: 2rem;
-    font-weight: 400;
+    max-width: 620px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .hero-cta-group {
@@ -133,32 +146,39 @@
     justify-content: center;
     gap: 0.75rem;
     flex-wrap: wrap;
-    width: 100%;
 }
 
 .hero-footnote {
     font-size: 0.78rem;
-    color: var(--text-muted);
+    color: var(--text-muted, #777D86);
     margin-top: 1.25rem;
 }
 
-/* --------------------------------------------------------------------------
-   3. HERO PREVIEW CARD
-   -------------------------------------------------------------------------- */
+/* Hero Preview Card */
 .hero-preview-wrapper {
+    position: relative;
     width: 100%;
-    max-width: 880px;
+    max-width: 860px;
     margin-top: 3.5rem;
 }
 
+.hero-currency {
+    position: absolute;
+    inset: -20px;
+    background: radial-gradient(circle at 50% 30%, rgba(52, 211, 153, 0.05), transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+}
+
 .hero-preview-card {
-    background-color: var(--bg-card);
-    border: 1px solid var(--border-strong);
-    border-radius: var(--radius-md);
+    position: relative;
+    z-index: 1;
+    background-color: var(--bg-card, #1D2024);
+    border: 1px solid var(--border-strong, #30343A);
+    border-radius: var(--radius-md, 6px);
     padding: 1.5rem;
     text-align: left;
-    box-shadow: var(--shadow-card);
-    width: 100%;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
 }
 
 .mockup-header {
@@ -166,56 +186,78 @@
     align-items: center;
     justify-content: space-between;
     padding-bottom: 0.85rem;
-    border-bottom: 1px solid var(--border-subtle);
+    border-bottom: 1px solid var(--border-subtle, #25282E);
     font-size: 0.78rem;
 }
+
+.mockup-dots {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+.mockup-dots .dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+}
+
+.mockup-dots .dot.red { background-color: #EF4444; opacity: 0.8; }
+.mockup-dots .dot.yellow { background-color: #F59E0B; opacity: 0.8; }
+.mockup-dots .dot.green { background-color: #10B981; opacity: 0.8; }
 
 .mockup-title {
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: var(--text-secondary);
+    letter-spacing: 0.06em;
+    color: var(--text-muted, #777D86);
+    font-size: 0.72rem;
 }
 
 .mockup-status {
-    font-family: var(--font-mono);
+    font-family: var(--font-mono, monospace);
     font-size: 0.72rem;
-    color: var(--text-muted);
+    color: var(--text-muted, #777D86);
 }
 
 .mockup-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 1rem;
-    padding: 1.25rem 0;
-    border-bottom: 1px solid var(--border-subtle);
+    padding: 1.5rem 0;
+    border-bottom: 1px solid var(--border-subtle, #25282E);
 }
 
 .mockup-stat {
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
-    min-width: 0;
 }
 
 .stat-label {
     font-size: 0.72rem;
-    color: var(--text-muted);
+    color: var(--text-muted, #777D86);
     font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
 .stat-num {
-    font-size: 1.35rem;
+    font-size: 1.5rem;
     font-weight: 600;
-    color: var(--text-primary);
+    color: var(--text-primary, #F2F3F5);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
 }
 
 .stat-sub {
     font-size: 0.72rem;
-    color: var(--text-muted);
+    color: var(--text-muted, #777D86);
 }
 
-.stat-sub.positive { color: var(--color-income); }
+.stat-sub.positive {
+    color: var(--color-income, #34D399);
+}
 
 .mockup-transactions {
     display: flex;
@@ -229,9 +271,9 @@
     align-items: center;
     justify-content: space-between;
     padding: 0.65rem 0.85rem;
-    background-color: var(--bg-surface);
-    border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-sm);
+    background-color: var(--bg-surface, #17191C);
+    border: 1px solid var(--border-subtle, #25282E);
+    border-radius: var(--radius-sm, 4px);
     font-size: 0.85rem;
     gap: 0.75rem;
 }
@@ -242,174 +284,101 @@
     text-transform: uppercase;
     letter-spacing: 0.04em;
     padding: 0.15rem 0.45rem;
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-sm, 4px);
     flex-shrink: 0;
 }
 
 .tx-badge.income {
-    background-color: var(--color-income-muted);
-    color: var(--color-income);
+    background-color: rgba(52, 211, 153, 0.12);
+    color: var(--color-income, #34D399);
 }
 
 .tx-badge.expense {
-    background-color: var(--color-expense-muted);
-    color: var(--color-expense);
+    background-color: rgba(248, 113, 113, 0.12);
+    color: var(--color-expense, #F87171);
 }
 
 .tx-desc {
     flex: 1;
-    color: var(--text-secondary);
+    color: var(--text-secondary, #D6D8DC);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    min-width: 0;
 }
 
 .tx-amt {
     font-weight: 600;
+    font-variant-numeric: tabular-nums;
     flex-shrink: 0;
 }
 
-.tx-amt.income { color: var(--color-income); }
-.tx-amt.expense { color: var(--color-expense); }
+.tx-amt.income { color: var(--color-income, #34D399); }
+.tx-amt.expense { color: var(--color-expense, #F87171); }
 
-/* --------------------------------------------------------------------------
-   4. ASYMMETRIC FEATURES SECTION
-   -------------------------------------------------------------------------- */
-.features-section {
+/* Why Us Section */
+.why-section {
     padding: 4rem 1.5rem 3rem;
 }
 
-.section-heading {
-    max-width: 640px;
+.why-card {
+    background-color: var(--bg-card, #1D2024);
+    border: 1px solid var(--border-strong, #30343A);
+    border-radius: var(--radius-md, 6px);
+    padding: 2.5rem 2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+}
+
+.why-header {
     margin-bottom: 2.25rem;
 }
 
 .section-title {
     font-size: 1.55rem;
     font-weight: 600;
+    color: var(--text-primary, #F2F3F5);
     margin-bottom: 0.45rem;
+    letter-spacing: -0.02em;
 }
 
-.section-desc {
+.section-subtitle {
     font-size: 0.92rem;
-    color: var(--text-muted);
+    color: var(--text-muted, #777D86);
     line-height: 1.5;
-}
-
-.feature-layout {
-    display: grid;
-    grid-template-columns: 1.35fr 1fr;
-    gap: 1.25rem;
-}
-
-.feature-primary {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-
-.feature-index {
-    font-size: 0.75rem;
-    font-family: var(--font-mono);
-    color: var(--text-muted);
-    margin-bottom: 0.85rem;
-    display: block;
-}
-
-.feature-title {
-    font-size: 1.15rem;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-}
-
-.feature-body {
-    font-size: 0.88rem;
-    color: var(--text-secondary);
-    line-height: 1.6;
-    margin-bottom: 1.25rem;
-}
-
-.account-spec-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0.6rem;
-    border-top: 1px solid var(--border-subtle);
-    padding-top: 1.15rem;
-}
-
-.spec-item {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.82rem;
-    gap: 1rem;
-}
-
-.spec-label { color: var(--text-muted); flex-shrink: 0; }
-.spec-value { color: var(--text-primary); font-weight: 500; text-align: right; }
-
-.feature-secondary-column {
-    display: flex;
-    flex-direction: column;
-    gap: 1.25rem;
-}
-
-.sub-feature {
-    height: 100%;
-}
-
-/* --------------------------------------------------------------------------
-   5. COMPARISON SECTION
-   -------------------------------------------------------------------------- */
-.why-section {
-    padding: 3rem 1.5rem;
-}
-
-.why-card {
-    background-color: var(--bg-card);
-    border: 1px solid var(--border-strong);
-    border-radius: var(--radius-md);
-    padding: 2.25rem 2rem;
-    box-shadow: var(--shadow-subtle);
-}
-
-.why-header {
-    margin-bottom: 2rem;
 }
 
 .comparison-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 2rem;
+    gap: 2.5rem;
 }
 
 .comparison-column {
     display: flex;
     flex-direction: column;
-    gap: 0.85rem;
+    gap: 1rem;
 }
 
 .new-way {
-    border-left: 1px solid var(--border-strong);
-    padding-left: 2rem;
+    border-left: 1px solid var(--border-strong, #30343A);
+    padding-left: 2.5rem;
 }
 
 .comp-col-title {
     font-size: 0.95rem;
     font-weight: 600;
-    color: var(--text-primary);
+    color: var(--text-primary, #F2F3F5);
 }
 
 .comp-list {
     list-style: none;
     display: flex;
     flex-direction: column;
-    gap: 0.65rem;
+    gap: 0.75rem;
 }
 
 .comp-list li {
     font-size: 0.85rem;
-    color: var(--text-secondary);
+    color: var(--text-secondary, #D6D8DC);
     line-height: 1.5;
     position: relative;
     padding-left: 1.15rem;
@@ -419,37 +388,41 @@
     content: "•";
     position: absolute;
     left: 0;
-    color: var(--text-muted);
+    color: var(--text-muted, #777D86);
 }
 
-/* --------------------------------------------------------------------------
-   6. CALL TO ACTION & FOOTER
-   -------------------------------------------------------------------------- */
+.new-way .comp-list li::before {
+    color: var(--color-income, #34D399);
+}
+
+/* CTA & Footer */
 .cta-section {
-    padding: 2.5rem 1.5rem 4.5rem;
+    padding: 3rem 1.5rem 5rem;
 }
 
 .cta-box {
-    background-color: var(--bg-card);
-    border: 1px solid var(--border-strong);
-    border-radius: var(--radius-md);
+    background-color: var(--bg-card, #1D2024);
+    border: 1px solid var(--border-strong, #30343A);
+    border-radius: var(--radius-md, 6px);
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 2rem;
-    padding: 2.25rem;
-    box-shadow: var(--shadow-card);
+    padding: 2.5rem;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
 }
 
 .cta-title {
-    font-size: 1.35rem;
+    font-size: 1.4rem;
     font-weight: 600;
+    color: var(--text-primary, #F2F3F5);
     margin-bottom: 0.35rem;
+    letter-spacing: -0.02em;
 }
 
 .cta-subtitle {
-    font-size: 0.88rem;
-    color: var(--text-muted);
+    font-size: 0.9rem;
+    color: var(--text-muted, #777D86);
 }
 
 .cta-btn-group {
@@ -459,9 +432,9 @@
 }
 
 .footer-wrapper {
-    border-top: 1px solid var(--border-subtle);
+    border-top: 1px solid var(--border-subtle, #25282E);
     padding: 2.5rem 1.5rem 2rem;
-    background-color: var(--bg-surface);
+    background-color: var(--bg-surface, #17191C);
 }
 
 .footer-content {
@@ -474,14 +447,14 @@
 }
 
 .footer-brand .brand-text {
-    font-size: 0.88rem;
+    font-size: 0.92rem;
     font-weight: 600;
-    color: var(--text-primary);
+    color: var(--text-primary, #F2F3F5);
 }
 
 .footer-tagline {
     font-size: 0.78rem;
-    color: var(--text-muted);
+    color: var(--text-muted, #777D86);
     margin-top: 0.2rem;
 }
 
@@ -493,29 +466,24 @@
 
 .footer-links a {
     font-size: 0.82rem;
-    color: var(--text-muted);
-    transition: color var(--transition-fast);
+    color: var(--text-muted, #777D86);
+    text-decoration: none;
+    transition: color 0.12s ease;
 }
 
 .footer-links a:hover {
-    color: var(--text-primary);
+    color: var(--text-primary, #F2F3F5);
 }
 
 .footer-bottom {
-    border-top: 1px solid var(--border-subtle);
+    border-top: 1px solid var(--border-subtle, #25282E);
     padding-top: 1.5rem;
     font-size: 0.75rem;
-    color: var(--text-subtle);
+    color: var(--text-muted, #777D86);
 }
 
-/* --------------------------------------------------------------------------
-   7. RESPONSIVE BREAKPOINTS (Tablet & Phone)
-   -------------------------------------------------------------------------- */
+/* Responsive */
 @media (max-width: 860px) {
-    .feature-layout {
-        grid-template-columns: 1fr;
-    }
-
     .comparison-grid {
         grid-template-columns: 1fr;
         gap: 1.5rem;
@@ -523,7 +491,7 @@
 
     .new-way {
         border-left: none;
-        border-top: 1px solid var(--border-strong);
+        border-top: 1px solid var(--border-strong, #30343A);
         padding-left: 0;
         padding-top: 1.5rem;
     }
@@ -531,8 +499,8 @@
     .cta-box {
         flex-direction: column;
         align-items: flex-start;
-        gap: 1.25rem;
         padding: 1.75rem;
+        gap: 1.25rem;
     }
 
     .cta-btn-group {
@@ -547,7 +515,7 @@
 
 @media (max-width: 680px) {
     .navbar {
-        padding: 0;
+        height: 56px;
     }
 
     .nav-links {
@@ -555,7 +523,7 @@
     }
 
     .hero-section {
-        padding: 3.5rem 1rem 2.5rem;
+        padding: 3.5rem 1rem 2rem;
     }
 
     .hero-title {
@@ -573,7 +541,17 @@
 
     .mockup-grid {
         grid-template-columns: 1fr;
-        gap: 0.75rem;
+        gap: 0.85rem;
+    }
+
+    .mockup-stat {
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid var(--border-subtle, #25282E);
+    }
+
+    .mockup-stat:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
     }
 
     .why-card {

@@ -2,68 +2,81 @@
    GAREEBI TRACKER — TITANIUM SILVER AUTH STYLES (static/css/auth.css)
    ========================================================================== */
 
-.auth-body {
-    background-color: var(--bg-base);
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem 1.25rem;
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
     width: 100%;
     max-width: 100%;
     overflow-x: hidden;
 }
 
+.auth-body {
+    background-color: var(--bg-base, #101113);
+    color: var(--text-secondary, #D6D8DC);
+    font-family: var(--font-sans, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2.5rem 1.25rem;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+}
+
 .auth-container {
     width: 100%;
-    max-width: 390px;
+    max-width: 400px;
     display: flex;
     flex-direction: column;
 }
 
-/* Back Link */
 .auth-back-link {
     align-self: flex-start;
     display: inline-flex;
     align-items: center;
-    gap: 0.4rem;
-    color: var(--text-muted);
+    gap: 0.45rem;
+    color: var(--text-muted, #777D86);
     font-size: 0.82rem;
     font-weight: 500;
+    text-decoration: none;
     margin-bottom: 1.25rem;
-    transition: color var(--transition-fast);
+    transition: color 0.12s ease;
 }
 
 .auth-back-link:hover {
-    color: var(--text-primary);
+    color: var(--text-primary, #F2F3F5);
 }
 
-/* --------------------------------------------------------------------------
-   AUTH CARD
-   -------------------------------------------------------------------------- */
 .auth-card {
     width: 100%;
-    background-color: var(--bg-card);
-    border: 1px solid var(--border-strong);
-    border-radius: var(--radius-md);
+    background-color: var(--bg-card, #1D2024);
+    border: 1px solid var(--border-strong, #30343A);
+    border-radius: var(--radius-md, 6px);
     padding: 2.25rem 2rem;
-    box-shadow: var(--shadow-card);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+    box-sizing: border-box;
 }
 
 .auth-header {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.75rem;
 }
 
 .auth-brand {
     display: inline-block;
     font-size: 0.95rem;
     font-weight: 600;
-    color: var(--text-primary);
-    margin-bottom: 1rem;
+    letter-spacing: -0.015em;
+    color: var(--text-primary, #F2F3F5);
+    text-decoration: none;
+    margin-bottom: 1.25rem;
 }
 
 .auth-brand .brand-accent {
-    color: var(--text-muted);
+    color: var(--text-muted, #777D86);
     font-weight: 400;
 }
 
@@ -71,21 +84,28 @@
     font-size: 1.45rem;
     font-weight: 600;
     letter-spacing: -0.025em;
-    color: var(--text-primary);
+    color: var(--text-primary, #F2F3F5);
     margin-bottom: 0.35rem;
 }
 
 .auth-subtitle {
     font-size: 0.85rem;
-    color: var(--text-muted);
-    line-height: 1.45;
+    color: var(--text-muted, #777D86);
+    line-height: 1.5;
 }
 
-/* Form Layout */
 .auth-form {
     display: flex;
     flex-direction: column;
     gap: 1.15rem;
+    width: 100%;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    width: 100%;
 }
 
 .label-row {
@@ -94,7 +114,38 @@
     justify-content: space-between;
 }
 
-/* Password Input with SVG Eye Toggle */
+.form-label {
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--text-muted, #777D86);
+}
+
+.form-input {
+    width: 100%;
+    background-color: var(--bg-surface, #17191C);
+    border: 1px solid var(--border-strong, #30343A);
+    border-radius: var(--radius-sm, 4px);
+    padding: 0.65rem 0.85rem;
+    color: var(--text-primary, #F2F3F5);
+    outline: none;
+    font-size: 0.88rem;
+    font-family: inherit;
+    transition: border-color 0.12s ease, background-color 0.12s ease;
+    box-sizing: border-box;
+}
+
+.form-input:focus {
+    border-color: var(--border-focus, #5A6270);
+    background-color: var(--bg-card, #1D2024);
+}
+
+.field-error-msg {
+    font-size: 0.75rem;
+    color: var(--color-expense, #F87171);
+    min-height: 1rem;
+    display: block;
+}
+
 .input-password-wrapper {
     position: relative;
     display: flex;
@@ -113,51 +164,47 @@
     border: none;
     cursor: pointer;
     padding: 0.35rem;
-    color: var(--text-muted);
+    color: var(--text-muted, #777D86);
     display: grid;
     place-items: center;
-    transition: color var(--transition-fast);
+    transition: color 0.12s ease;
 }
 
 .btn-toggle-password:hover {
-    color: var(--text-primary);
+    color: var(--text-primary, #F2F3F5);
 }
 
 .toggle-icon-svg {
     display: block;
 }
 
-/* Submit Action */
 .btn-auth-submit {
     width: 100%;
     padding: 0.75rem;
-    font-size: 0.88rem;
     margin-top: 0.25rem;
 }
 
-/* Footer Switcher */
 .auth-footer {
-    margin-top: 1.5rem;
+    margin-top: 1.75rem;
     padding-top: 1.25rem;
-    border-top: 1px solid var(--border-subtle);
+    border-top: 1px solid var(--border-subtle, #25282E);
     font-size: 0.82rem;
-    color: var(--text-muted);
+    color: var(--text-muted, #777D86);
     text-align: center;
 }
 
 .auth-switch-link {
-    color: var(--text-primary);
+    color: var(--text-primary, #F2F3F5);
     font-weight: 500;
     text-decoration: underline;
     text-underline-offset: 3px;
-    transition: color var(--transition-fast);
+    transition: color 0.12s ease;
 }
 
 .auth-switch-link:hover {
-    color: var(--text-secondary);
+    color: var(--text-secondary, #D6D8DC);
 }
 
-/* Mobile Breakpoint */
 @media (max-width: 480px) {
     .auth-body {
         padding: 1.5rem 1rem;
@@ -165,5 +212,9 @@
 
     .auth-card {
         padding: 1.75rem 1.25rem;
+    }
+
+    .auth-title {
+        font-size: 1.3rem;
     }
 }

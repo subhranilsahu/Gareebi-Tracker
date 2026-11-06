@@ -5,12 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Transactions: Gareebi Tracker</title>
 
-    <!-- Google Font: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-    <!-- Stylesheets: Global variables first, then dedicated transaction styling -->
     <link rel="stylesheet" href="../static/css/global.css">
     <link rel="stylesheet" href="../static/css/transactions.css">
 </head>
@@ -18,9 +16,7 @@
 
     <div class="app-shell">
 
-        <!-- ================================================================= -->
-        <!-- 1. SIDEBAR NAVIGATION                                             -->
-        <!-- ================================================================= -->
+        <!-- Sidebar Navigation (Accounts Removed) -->
         <aside class="sidebar">
             <div class="sidebar-top">
                 <a href="dashboard.html" class="sidebar-brand">
@@ -34,16 +30,12 @@
                     <a href="transactions.html" class="nav-item active">
                         <span>Transactions</span>
                     </a>
-                    <a href="accounts.html" class="nav-item">
-                        <span>Accounts</span>
-                    </a>
                     <a href="profile.html" class="nav-item">
                         <span>Profile & Settings</span>
                     </a>
                 </nav>
             </div>
 
-            <!-- User Badge / Footer -->
             <div class="sidebar-footer">
                 <div class="user-pill">
                     <div class="user-avatar">AD</div>
@@ -56,23 +48,20 @@
             </div>
         </aside>
 
-        <!-- ================================================================= -->
-        <!-- 2. MAIN TRANSACTIONS CONTENT                                      -->
-        <!-- ================================================================= -->
+        <!-- Main Ledger Surface -->
         <main class="transactions-main">
 
-            <!-- Page Header -->
             <header class="transactions-header">
                 <div>
                     <h1 class="page-title">Transaction Ledger</h1>
-                    <p class="page-subtitle">Complete audit history of credits, debits, and account settlements.</p>
+                    <p class="page-subtitle">Complete chronological record of all recorded inflows and outflows.</p>
                 </div>
                 <button type="button" class="btn btn-primary" id="btn-open-modal">
                     Log transaction
                 </button>
             </header>
 
-            <!-- Quick Ledger Summary Stats -->
+            <!-- Ledger Summary Statistics (Fluid 3-column deck) -->
             <section class="ledger-stats-grid">
                 <div class="card stat-card">
                     <span class="stat-label">Total Outflows (Filtered)</span>
@@ -88,11 +77,11 @@
                 </div>
             </section>
 
-            <!-- Filtering, Search & Control Toolbar -->
+            <!-- Search & Filter Toolbar -->
             <section class="card filter-card">
                 <div class="filter-toolbar">
                     
-                    <!-- Search Input with SVG Icon -->
+                    <!-- Search Input with Inline SVG Icon -->
                     <div class="search-wrap">
                         <svg class="search-icon-svg" viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                             <circle cx="11" cy="11" r="8"></circle>
@@ -102,7 +91,8 @@
                             type="text" 
                             id="tx-search-input" 
                             class="search-input" 
-                            placeholder="Search description, category, or note..."
+                            placeholder="Search category, note, or date..."
+                            autocomplete="off"
                         >
                     </div>
 
@@ -113,20 +103,10 @@
                         <button type="button" class="type-filter-btn" data-filter="income">Income</button>
                     </div>
 
-                    <!-- Account Dropdown Selector -->
-                    <div class="account-filter-wrap">
-                        <select id="tx-account-filter" class="form-select filter-select">
-                            <option value="all">All Accounts</option>
-                            <option value="HDFC Bank">HDFC Bank</option>
-                            <option value="UPI / Wallet">UPI / Wallet</option>
-                            <option value="Physical Cash">Physical Cash</option>
-                        </select>
-                    </div>
-
                 </div>
             </section>
 
-            <!-- Transactions Table View -->
+            <!-- Full-Width Ledger Table -->
             <section class="card table-card">
                 <div class="table-wrap">
                     <table class="ledger-table">
@@ -135,7 +115,6 @@
                                 <th>Type</th>
                                 <th>Category</th>
                                 <th>Description / Note</th>
-                                <th>Account</th>
                                 <th>Date</th>
                                 <th class="text-right">Amount (₹)</th>
                                 <th class="text-center">Action</th>
@@ -150,16 +129,14 @@
                 <!-- Empty State Message -->
                 <div class="empty-state" id="empty-state" style="display: none;">
                     <h4 class="empty-title">No transactions found</h4>
-                    <p class="empty-desc">Adjust your search query or reset active filters to view ledger records.</p>
+                    <p class="empty-desc">Try clearing your search query or switching your active filters.</p>
                 </div>
             </section>
 
         </main>
     </div>
 
-    <!-- ================================================================= -->
-    <!-- 3. MODAL: LOG TRANSACTION POPUP                                   -->
-    <!-- ================================================================= -->
+    <!-- Log Transaction Modal (Accounts Dropdown Removed) -->
     <div class="modal-overlay" id="tx-modal" aria-hidden="true">
         <div class="modal-box">
             
@@ -191,40 +168,36 @@
                     >
                 </div>
 
-                <!-- Category -->
+                <!-- Category with Quick Presets -->
                 <div class="form-row">
                     <label for="entry-category" class="form-label">Category</label>
                     <input 
                         type="text" 
                         id="entry-category" 
                         class="form-input" 
-                        placeholder="e.g. Swiggy, Wi-Fi Bill, Project Stipend" 
+                        placeholder="e.g. Food & Mess, Transport, Stipend" 
                         required
                     >
+                    <div class="quick-tags" id="category-quick-tags">
+                        <button type="button" class="tag-pill" data-tag="Food & Mess">Food & Mess</button>
+                        <button type="button" class="tag-pill" data-tag="Hostel & Rent">Hostel & Rent</button>
+                        <button type="button" class="tag-pill" data-tag="Transit & Fuel">Transit & Fuel</button>
+                        <button type="button" class="tag-pill" data-tag="Tech & Gear">Tech & Gear</button>
+                    </div>
                 </div>
 
-                <!-- Account -->
-                <div class="form-row">
-                    <label for="entry-account" class="form-label">Account</label>
-                    <select id="entry-account" class="form-select" required>
-                        <option value="HDFC Bank">HDFC Bank</option>
-                        <option value="UPI / Wallet">UPI / Wallet</option>
-                        <option value="Physical Cash">Physical Cash</option>
-                    </select>
-                </div>
-
-                <!-- Note -->
+                <!-- Note / Remark -->
                 <div class="form-row">
                     <label for="entry-note" class="form-label">Note (Optional)</label>
                     <input 
                         type="text" 
                         id="entry-note" 
                         class="form-input" 
-                        placeholder="Entry description"
+                        placeholder="What was this for?"
                     >
                 </div>
 
-                <!-- Modal Actions -->
+                <!-- Actions -->
                 <div class="modal-actions">
                     <button type="button" class="btn btn-secondary" id="modal-cancel-btn">Cancel</button>
                     <button type="submit" class="btn btn-primary">Save to ledger</button>
@@ -235,7 +208,6 @@
         </div>
     </div>
 
-    <!-- Script Hook -->
     <script src="../static/js/transactions.js"></script>
 </body>
 </html>

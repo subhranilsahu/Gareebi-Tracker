@@ -1,13 +1,14 @@
 /* ==========================================================================
-   GAREEBI TRACKER — TRANSACTIONS LEDGER LOGIC (static/js/transactions.js)
-   Handles real-time search, category/account filtering, dynamic metric 
-   aggregation, and entry deletion/creation.
+   GAREEBI TRACKER — TRANSACTIONS SCRIPT (static/js/transactions.js)
+   Accounts removed, clean real-time search, category tagging, zero refresh bugs.
    ========================================================================== */
+
+window.onbeforeunload = null;
 
 document.addEventListener('DOMContentLoaded', () => {
 
     /* --------------------------------------------------------------------------
-       1. INITIAL IN-MEMORY DATA
+       1. IN-MEMORY LEDGER STATE (Accounts removed)
        -------------------------------------------------------------------------- */
     let transactions = [
         {
@@ -16,25 +17,22 @@ document.addEventListener('DOMContentLoaded', () => {
             amount: 15000.00,
             category: 'Stipend / Freelance',
             note: 'Monthly development milestone payout',
-            account: 'HDFC Bank',
             date: 'Nov 05, 2026'
         },
         {
             id: 2,
             type: 'expense',
             amount: 450.00,
-            category: 'Food & Dining',
-            note: 'Hostel mess night snack with friends',
-            account: 'UPI / Wallet',
+            category: 'Food & Mess',
+            note: 'Hostel mess night snack',
             date: 'Nov 04, 2026'
         },
         {
             id: 3,
             type: 'expense',
             amount: 300.00,
-            category: 'Transit & Petrol',
-            note: 'Metro card top-up',
-            account: 'Physical Cash',
+            category: 'Transit & Fuel',
+            note: 'Metro card recharge',
             date: 'Nov 03, 2026'
         },
         {
@@ -43,16 +41,14 @@ document.addEventListener('DOMContentLoaded', () => {
             amount: 2500.00,
             category: 'Consulting',
             note: 'Bug fix bounty reward',
-            account: 'UPI / Wallet',
             date: 'Nov 02, 2026'
         },
         {
             id: 5,
             type: 'expense',
             amount: 899.00,
-            category: 'Subscriptions',
+            category: 'Tech & Gear',
             note: 'Cloud server hosting invoice',
-            account: 'HDFC Bank',
             date: 'Nov 01, 2026'
         }
     ];
@@ -63,7 +59,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const ledgerBody = document.getElementById('ledger-body');
     const emptyState = document.getElementById('empty-state');
     const searchInput = document.getElementById('tx-search-input');
-    const accountFilter = document.getElementById('tx-account-filter');
     const typeFilterBtns = document.querySelectorAll('.type-filter-btn');
 
     // Summary Elements
@@ -82,50 +77,46 @@ document.addEventListener('DOMContentLoaded', () => {
     const modalTabIncome = document.getElementById('modal-tab-income');
     const entryAmount = document.getElementById('entry-amount');
     const entryCategory = document.getElementById('entry-category');
-    const entryAccount = document.getElementById('entry-account');
     const entryNote = document.getElementById('entry-note');
+    const tagPills = document.querySelectorAll('.tag-pill');
 
-    // Active Filters
-    let activeType = 'all'; // 'all' | 'expense' | 'income'
-    let activeAccount = 'all';
+    let activeType = 'all';
     let searchQuery = '';
 
     /* --------------------------------------------------------------------------
-       3. FORMATTING HELPERS
+       3. FORMATTING HELPER
        -------------------------------------------------------------------------- */
     function formatINR(val) {
-        return '₹' + val.toLocaleString('en-IN', {
+        return '₹' + Number(val).toLocaleString('en-IN', {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2
         });
     }
 
     /* --------------------------------------------------------------------------
-       4. RENDER LEDGER TABLE & SUMMARY
+       4. LEDGER RENDER & SUMMARY AGGREGATION
        -------------------------------------------------------------------------- */
     function renderLedger() {
+        if (!ledgerBody) return;
         ledgerBody.innerHTML = '';
 
-        // Filter transactions based on active toolbar states
+        // Filter transactions based on active toolbar state
+        const query = searchQuery.toLowerCase();
         const filtered = transactions.filter(item => {
             const matchesType = activeType === 'all' || item.type === activeType;
-            const matchesAccount = activeAccount === 'all' || item.account === activeAccount;
             const matchesSearch = 
-                item.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                item.note.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                item.account.toLowerCase().includes(searchQuery.toLowerCase());
+                item.category.toLowerCase().includes(query) ||
+                item.note.toLowerCase().includes(query) ||
+                item.date.toLowerCase().includes(query);
 
-            return matchesType && matchesAccount && matchesSearch;
+            return matchesType && matchesSearch;
         });
 
-        // Toggle Empty State
-        if (filtered.length === 0) {
-            emptyState.style.display = 'block';
-        } else {
-            emptyState.style.display = 'none';
+        // Toggle Empty State Visibility
+        if (emptyState) {
+            emptyState.style.display = filtered.length === 0 ? 'block' : 'none';
         }
 
-        // Compute filtered summary stats
         let totalIncome = 0;
         let totalExpense = 0;
 
@@ -137,31 +128,30 @@ document.addEventListener('DOMContentLoaded', () => {
             const isIncome = tx.type === 'income';
 
             tr.innerHTML = `
-                <td><span class="tx-badge ${isIncome ? 'income' : 'expense'}">${isIncome ? 'Income' : 'Expense'}</span></td>
-                <td style="font-weight: 600; color: var(--text-primary);">${tx.category}</td>
-                <td>${tx.note || '—'}</td>
-                <td><span class="account-chip">${tx.account}</span></td>
+                <td><span class="tx-badge ${isIncome ? 'income' : 'expense'}">${isIncome ? 'Credit' : 'Debit'}</span></td>
+                <td style="font-weight: 500; color: var(--text-primary);">${tx.category}</td>
+                <td style="color: var(--text-muted);">${tx.note || '—'}</td>
                 <td style="color: var(--text-muted);">${tx.date}</td>
-                <td class="text-right font-tabular ${isIncome ? 'text-success' : 'text-danger'}" style="font-weight: 700;">
+                <td class="text-right font-tabular ${isIncome ? 'text-success' : 'text-danger'}" style="font-weight: 600;">
                     ${isIncome ? '+' : '-'}${formatINR(tx.amount)}
                 </td>
                 <td class="text-center">
-                    <button type="button" class="btn-delete-row" data-id="${tx.id}" title="Remove entry">✕</button>
+                    <button type="button" class="btn-delete-row" data-id="${tx.id}" title="Remove entry" aria-label="Delete entry">&times;</button>
                 </td>
             `;
 
             ledgerBody.appendChild(tr);
         });
 
-        // Update Summary Cards
-        summaryTotalExpense.textContent = '-' + formatINR(totalExpense);
-        summaryTotalIncome.textContent = '+' + formatINR(totalIncome);
-        summaryTotalCount.textContent = filtered.length;
+        // Update Summary Badges
+        if (summaryTotalExpense) summaryTotalExpense.textContent = '-' + formatINR(totalExpense);
+        if (summaryTotalIncome) summaryTotalIncome.textContent = '+' + formatINR(totalIncome);
+        if (summaryTotalCount) summaryTotalCount.textContent = filtered.length;
 
-        // Attach delete handlers to newly rendered rows
+        // Attach Delete Listeners
         document.querySelectorAll('.btn-delete-row').forEach(btn => {
             btn.addEventListener('click', (e) => {
-                const idToDelete = parseInt(e.target.getAttribute('data-id'), 10);
+                const idToDelete = parseInt(e.currentTarget.getAttribute('data-id'), 10);
                 transactions = transactions.filter(t => t.id !== idToDelete);
                 renderLedger();
             });
@@ -169,17 +159,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /* --------------------------------------------------------------------------
-       5. FILTER & SEARCH EVENT LISTENERS
+       5. FILTER & SEARCH EVENT HANDLERS
        -------------------------------------------------------------------------- */
-    searchInput.addEventListener('input', (e) => {
-        searchQuery = e.target.value.trim();
-        renderLedger();
-    });
-
-    accountFilter.addEventListener('change', (e) => {
-        activeAccount = e.target.value;
-        renderLedger();
-    });
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            searchQuery = e.target.value.trim();
+            renderLedger();
+        });
+    }
 
     typeFilterBtns.forEach(btn => {
         btn.addEventListener('click', () => {
@@ -194,81 +181,88 @@ document.addEventListener('DOMContentLoaded', () => {
        6. MODAL INTERACTION LOGIC
        -------------------------------------------------------------------------- */
     function openModal(type = 'expense') {
+        if (!txModal) return;
         setModalType(type);
         txModal.classList.add('open');
         txModal.setAttribute('aria-hidden', 'false');
-        entryAmount.focus();
+        if (entryAmount) entryAmount.focus();
     }
 
     function closeModal() {
+        if (!txModal) return;
         txModal.classList.remove('open');
         txModal.setAttribute('aria-hidden', 'true');
-        ledgerForm.reset();
+        if (ledgerForm) ledgerForm.reset();
     }
 
     function setModalType(type) {
+        if (!entryTypeInput) return;
         entryTypeInput.value = type;
         if (type === 'income') {
-            modalTabIncome.classList.add('active');
-            modalTabExpense.classList.remove('active');
+            if (modalTabIncome) modalTabIncome.classList.add('active');
+            if (modalTabExpense) modalTabExpense.classList.remove('active');
         } else {
-            modalTabExpense.classList.add('active');
-            modalTabIncome.classList.remove('active');
+            if (modalTabExpense) modalTabExpense.classList.add('active');
+            if (modalTabIncome) modalTabIncome.classList.remove('active');
         }
     }
 
-    btnOpenModal.addEventListener('click', () => openModal('expense'));
-    modalCloseBtn.addEventListener('click', closeModal);
-    modalCancelBtn.addEventListener('click', closeModal);
+    if (btnOpenModal) btnOpenModal.addEventListener('click', () => openModal('expense'));
+    if (modalCloseBtn) modalCloseBtn.addEventListener('click', closeModal);
+    if (modalCancelBtn) modalCancelBtn.addEventListener('click', closeModal);
 
-    txModal.addEventListener('click', (e) => {
-        if (e.target === txModal) closeModal();
-    });
+    if (txModal) {
+        txModal.addEventListener('click', (e) => {
+            if (e.target === txModal) closeModal();
+        });
+    }
 
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && txModal.classList.contains('open')) {
+        if (e.key === 'Escape' && txModal && txModal.classList.contains('open')) {
             closeModal();
         }
     });
 
-    modalTabExpense.addEventListener('click', () => setModalType('expense'));
-    modalTabIncome.addEventListener('click', () => setModalType('income'));
+    if (modalTabExpense) modalTabExpense.addEventListener('click', () => setModalType('expense'));
+    if (modalTabIncome) modalTabIncome.addEventListener('click', () => setModalType('income'));
 
-    /* --------------------------------------------------------------------------
-       7. LOG ENTRY SUBMISSION
-       -------------------------------------------------------------------------- */
-    ledgerForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-
-        const amount = parseFloat(entryAmount.value);
-        if (isNaN(amount) || amount <= 0) {
-            alert('Please enter a valid amount.');
-            return;
-        }
-
-        const now = new Date();
-        const dateStr = now.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
-
-        const newEntry = {
-            id: Date.now(),
-            type: entryTypeInput.value,
-            amount: amount,
-            category: entryCategory.value.trim(),
-            note: entryNote.value.trim(),
-            account: entryAccount.value,
-            date: dateStr
-        };
-
-        // Add to front of array
-        transactions.unshift(newEntry);
-
-        renderLedger();
-        closeModal();
+    // Category Quick-Tag Fillers
+    tagPills.forEach(pill => {
+        pill.addEventListener('click', () => {
+            if (entryCategory) {
+                entryCategory.value = pill.getAttribute('data-tag');
+                if (entryNote) entryNote.focus();
+            }
+        });
     });
 
     /* --------------------------------------------------------------------------
-       8. INITIALIZATION
+       7. ENTRY CREATION HANDLER
        -------------------------------------------------------------------------- */
-    renderLedger();
+    if (ledgerForm) {
+        ledgerForm.addEventListener('submit', (e) => {
+            e.preventDefault();
 
+            const amount = parseFloat(entryAmount.value);
+            if (isNaN(amount) || amount <= 0) return;
+
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
+
+            const newEntry = {
+                id: Date.now(),
+                type: entryTypeInput.value,
+                amount: amount,
+                category: entryCategory.value.trim() || 'General',
+                note: entryNote ? entryNote.value.trim() : '',
+                date: dateStr
+            };
+
+            transactions.unshift(newEntry);
+            renderLedger();
+            closeModal();
+        });
+    }
+
+    renderLedger();
 });

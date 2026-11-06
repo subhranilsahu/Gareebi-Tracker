@@ -1,5 +1,6 @@
 /* ==========================================================================
-   GAREEBI TRACKER: TITANIUM SILVER TRANSACTIONS LEDGER (static/css/transactions.css)
+   GAREEBI TRACKER — GOLD & CHARCOAL TRANSACTIONS LEDGER
+   static/css/transactions.css
    Full-window fluid layout (100% viewport coverage, Accounts removed)
    ========================================================================== */
 
@@ -8,6 +9,10 @@
     margin: 0;
     padding: 0;
 }
+
+/* --------------------------------------------------------------------------
+   BASE
+   -------------------------------------------------------------------------- */
 
 .transactions-body {
     background-color: var(--bg-base, #101113);
@@ -34,6 +39,10 @@
     box-sizing: border-box;
 }
 
+/* --------------------------------------------------------------------------
+   HEADER
+   -------------------------------------------------------------------------- */
+
 .transactions-header {
     display: flex;
     align-items: center;
@@ -51,10 +60,14 @@
 }
 
 .page-subtitle {
-    color: var(--text-muted, #777D86);
+    color: var(--text-muted, #92908A);
     font-size: 0.85rem;
     margin-top: 0.2rem;
 }
+
+/* --------------------------------------------------------------------------
+   LEDGER STATISTICS
+   -------------------------------------------------------------------------- */
 
 .ledger-stats-grid {
     display: grid;
@@ -74,7 +87,7 @@
     font-size: 0.72rem;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    color: var(--text-muted, #777D86);
+    color: var(--text-muted, #92908A);
     font-weight: 600;
 }
 
@@ -82,9 +95,13 @@
     font-size: 1.65rem;
     font-weight: 600;
     letter-spacing: -0.02em;
+    color: var(--text-primary, #F2F3F5);
 }
 
-/* Filter Toolbar */
+/* --------------------------------------------------------------------------
+   FILTER TOOLBAR
+   -------------------------------------------------------------------------- */
+
 .filter-card {
     padding: 0.85rem 1.25rem;
     width: 100%;
@@ -110,32 +127,41 @@
 .search-icon-svg {
     position: absolute;
     left: 0.85rem;
-    color: var(--text-muted, #777D86);
+    color: var(--text-muted, #92908A);
     pointer-events: none;
 }
 
 .search-input {
     width: 100%;
     background-color: var(--bg-surface, #17191C);
-    border: 1px solid var(--border-strong, #30343A);
+    border: 1px solid var(--border-strong, #38352D);
     border-radius: var(--radius-sm, 4px);
     padding: 0.6rem 0.85rem 0.6rem 2.3rem;
     color: var(--text-primary, #F2F3F5);
     font-size: 0.85rem;
     font-family: inherit;
     outline: none;
-    transition: border-color 0.12s ease;
+    transition: border-color 0.12s ease, background-color 0.12s ease, box-shadow 0.12s ease;
+}
+
+.search-input::placeholder {
+    color: var(--text-subtle, #625F58);
 }
 
 .search-input:focus {
-    border-color: var(--border-focus, #5A6270);
+    border-color: var(--color-accent-dark, #A88A4A);
     background-color: var(--bg-card, #1D2024);
+    box-shadow: 0 0 0 3px rgba(214, 181, 109, 0.08);
 }
+
+/* --------------------------------------------------------------------------
+   TYPE FILTER TABS
+   -------------------------------------------------------------------------- */
 
 .filter-type-tabs {
     display: flex;
     background-color: var(--bg-surface, #17191C);
-    border: 1px solid var(--border-strong, #30343A);
+    border: 1px solid var(--border-strong, #38352D);
     border-radius: var(--radius-sm, 4px);
     padding: 3px;
     gap: 3px;
@@ -144,7 +170,7 @@
 .type-filter-btn {
     background: transparent;
     border: none;
-    color: var(--text-muted, #777D86);
+    color: var(--text-muted, #92908A);
     padding: 0.45rem 0.85rem;
     border-radius: 3px;
     font-size: 0.8rem;
@@ -154,16 +180,19 @@
 }
 
 .type-filter-btn:hover {
-    color: var(--text-primary, #F2F3F5);
+    color: var(--color-accent-light, #E8D5A3);
 }
 
 .type-filter-btn.active {
-    background-color: var(--bg-card, #1D2024);
-    color: var(--text-primary, #F2F3F5);
-    border: 1px solid var(--border-strong, #30343A);
+    background-color: var(--color-accent-muted, rgba(214, 181, 109, 0.12));
+    color: var(--color-accent-light, #E8D5A3);
+    border: 1px solid rgba(214, 181, 109, 0.25);
 }
 
-/* Ledger Table */
+/* --------------------------------------------------------------------------
+   LEDGER TABLE
+   -------------------------------------------------------------------------- */
+
 .table-card {
     padding: 1.25rem 1.5rem;
     width: 100%;
@@ -185,31 +214,44 @@
 
 .ledger-table th {
     padding: 0.75rem 0.85rem;
-    color: var(--text-muted, #777D86);
+    color: var(--text-muted, #92908A);
     font-size: 0.72rem;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     font-weight: 600;
-    border-bottom: 1px solid var(--border-subtle, #25282E);
+    border-bottom: 1px solid var(--border-subtle, #292720);
 }
 
 .ledger-table td {
     padding: 0.85rem;
-    border-bottom: 1px solid var(--border-subtle, #25282E);
+    border-bottom: 1px solid var(--border-subtle, #292720);
     color: var(--text-secondary, #D6D8DC);
 }
 
-.ledger-table tbody tr:hover {
-    background-color: var(--bg-hover, #2B3037);
+.ledger-table tbody tr {
+    transition: background-color 0.12s ease;
 }
 
-.text-right { text-align: right; }
-.text-center { text-align: center; }
+.ledger-table tbody tr:hover {
+    background-color: rgba(214, 181, 109, 0.045);
+}
+
+.text-right {
+    text-align: right;
+}
+
+.text-center {
+    text-align: center;
+}
+
+/* --------------------------------------------------------------------------
+   DELETE ROW BUTTON
+   -------------------------------------------------------------------------- */
 
 .btn-delete-row {
     background: transparent;
     border: none;
-    color: var(--text-muted, #777D86);
+    color: var(--text-muted, #92908A);
     cursor: pointer;
     font-size: 0.88rem;
     padding: 0.2rem 0.45rem;
@@ -219,8 +261,12 @@
 
 .btn-delete-row:hover {
     color: var(--color-expense, #F87171);
-    background-color: rgba(248, 113, 113, 0.12);
+    background-color: var(--color-expense-muted, rgba(248, 113, 113, 0.12));
 }
+
+/* --------------------------------------------------------------------------
+   EMPTY STATE
+   -------------------------------------------------------------------------- */
 
 .empty-state {
     text-align: center;
@@ -236,10 +282,13 @@
 
 .empty-desc {
     font-size: 0.85rem;
-    color: var(--text-muted, #777D86);
+    color: var(--text-muted, #92908A);
 }
 
-/* Category Quick Preset Pills */
+/* --------------------------------------------------------------------------
+   CATEGORY QUICK PRESET PILLS
+   -------------------------------------------------------------------------- */
+
 .quick-tags {
     display: flex;
     gap: 0.4rem;
@@ -249,8 +298,8 @@
 
 .tag-pill {
     background: var(--bg-surface, #17191C);
-    border: 1px solid var(--border-strong, #30343A);
-    color: var(--text-muted, #777D86);
+    border: 1px solid var(--border-strong, #38352D);
+    color: var(--text-muted, #92908A);
     padding: 0.2rem 0.5rem;
     border-radius: var(--radius-sm, 4px);
     font-size: 0.72rem;
@@ -259,15 +308,24 @@
 }
 
 .tag-pill:hover {
-    color: var(--text-primary, #F2F3F5);
-    border-color: var(--border-focus, #5A6270);
+    color: var(--color-accent-light, #E8D5A3);
+    border-color: var(--color-accent-dark, #A88A4A);
+    background-color: var(--color-accent-muted, rgba(214, 181, 109, 0.12));
 }
+
+/* --------------------------------------------------------------------------
+   TABLET RESPONSIVENESS
+   -------------------------------------------------------------------------- */
 
 @media (max-width: 900px) {
     .ledger-stats-grid {
         grid-template-columns: 1fr;
     }
 }
+
+/* --------------------------------------------------------------------------
+   MOBILE RESPONSIVENESS
+   -------------------------------------------------------------------------- */
 
 @media (max-width: 768px) {
     .transactions-main {

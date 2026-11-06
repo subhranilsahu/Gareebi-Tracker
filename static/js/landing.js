@@ -1,30 +1,3 @@
-// console.log("Animation JS loaded");
-
-// const revealElements = document.querySelectorAll(".reveal");
-
-// console.log("Reveal elements found:", revealElements.length);
-
-// const observer = new IntersectionObserver((entries) => {
-//     entries.forEach((entry) => {
-//         console.log("Element visible:", entry.isIntersecting);
-
-//         if (entry.isIntersecting) {
-//             entry.target.classList.add("is-visible");
-//         } else {
-//             entry.target.classList.remove("is-visible");
-//         }
-//     });
-// }, {
-//     threshold: 0.15
-// });
-
-// revealElements.forEach((element) => {
-//     observer.observe(element);
-// });
-
-
-
-
 const revealElements = document.querySelectorAll(".reveal");
 
 function revealOnScroll() {

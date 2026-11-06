@@ -1,4 +1,3 @@
-
 /* ==========================================================================
    GAREEBI TRACKER — DASHBOARD LOGIC
    Handles transactions, database connection, metrics and logout.
@@ -22,7 +21,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const tabIncome = document.getElementById("tab-income");
   const txAmount = document.getElementById("tx-amount");
   const txCategory = document.getElementById("tx-category");
-  const txAccount = document.getElementById("tx-account");
   const txNote = document.getElementById("tx-note");
 
   const metricBalance = document.getElementById("metric-balance");
@@ -101,7 +99,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     txAmount.value = tx.amount;
     txCategory.value = tx.category;
-    txAccount.value = tx.account;
     txNote.value = tx.note || "";
 
     modalTitle.textContent = "Edit Transaction";
@@ -148,7 +145,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   /* --------------------------------------------------------------------------
        5. DATE PARSER
-       Supports both old and new date formats.
        -------------------------------------------------------------------------- */
 
   function parseTransactionDate(date) {
@@ -279,7 +275,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* --------------------------------------------------------------------------
-       8. TOP OUTFLOWS — DYNAMIC CATEGORY BREAKDOWN
+       8. TOP OUTFLOWS
        -------------------------------------------------------------------------- */
 
   function updateTopOutflows() {
@@ -359,12 +355,6 @@ document.addEventListener("DOMContentLoaded", () => {
       noteCell.style.color = "var(--text-muted)";
       noteCell.textContent = tx.note || "—";
 
-      const accountCell = document.createElement("td");
-      const accountChip = document.createElement("span");
-      accountChip.className = "account-chip";
-      accountChip.textContent = tx.account;
-      accountCell.appendChild(accountChip);
-
       const dateCell = document.createElement("td");
       dateCell.style.color = "var(--text-muted)";
       dateCell.textContent = tx.date;
@@ -376,7 +366,6 @@ document.addEventListener("DOMContentLoaded", () => {
       amountCell.textContent =
         `${isIncome ? "+" : "-"}${formatINR(tx.amount)}`;
 
-      // Actions column
       const actionsCell = document.createElement("td");
 
       const editBtn = document.createElement("button");
@@ -406,11 +395,9 @@ document.addEventListener("DOMContentLoaded", () => {
         `;
       });
 
-      // Edit button — premium blue
       editBtn.style.color = "#3B82F6";
       editBtn.style.borderColor = "rgba(59, 130, 246, 0.25)";
 
-      // Delete button — subtle red
       deleteBtn.style.color = "var(--text-danger, #dc2626)";
       deleteBtn.style.borderColor = "rgba(239, 68, 68, 0.25)";
 
@@ -420,7 +407,6 @@ document.addEventListener("DOMContentLoaded", () => {
         typeCell,
         categoryCell,
         noteCell,
-        accountCell,
         dateCell,
         amountCell,
         actionsCell
@@ -502,7 +488,6 @@ document.addEventListener("DOMContentLoaded", () => {
       transactions = result.transactions;
 
       populateMonthFilter();
-
       renderTable();
       updateMetrics();
       updateTopOutflows();
@@ -540,7 +525,6 @@ document.addEventListener("DOMContentLoaded", () => {
       amount: amount,
       category: txCategory.value.trim(),
       note: txNote.value.trim(),
-      account: txAccount.value,
       date: editingTransactionDate || todayDate,
     };
 

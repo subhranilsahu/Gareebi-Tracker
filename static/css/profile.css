@@ -1,5 +1,6 @@
 /* ==========================================================================
-   GAREEBI TRACKER: TITANIUM SILVER PROFILE & SETTINGS (static/css/profile.css)
+   GAREEBI TRACKER — GOLD & CHARCOAL PROFILE & SETTINGS
+   static/css/profile.css
    ========================================================================== */
 
 *, *::before, *::after {
@@ -33,6 +34,10 @@
     box-sizing: border-box;
 }
 
+/* --------------------------------------------------------------------------
+   PROFILE HEADER
+   -------------------------------------------------------------------------- */
+
 .profile-header {
     display: flex;
     align-items: center;
@@ -50,7 +55,7 @@
 }
 
 .page-subtitle {
-    color: var(--text-muted, #777D86);
+    color: var(--text-muted, #92908A);
     font-size: 0.85rem;
     margin-top: 0.2rem;
 }
@@ -60,7 +65,7 @@
     align-items: center;
     gap: 0.45rem;
     background-color: var(--bg-surface, #17191C);
-    border: 1px solid var(--border-strong, #30343A);
+    border: 1px solid var(--border-strong, #38352D);
     padding: 0.45rem 0.75rem;
     border-radius: var(--radius-sm, 4px);
 }
@@ -69,17 +74,24 @@
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background-color: var(--color-income, #34D399);
+    background-color: var(--color-income, #D6B56D);
+    box-shadow: 0 0 8px rgba(214, 181, 109, 0.35);
 }
 
 .status-indicator-text {
     font-size: 0.75rem;
-    color: var(--text-muted, #777D86);
+    color: var(--text-muted, #92908A);
 }
+
+/* --------------------------------------------------------------------------
+   PROFILE HERO CARD
+   -------------------------------------------------------------------------- */
 
 .persona-hero-card {
     padding: 1.75rem 2rem;
     width: 100%;
+    background-color: var(--bg-card, #1D2024);
+    border-color: var(--border-strong, #38352D);
 }
 
 .persona-layout {
@@ -98,13 +110,13 @@
     width: 72px;
     height: 72px;
     border-radius: var(--radius-md, 6px);
-    background-color: var(--bg-surface, #17191C);
-    border: 1px solid var(--border-strong, #30343A);
+    background: linear-gradient(145deg, #24231F, #17191C);
+    border: 1px solid rgba(214, 181, 109, 0.3);
     display: grid;
     place-items: center;
     font-size: 1.35rem;
     font-weight: 600;
-    color: var(--text-primary, #F2F3F5);
+    color: var(--color-accent-light, #E8D5A3);
 }
 
 .persona-details {
@@ -130,9 +142,9 @@
 }
 
 .persona-tag {
-    background-color: var(--bg-surface, #17191C);
-    color: var(--text-secondary, #D6D8DC);
-    border: 1px solid var(--border-strong, #30343A);
+    background-color: var(--color-accent-muted, rgba(214, 181, 109, 0.12));
+    color: var(--color-accent-light, #E8D5A3);
+    border: 1px solid rgba(214, 181, 109, 0.25);
     font-size: 0.75rem;
     font-weight: 500;
     padding: 0.2rem 0.65rem;
@@ -141,7 +153,7 @@
 
 .user-handle {
     font-size: 0.82rem;
-    color: var(--text-muted, #777D86);
+    color: var(--text-muted, #92908A);
 }
 
 .meta-pills-row {
@@ -153,14 +165,17 @@
 
 .meta-pill {
     background-color: var(--bg-surface, #17191C);
-    border: 1px solid var(--border-subtle, #25282E);
+    border: 1px solid var(--border-subtle, #292720);
     padding: 0.15rem 0.5rem;
     border-radius: var(--radius-sm, 4px);
     font-size: 0.72rem;
-    color: var(--text-muted, #777D86);
+    color: var(--text-muted, #92908A);
 }
 
-/* Settings Grid */
+/* --------------------------------------------------------------------------
+   SETTINGS GRID
+   -------------------------------------------------------------------------- */
+
 .settings-grid {
     display: grid;
     grid-template-columns: 1.4fr 1fr;
@@ -171,12 +186,14 @@
 .settings-card,
 .data-card {
     padding: 1.75rem 2rem;
+    background-color: var(--bg-card, #1D2024);
+    border-color: var(--border-strong, #38352D);
 }
 
 .card-head-simple {
     margin-bottom: 1.5rem;
     padding-bottom: 0.75rem;
-    border-bottom: 1px solid var(--border-subtle, #25282E);
+    border-bottom: 1px solid var(--border-subtle, #292720);
 }
 
 .section-title {
@@ -187,9 +204,13 @@
 
 .section-subtitle {
     font-size: 0.82rem;
-    color: var(--text-muted, #777D86);
+    color: var(--text-muted, #92908A);
     margin-top: 0.15rem;
 }
+
+/* --------------------------------------------------------------------------
+   SETTINGS FORM
+   -------------------------------------------------------------------------- */
 
 .settings-form {
     display: flex;
@@ -217,16 +238,19 @@
     justify-content: flex-end;
     gap: 1rem;
     padding-top: 1rem;
-    border-top: 1px solid var(--border-subtle, #25282E);
+    border-top: 1px solid var(--border-subtle, #292720);
 }
 
 .save-status {
     font-size: 0.82rem;
-    color: var(--color-income, #34D399);
+    color: var(--color-income, #D6B56D);
     font-weight: 500;
 }
 
-/* Data Management */
+/* --------------------------------------------------------------------------
+   DATA MANAGEMENT
+   -------------------------------------------------------------------------- */
+
 .data-actions-list {
     display: flex;
     flex-direction: column;
@@ -239,7 +263,7 @@
     justify-content: space-between;
     gap: 1rem;
     padding-bottom: 1.25rem;
-    border-bottom: 1px solid var(--border-subtle, #25282E);
+    border-bottom: 1px solid var(--border-subtle, #292720);
 }
 
 .data-action-row:last-child {
@@ -261,9 +285,13 @@
 
 .action-desc {
     font-size: 0.78rem;
-    color: var(--text-muted, #777D86);
+    color: var(--text-muted, #92908A);
     line-height: 1.4;
 }
+
+/* --------------------------------------------------------------------------
+   DANGER BUTTON
+   -------------------------------------------------------------------------- */
 
 .btn-danger-outline {
     background: transparent;
@@ -276,11 +304,19 @@
     border-color: var(--color-expense, #F87171);
 }
 
+/* --------------------------------------------------------------------------
+   TABLET RESPONSIVENESS
+   -------------------------------------------------------------------------- */
+
 @media (max-width: 1024px) {
     .settings-grid {
         grid-template-columns: 1fr;
     }
 }
+
+/* --------------------------------------------------------------------------
+   MOBILE RESPONSIVENESS
+   -------------------------------------------------------------------------- */
 
 @media (max-width: 768px) {
     .profile-main {

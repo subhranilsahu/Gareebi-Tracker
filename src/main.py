@@ -21,8 +21,6 @@ from database import (
 
 from auth import login_user, register_user
 
-import secrets
-
 
 # Project root directory
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -49,10 +47,6 @@ initialize_database()
 @app.route("/")
 @app.route("/landing.html")
 def landing_page():
-
-    print("LANDING PAGE REQUEST RECEIVED")
-    print("SESSION:", dict(session))
-    print("USER AGENT:", request.headers.get("User-Agent"))
 
     if "user_id" in session:
         return redirect(url_for("dashboard"))
@@ -151,6 +145,19 @@ def dashboard():
     )
 
 
+# Protected transactions page
+@app.route("/transactions-page")
+def transactions_page():
+
+    if "user_id" not in session:
+        return redirect(url_for("login_page"))
+
+    return render_template(
+        "transactions.html",
+        user_name=session.get("user_name")
+    )
+
+
 # Save transaction API
 @app.route("/transactions", methods=["POST"])
 def save_transaction():
@@ -165,7 +172,7 @@ def save_transaction():
 
     category = data.get("category", "").strip()
     note = data.get("note", "").strip()
-    account = data.get("account", "").strip()
+    account = ""
     date = data.get("date", "").strip()
 
     if tx_type not in ("income", "expense"):
@@ -183,9 +190,9 @@ def save_transaction():
     except (TypeError, ValueError):
         return jsonify({"error": "Please enter a valid amount."}), 400
 
-    if not category or not account or not date:
+    if not category or not date:
         return jsonify({
-            "error": "Category, account and date are required."
+            "error": "Category and date are required."
         }), 400
 
     transaction_id = add_transaction(
@@ -232,7 +239,7 @@ def edit_transaction(transaction_id):
 
     category = data.get("category", "").strip()
     note = data.get("note", "").strip()
-    account = data.get("account", "").strip()
+    account = ""
     date = data.get("date", "").strip()
 
     if tx_type not in ("income", "expense"):
@@ -250,9 +257,9 @@ def edit_transaction(transaction_id):
     except (TypeError, ValueError):
         return jsonify({"error": "Invalid amount."}), 400
 
-    if not category or not account or not date:
+    if not category or not date:
         return jsonify({
-            "error": "Required fields are missing."
+            "error": "Category and date are required."
         }), 400
 
     updated = update_transaction(

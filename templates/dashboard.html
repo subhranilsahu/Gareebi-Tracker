@@ -1,52 +1,53 @@
 <!doctype html>
-<!-- Standard HTML5 document declaration -->
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dashboard — Gareebi Tracker 💸</title>
 
-    <!-- Google Font: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
 
-    <!-- CSS Order: Global tokens & resets first, then dashboard-specific layout -->
-    <link rel="stylesheet" href="../static/css/global.css" />
-    <link rel="stylesheet" href="../static/css/dashboard.css" />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/global.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/dashboard.css') }}"
+    />
   </head>
+
   <body class="dashboard-body">
     <div class="app-shell">
-      <!-- ================================================================= -->
-      <!-- 1. SIDEBAR NAVIGATION                                             -->
-      <!-- ================================================================= -->
+
+      <!-- SIDEBAR -->
       <aside class="sidebar">
         <div class="sidebar-top">
-          <!-- Brand Anchor pointing back to landing or dashboard -->
+
           <a href="{{ url_for('dashboard') }}" class="sidebar-brand">
             <span class="brand-emoji">💸</span>
-            <span class="brand-text"
-              >Gareebi<span class="brand-accent">Tracker</span></span
-            >
+            <span class="brand-text">
+              Gareebi<span class="brand-accent">Tracker</span>
+            </span>
           </a>
 
-          <!-- Navigation Links -->
           <nav class="sidebar-nav">
             <a href="{{ url_for('dashboard') }}" class="nav-item active">
               <span class="nav-icon">📊</span>
               <span>Dashboard</span>
             </a>
-            <a href="transactions.html" class="nav-item">
+
+            <a href="{{ url_for('transactions_page') }}" class="nav-item">
               <span class="nav-icon">💳</span>
               <span>Transactions</span>
             </a>
-            <a href="accounts.html" class="nav-item">
-              <span class="nav-icon">🏦</span>
-              <span>Accounts</span>
-            </a>
+
             <a href="profile.html" class="nav-item">
               <span class="nav-icon">👤</span>
               <span>Profile & Humor</span>
@@ -54,15 +55,17 @@
           </nav>
         </div>
 
-        <!-- User Badge / Footer -->
+        <!-- USER FOOTER -->
         <div class="sidebar-footer">
           <div class="user-pill">
             <div class="user-avatar">AD</div>
+
             <div class="user-meta">
               <span class="user-name">{{ user_name }}</span>
               <span class="user-role">Student Tier</span>
             </div>
           </div>
+
           <button
             type="button"
             class="btn-logout"
@@ -74,15 +77,16 @@
         </div>
       </aside>
 
-      <!-- ================================================================= -->
-      <!-- 2. MAIN DASHBOARD CONTENT AREA                                    -->
-      <!-- ================================================================= -->
+      <!-- MAIN DASHBOARD -->
       <main class="dashboard-main">
-        <!-- Top Header & Quick Action Triggers -->
+
+        <!-- HEADER -->
         <header class="dashboard-header">
           <div>
             <h1 class="page-title">Dashboard</h1>
-            <p class="page-subtitle">Track your money before it tracks you.</p>
+            <p class="page-subtitle">
+              Track your money before it tracks you.
+            </p>
           </div>
 
           <div class="header-actions">
@@ -90,6 +94,7 @@
               <span class="indicator-dot"></span>
               <span id="current-month">November 2026</span>
             </div>
+
             <button
               type="button"
               class="btn btn-secondary"
@@ -97,22 +102,28 @@
             >
               <span>−</span> Add Expense
             </button>
-            <button type="button" class="btn btn-primary" id="btn-quick-income">
+
+            <button
+              type="button"
+              class="btn btn-primary"
+              id="btn-quick-income"
+            >
               <span>+</span> Add Income
             </button>
           </div>
         </header>
 
-        <!-- Key Financial Metrics Cards -->
+        <!-- FINANCIAL METRICS -->
         <section class="metrics-grid">
-          <!-- Net Balance Card -->
+
           <div class="card metric-card">
             <span class="metric-label">Net Liquid Balance</span>
-            <h2 class="metric-value font-tabular" id="metric-balance">₹0.00</h2>
+            <h2 class="metric-value font-tabular" id="metric-balance">
+              ₹0.00
+            </h2>
             <span class="metric-hint">Cash + Bank + UPI</span>
           </div>
 
-          <!-- Monthly Income Card -->
           <div class="card metric-card">
             <span class="metric-label">Income This Month</span>
             <h2
@@ -124,7 +135,6 @@
             <span class="metric-hint text-success">Total Earnings</span>
           </div>
 
-          <!-- Monthly Expense Card -->
           <div class="card metric-card">
             <span class="metric-label">Spent This Month</span>
             <h2
@@ -136,36 +146,45 @@
             <span class="metric-hint text-danger">Total Outflow</span>
           </div>
 
-          <!-- Total Savings / Emergency Reserve -->
           <div class="card metric-card">
             <span class="metric-label">Emergency Stash</span>
-            <h2 class="metric-value font-tabular" id="metric-savings">₹0.00</h2>
+            <h2 class="metric-value font-tabular" id="metric-savings">
+              ₹0.00
+            </h2>
             <span class="metric-hint">Untouchable Reserve</span>
           </div>
+
         </section>
 
-        <!-- Dashboard Analytics Grid -->
+        <!-- ANALYTICS -->
         <section class="analytics-grid">
-          <!-- Cash Flow Overview Card -->
+
+          <!-- CASH FLOW -->
           <div class="card chart-card">
             <div class="card-header">
               <div>
                 <h3 class="card-title">Cash Flow Trajectory</h3>
-                <p class="card-subtitle">Income vs Outflow overview</p>
+                <p class="card-subtitle">
+                  Income vs Outflow overview
+                </p>
               </div>
+
               <div class="chart-legend">
-                <span class="legend-item"
-                  ><span class="legend-dot income"></span> Income</span
-                >
-                <span class="legend-item"
-                  ><span class="legend-dot expense"></span> Expense</span
-                >
+                <span class="legend-item">
+                  <span class="legend-dot income"></span>
+                  Income
+                </span>
+
+                <span class="legend-item">
+                  <span class="legend-dot expense"></span>
+                  Expense
+                </span>
               </div>
             </div>
 
             <div class="chart-box">
               <div class="chart-bars-demo">
-                <!-- Visual placeholder bars -->
+
                 <div class="bar-group">
                   <div class="bar-pair">
                     <div class="bar bar-income" style="height: 65%"></div>
@@ -173,6 +192,7 @@
                   </div>
                   <span class="bar-label">Week 1</span>
                 </div>
+
                 <div class="bar-group">
                   <div class="bar-pair">
                     <div class="bar bar-income" style="height: 85%"></div>
@@ -180,6 +200,7 @@
                   </div>
                   <span class="bar-label">Week 2</span>
                 </div>
+
                 <div class="bar-group">
                   <div class="bar-pair">
                     <div class="bar bar-income" style="height: 45%"></div>
@@ -187,6 +208,7 @@
                   </div>
                   <span class="bar-label">Week 3</span>
                 </div>
+
                 <div class="bar-group">
                   <div class="bar-pair">
                     <div class="bar bar-income" style="height: 90%"></div>
@@ -194,11 +216,12 @@
                   </div>
                   <span class="bar-label">Week 4</span>
                 </div>
+
               </div>
             </div>
           </div>
 
-          <!-- Category Breakdown Card -->
+          <!-- CATEGORY BREAKDOWN -->
           <div class="card category-card">
             <div class="card-header">
               <h3 class="card-title">Top Outflows</h3>
@@ -206,11 +229,13 @@
             </div>
 
             <div class="category-list" id="category-list">
+
               <div class="category-item">
                 <div class="cat-info">
                   <span class="cat-name">Food & Swiggy</span>
                   <span class="cat-pct font-tabular">45%</span>
                 </div>
+
                 <div class="progress-track">
                   <div
                     class="progress-fill fill-amber"
@@ -224,6 +249,7 @@
                   <span class="cat-name">Hostel & Utilities</span>
                   <span class="cat-pct font-tabular">30%</span>
                 </div>
+
                 <div class="progress-track">
                   <div
                     class="progress-fill fill-violet"
@@ -237,8 +263,12 @@
                   <span class="cat-name">Transit & Petrol</span>
                   <span class="cat-pct font-tabular">15%</span>
                 </div>
+
                 <div class="progress-track">
-                  <div class="progress-fill fill-cyan" style="width: 15%"></div>
+                  <div
+                    class="progress-fill fill-cyan"
+                    style="width: 15%"
+                  ></div>
                 </div>
               </div>
 
@@ -247,23 +277,33 @@
                   <span class="cat-name">Subscriptions & Tech</span>
                   <span class="cat-pct font-tabular">10%</span>
                 </div>
+
                 <div class="progress-track">
-                  <div class="progress-fill fill-blue" style="width: 10%"></div>
+                  <div
+                    class="progress-fill fill-blue"
+                    style="width: 10%"
+                  ></div>
                 </div>
               </div>
+
             </div>
           </div>
+
         </section>
 
-        <!-- Recent Transactions Ledger Card -->
+        <!-- RECENT TRANSACTIONS -->
         <section class="card table-card">
+
           <div class="card-header">
             <div>
               <h3 class="card-title">Recent Transactions</h3>
-              <p class="card-subtitle">Real-time ledger entries</p>
+              <p class="card-subtitle">
+                Real-time ledger entries
+              </p>
             </div>
 
             <div style="display: flex; align-items: center; gap: 12px">
+
               <div class="month-filter-wrapper">
                 <select
                   id="month-filter"
@@ -271,63 +311,91 @@
                 ></select>
               </div>
 
-              <a href="transactions.html" class="view-all-link">
+              <a
+                href="{{ url_for('transactions_page') }}"
+                class="view-all-link"
+              >
                 View Full Ledger →
               </a>
+
             </div>
           </div>
 
           <div class="table-wrap">
             <table class="dashboard-table">
+
               <thead>
                 <tr>
                   <th>Type</th>
                   <th>Category</th>
                   <th>Note</th>
-                  <th>Account</th>
                   <th>Date</th>
                   <th class="text-right">Amount</th>
                   <th>Actions</th>
                 </tr>
               </thead>
+
               <tbody id="transactions-table-body">
                 <!-- Populated dynamically by dashboard.js -->
               </tbody>
+
             </table>
           </div>
+
         </section>
+
       </main>
     </div>
 
-    <!-- ================================================================= -->
-    <!-- 3. MODAL: ADD TRANSACTION POPUP                                   -->
-    <!-- ================================================================= -->
-    <div class="modal-overlay" id="transaction-modal" aria-hidden="true">
+    <!-- ADD TRANSACTION MODAL -->
+    <div
+      class="modal-overlay"
+      id="transaction-modal"
+      aria-hidden="true"
+    >
       <div class="modal-box">
+
         <div class="modal-head">
           <h3 class="modal-title">Log Transaction</h3>
-          <button type="button" class="btn-modal-close" id="modal-close-btn">
+
+          <button
+            type="button"
+            class="btn-modal-close"
+            id="modal-close-btn"
+          >
             &times;
           </button>
         </div>
 
         <form id="dashboard-tx-form" class="modal-form">
-          <!-- Hidden Type Input (income or expense) -->
+
           <input type="hidden" id="tx-type" value="expense" />
 
-          <!-- Type Selector Tab -->
+          <!-- TYPE SELECTOR -->
           <div class="type-toggle-group">
-            <button type="button" class="toggle-choice active" id="tab-expense">
+            <button
+              type="button"
+              class="toggle-choice active"
+              id="tab-expense"
+            >
               Expense
             </button>
-            <button type="button" class="toggle-choice" id="tab-income">
+
+            <button
+              type="button"
+              class="toggle-choice"
+              id="tab-income"
+            >
               Income
             </button>
           </div>
 
-          <!-- Amount -->
+          <!-- AMOUNT -->
           <div class="form-row">
-            <label for="tx-amount" class="form-label">Amount (₹)</label>
+            <label for="tx-amount" class="form-label">
+              Amount (₹)
+            </label>
+
             <input
               type="number"
               id="tx-amount"
@@ -338,9 +406,12 @@
             />
           </div>
 
-          <!-- Category -->
+          <!-- CATEGORY -->
           <div class="form-row">
-            <label for="tx-category" class="form-label">Category</label>
+            <label for="tx-category" class="form-label">
+              Category
+            </label>
+
             <input
               type="text"
               id="tx-category"
@@ -350,21 +421,12 @@
             />
           </div>
 
-          <!-- Account -->
+          <!-- NOTE -->
           <div class="form-row">
-            <label for="tx-account" class="form-label"
-              >Paid Via / Received In</label
-            >
-            <select id="tx-account" class="form-select" required>
-              <option value="HDFC Bank">HDFC Bank</option>
-              <option value="UPI / Wallet">UPI / Paytm / GPay</option>
-              <option value="Physical Cash">Physical Cash</option>
-            </select>
-          </div>
+            <label for="tx-note" class="form-label">
+              Note (Optional)
+            </label>
 
-          <!-- Note / Remarks -->
-          <div class="form-row">
-            <label for="tx-note" class="form-label">Note (Optional)</label>
             <input
               type="text"
               id="tx-note"
@@ -373,8 +435,9 @@
             />
           </div>
 
-          <!-- Modal Actions -->
+          <!-- MODAL ACTIONS -->
           <div class="modal-actions">
+
             <button
               type="button"
               class="btn btn-secondary"
@@ -382,15 +445,23 @@
             >
               Cancel
             </button>
-            <button type="submit" class="btn btn-primary" id="modal-submit-btn">
+
+            <button
+              type="submit"
+              class="btn btn-primary"
+              id="modal-submit-btn"
+            >
               Save Entry
             </button>
+
           </div>
+
         </form>
       </div>
     </div>
 
-    <!-- Application Script -->
-    <script src="../static/js/dashboard.js"></script>
+    <!-- DASHBOARD SCRIPT -->
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+
   </body>
 </html>

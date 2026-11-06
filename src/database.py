@@ -70,7 +70,7 @@ def add_transaction(user_id, tx_type, amount, category, note, account, date):
             INSERT INTO transactions
             (user_id, type, amount, category, note, account, date)
             VALUES (?, ?, ?, ?, ?, ?, ?)
-        """, (user_id, tx_type, amount, category, note, account, date))
+        """, (user_id, tx_type, amount, category, note, account or "", date))
 
         connection.commit()
         return cursor.lastrowid
@@ -85,7 +85,7 @@ def get_user_transactions(user_id):
 
     try:
         transactions = connection.execute("""
-            SELECT id, type, amount, category, note, account, date
+            SELECT id, type, amount, category, note, date
             FROM transactions
             WHERE user_id = ?
             ORDER BY id DESC

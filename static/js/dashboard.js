@@ -1,9 +1,11 @@
+
 /* ==========================================================================
    GAREEBI TRACKER — DASHBOARD LOGIC
    Handles transactions, database connection, metrics and logout.
    ========================================================================== */
 
 document.addEventListener("DOMContentLoaded", () => {
+
   /* --------------------------------------------------------------------------
        1. DOM REFERENCES
        -------------------------------------------------------------------------- */
@@ -29,6 +31,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const metricSavings = document.getElementById("metric-savings");
 
   const tableBody = document.getElementById("transactions-table-body");
+  const categoryList = document.getElementById("category-list");
+  const monthFilter = document.getElementById("month-filter");
 
   const modalTitle = modal.querySelector(".modal-title");
   const submitBtn = document.getElementById("modal-submit-btn");
@@ -40,6 +44,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let transactions = [];
   let editingTransactionId = null;
   let editingTransactionDate = null;
+  let selectedMonth = "all";
 
   /* --------------------------------------------------------------------------
        3. MODAL CONTROLS
@@ -155,21 +160,88 @@ document.addEventListener("DOMContentLoaded", () => {
     return new Date(date);
   }
 
+  function getMonthKey(date) {
+    const txDate = parseTransactionDate(date);
+
+    if (isNaN(txDate.getTime())) return null;
+
+    return `${txDate.getFullYear()}-${String(
+      txDate.getMonth() + 1
+    ).padStart(2, "0")}`;
+  }
+
   /* --------------------------------------------------------------------------
-       6. METRIC COMPUTATIONS
+       6. MONTH FILTER
+       -------------------------------------------------------------------------- */
+
+  function getFilteredTransactions() {
+    if (selectedMonth === "all") {
+      return transactions;
+    }
+
+    return transactions.filter(
+      (tx) => getMonthKey(tx.date) === selectedMonth
+    );
+  }
+
+  function populateMonthFilter() {
+    const previousSelection = selectedMonth;
+
+    const months = [
+      ...new Set(
+        transactions
+          .map((tx) => getMonthKey(tx.date))
+          .filter(Boolean)
+      ),
+    ].sort().reverse();
+
+    monthFilter.innerHTML = "";
+
+    const allOption = document.createElement("option");
+    allOption.value = "all";
+    allOption.textContent = "All Months";
+    monthFilter.appendChild(allOption);
+
+    months.forEach((month) => {
+      const [year, monthNumber] = month.split("-");
+
+      const label = new Date(
+        Number(year),
+        Number(monthNumber) - 1
+      ).toLocaleDateString("en-IN", {
+        month: "long",
+        year: "numeric",
+      });
+
+      const option = document.createElement("option");
+      option.value = month;
+      option.textContent = label;
+
+      monthFilter.appendChild(option);
+    });
+
+    selectedMonth = months.includes(previousSelection)
+      ? previousSelection
+      : "all";
+
+    monthFilter.value = selectedMonth;
+  }
+
+  monthFilter.addEventListener("change", () => {
+    selectedMonth = monthFilter.value;
+
+    renderTable();
+    updateMetrics();
+    updateTopOutflows();
+  });
+
+  /* --------------------------------------------------------------------------
+       7. METRIC COMPUTATIONS
        -------------------------------------------------------------------------- */
 
   function updateMetrics() {
     let totalIncome = 0;
     let totalExpense = 0;
-
-    let monthlyIncome = 0;
-    let monthlyExpense = 0;
-
-    const today = new Date();
-
-    const currentMonth = today.getMonth();
-    const currentYear = today.getFullYear();
 
     transactions.forEach((t) => {
       const amount = Number(t.amount);
@@ -179,19 +251,18 @@ document.addEventListener("DOMContentLoaded", () => {
       } else {
         totalExpense += amount;
       }
+    });
 
-      const txDate = parseTransactionDate(t.date);
+    let monthlyIncome = 0;
+    let monthlyExpense = 0;
 
-      if (
-        !isNaN(txDate.getTime()) &&
-        txDate.getMonth() === currentMonth &&
-        txDate.getFullYear() === currentYear
-      ) {
-        if (t.type === "income") {
-          monthlyIncome += amount;
-        } else {
-          monthlyExpense += amount;
-        }
+    getFilteredTransactions().forEach((t) => {
+      const amount = Number(t.amount);
+
+      if (t.type === "income") {
+        monthlyIncome += amount;
+      } else {
+        monthlyExpense += amount;
       }
     });
 
@@ -208,13 +279,67 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* --------------------------------------------------------------------------
-       7. TABLE RENDERING
+       8. TOP OUTFLOWS — DYNAMIC CATEGORY BREAKDOWN
+       -------------------------------------------------------------------------- */
+
+  function updateTopOutflows() {
+    const categoryTotals = {};
+
+    getFilteredTransactions().forEach((tx) => {
+      if (tx.type !== "expense") return;
+
+      categoryTotals[tx.category] =
+        (categoryTotals[tx.category] || 0) + Number(tx.amount);
+    });
+
+    const sortedCategories = Object.entries(categoryTotals)
+      .sort((a, b) => b[1] - a[1]);
+
+    const totalExpense = sortedCategories.reduce(
+      (sum, item) => sum + item[1],
+      0
+    );
+
+    const topCategories = sortedCategories.slice(0, 4);
+
+    categoryList.innerHTML = "";
+
+    if (topCategories.length === 0) {
+      categoryList.textContent = "No expenses for this period yet.";
+      return;
+    }
+
+    topCategories.forEach(([category, amount]) => {
+      const percentage = totalExpense
+        ? (amount / totalExpense) * 100
+        : 0;
+
+      const item = document.createElement("div");
+      item.className = "category-item";
+
+      item.innerHTML = `
+        <div class="cat-info">
+          <span class="cat-name"></span>
+          <span class="cat-pct font-tabular">${percentage.toFixed(1)}%</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill fill-amber" style="width: ${percentage}%"></div>
+        </div>
+      `;
+
+      item.querySelector(".cat-name").textContent = category;
+      categoryList.appendChild(item);
+    });
+  }
+
+  /* --------------------------------------------------------------------------
+       9. TABLE RENDERING
        -------------------------------------------------------------------------- */
 
   function renderTable() {
     tableBody.innerHTML = "";
 
-    transactions.forEach((tx) => {
+    getFilteredTransactions().forEach((tx) => {
       const tr = document.createElement("tr");
       const isIncome = tx.type === "income";
 
@@ -245,9 +370,11 @@ document.addEventListener("DOMContentLoaded", () => {
       dateCell.textContent = tx.date;
 
       const amountCell = document.createElement("td");
-      amountCell.className = `text-right font-tabular ${isIncome ? "text-success" : "text-danger"}`;
+      amountCell.className =
+        `text-right font-tabular ${isIncome ? "text-success" : "text-danger"}`;
       amountCell.style.fontWeight = "600";
-      amountCell.textContent = `${isIncome ? "+" : "-"}${formatINR(tx.amount)}`;
+      amountCell.textContent =
+        `${isIncome ? "+" : "-"}${formatINR(tx.amount)}`;
 
       // Actions column
       const actionsCell = document.createElement("td");
@@ -266,17 +393,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
       [editBtn, deleteBtn].forEach((btn) => {
         btn.style.cssText = `
-    padding: 7px 12px;
-    margin: 2px;
-    border-radius: 7px;
-    border: 1px solid var(--border-color);
-    background: var(--bg-secondary);
-    cursor: pointer;
-    font-family: inherit;
-    font-size: 12px;
-    font-weight: 600;
-    transition: all 0.2s ease;
-  `;
+          padding: 7px 12px;
+          margin: 2px;
+          border-radius: 7px;
+          border: 1px solid var(--border-color);
+          background: var(--bg-secondary);
+          cursor: pointer;
+          font-family: inherit;
+          font-size: 12px;
+          font-weight: 600;
+          transition: all 0.2s ease;
+        `;
       });
 
       // Edit button — premium blue
@@ -284,10 +411,8 @@ document.addEventListener("DOMContentLoaded", () => {
       editBtn.style.borderColor = "rgba(59, 130, 246, 0.25)";
 
       // Delete button — subtle red
-      deleteBtn.style.color = "#EF4444";
-      deleteBtn.style.borderColor = "rgba(239, 68, 68, 0.25)";
-
       deleteBtn.style.color = "var(--text-danger, #dc2626)";
+      deleteBtn.style.borderColor = "rgba(239, 68, 68, 0.25)";
 
       actionsCell.append(editBtn, deleteBtn);
 
@@ -298,7 +423,7 @@ document.addEventListener("DOMContentLoaded", () => {
         accountCell,
         dateCell,
         amountCell,
-        actionsCell,
+        actionsCell
       );
 
       tableBody.appendChild(tr);
@@ -306,7 +431,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* --------------------------------------------------------------------------
-       8. EDIT AND DELETE ACTIONS
+       10. EDIT AND DELETE ACTIONS
        -------------------------------------------------------------------------- */
 
   tableBody.addEventListener("click", async (e) => {
@@ -317,7 +442,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const transactionId = Number(button.dataset.id);
     const action = button.dataset.action;
 
-    const tx = transactions.find((item) => Number(item.id) === transactionId);
+    const tx = transactions.find(
+      (item) => Number(item.id) === transactionId
+    );
 
     if (!tx) return;
 
@@ -327,7 +454,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (action === "delete") {
       const confirmed = confirm(
-        `Are you sure you want to delete "${tx.category}" transaction of ${formatINR(tx.amount)}?`,
+        `Are you sure you want to delete "${tx.category}" transaction of ${formatINR(tx.amount)}?`
       );
 
       if (!confirmed) return;
@@ -342,10 +469,13 @@ document.addEventListener("DOMContentLoaded", () => {
         const result = await response.json();
 
         if (!response.ok) {
-          throw new Error(result.error || "Transaction could not be deleted.");
+          throw new Error(
+            result.error || "Transaction could not be deleted."
+          );
         }
 
         await loadTransactions();
+
       } catch (error) {
         console.error("Transaction deletion error:", error);
         alert(error.message);
@@ -355,7 +485,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   /* --------------------------------------------------------------------------
-       9. FETCH TRANSACTIONS FROM DATABASE
+       11. FETCH TRANSACTIONS FROM DATABASE
        -------------------------------------------------------------------------- */
 
   async function loadTransactions() {
@@ -364,13 +494,19 @@ document.addEventListener("DOMContentLoaded", () => {
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.error || "Could not load transactions.");
+        throw new Error(
+          result.error || "Could not load transactions."
+        );
       }
 
       transactions = result.transactions;
 
+      populateMonthFilter();
+
       renderTable();
       updateMetrics();
+      updateTopOutflows();
+
     } catch (error) {
       console.error("Transaction loading error:", error);
       alert("Could not load transactions. Please refresh the page.");
@@ -378,7 +514,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* --------------------------------------------------------------------------
-       10. SAVE OR UPDATE TRANSACTION
+       12. SAVE OR UPDATE TRANSACTION
        -------------------------------------------------------------------------- */
 
   txForm.addEventListener("submit", async (e) => {
@@ -428,21 +564,25 @@ document.addEventListener("DOMContentLoaded", () => {
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.error || "Transaction could not be saved.");
+        throw new Error(
+          result.error || "Transaction could not be saved."
+        );
       }
 
       closeModal();
       await loadTransactions();
+
     } catch (error) {
       console.error("Transaction saving error:", error);
       alert(error.message);
+
     } finally {
       submitBtn.disabled = false;
     }
   });
 
   /* --------------------------------------------------------------------------
-       11. LOGOUT
+       13. LOGOUT
        -------------------------------------------------------------------------- */
 
   const logoutBtn = document.getElementById("btn-logout");
@@ -461,6 +601,7 @@ document.addEventListener("DOMContentLoaded", () => {
         } else {
           alert("Logout failed. Please try again.");
         }
+
       } catch (error) {
         console.error("Logout error:", error);
         alert("Something went wrong. Please try again.");
@@ -469,8 +610,9 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* --------------------------------------------------------------------------
-       12. INITIALIZATION
+       14. INITIALIZATION
        -------------------------------------------------------------------------- */
 
   loadTransactions();
+
 });

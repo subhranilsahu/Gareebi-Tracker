@@ -636,3 +636,30 @@
         padding: 1.5rem 1rem;
     }
 }
+.month-filter-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.month-filter-select {
+    width: 165px;
+    height: 42px;
+    padding: 0 38px 0 14px;
+    appearance: none;
+    -webkit-appearance: none;
+    box-sizing: border-box;
+    cursor: pointer;
+}
+
+.month-filter-wrapper::after {
+    content: "";
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    width: 8px;
+    height: 8px;
+    border-right: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    transform: translateY(-70%) rotate(45deg);
+    pointer-events: none;
+}

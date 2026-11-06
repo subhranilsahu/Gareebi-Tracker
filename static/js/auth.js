@@ -1,19 +1,18 @@
 
 /* ==========================================================================
    GAREEBI TRACKER — AUTHENTICATION LOGIC
-   Handles password visibility, form validation and backend connection.
+   Handles password visibility, validation and Flask backend connection.
    ========================================================================== */
 
 document.addEventListener('DOMContentLoaded', () => {
 
-    /* --------------------------------------------------------------------------
-       1. PASSWORD SHOW / HIDE TOGGLE
-       -------------------------------------------------------------------------- */
+    // 1. PASSWORD SHOW / HIDE TOGGLE
 
     const togglePasswordButtons = document.querySelectorAll('.btn-toggle-password');
 
     togglePasswordButtons.forEach(button => {
         button.addEventListener('click', () => {
+
             const inputWrapper = button.closest('.input-password-wrapper');
             const passwordInput = inputWrapper.querySelector('input');
             const iconSpan = button.querySelector('.toggle-icon');
@@ -29,9 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
 
-    /* --------------------------------------------------------------------------
-       2. VALIDATION HELPERS
-       -------------------------------------------------------------------------- */
+    // 2. VALIDATION HELPERS
 
     function isValidEmail(email) {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -49,17 +46,19 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 
-    /* --------------------------------------------------------------------------
-       3. LOGIN FORM VALIDATION
-       -------------------------------------------------------------------------- */
+    // 3. LOGIN FORM + BACKEND CONNECTION
 
     const loginForm = document.getElementById('login-form');
 
     if (loginForm) {
+
         const emailInput = document.getElementById('login-email');
         const passwordInput = document.getElementById('login-password');
+
         const emailError = document.getElementById('login-email-error');
         const passwordError = document.getElementById('login-password-error');
+
+        const submitButton = loginForm.querySelector('button[type="submit"]');
 
         emailInput.addEventListener('input', () =>
             clearFieldError(emailInput, emailError)
@@ -69,7 +68,8 @@ document.addEventListener('DOMContentLoaded', () => {
             clearFieldError(passwordInput, passwordError)
         );
 
-        loginForm.addEventListener('submit', (event) => {
+        loginForm.addEventListener('submit', async (event) => {
+
             event.preventDefault();
 
             let isValid = true;
@@ -87,20 +87,55 @@ document.addEventListener('DOMContentLoaded', () => {
                 isValid = false;
             }
 
-            if (isValid) {
-                alert('Login backend connection is our next step.');
+            if (!isValid) return;
+
+            try {
+
+                submitButton.disabled = true;
+                submitButton.textContent = 'Logging in...';
+
+                const response = await fetch('/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: emailInput.value.trim(),
+                        password: passwordInput.value
+                    })
+                });
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    alert(result.error || 'Login failed. Please try again.');
+                    return;
+                }
+
+                // Login successful: open dashboard
+                window.location.href = result.redirect || '/dashboard';
+
+            } catch (error) {
+
+                console.error('Login error:', error);
+                alert('Unable to connect to the server. Please try again.');
+
+            } finally {
+
+                submitButton.disabled = false;
+                submitButton.textContent = 'Sign In to Dashboard';
+
             }
         });
     }
 
 
-    /* --------------------------------------------------------------------------
-       4. SIGNUP FORM VALIDATION + BACKEND CONNECTION
-       -------------------------------------------------------------------------- */
+    // 4. SIGNUP FORM + BACKEND CONNECTION
 
     const signupForm = document.getElementById('signup-form');
 
     if (signupForm) {
+
         const nameInput = document.getElementById('signup-name');
         const emailInput = document.getElementById('signup-email');
         const passwordInput = document.getElementById('signup-password');
@@ -111,7 +146,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const submitButton = signupForm.querySelector('button[type="submit"]');
 
-        // Clear errors as the user types
         nameInput.addEventListener('input', () =>
             clearFieldError(nameInput, nameError)
         );
@@ -125,17 +159,16 @@ document.addEventListener('DOMContentLoaded', () => {
         );
 
         signupForm.addEventListener('submit', async (event) => {
+
             event.preventDefault();
 
             let isValid = true;
 
-            // Full name validation
             if (!nameInput.value.trim()) {
                 setFieldError(nameInput, nameError, 'Full name is required.');
                 isValid = false;
             }
 
-            // Email validation
             if (!emailInput.value.trim()) {
                 setFieldError(emailInput, emailError, 'Email address is required.');
                 isValid = false;
@@ -144,7 +177,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 isValid = false;
             }
 
-            // Password validation
             if (!passwordInput.value) {
                 setFieldError(passwordInput, passwordError, 'Password is required.');
                 isValid = false;
@@ -153,17 +185,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 isValid = false;
             }
 
-            // Stop if frontend validation fails
-            if (!isValid) {
-                return;
-            }
+            if (!isValid) return;
 
             try {
-                // Prevent multiple submissions
+
                 submitButton.disabled = true;
                 submitButton.textContent = 'Creating Account...';
 
-                // Send signup details to Flask backend
                 const response = await fetch('/register', {
                     method: 'POST',
                     headers: {
@@ -178,26 +206,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const result = await response.json();
 
-                // Handle backend errors
                 if (!response.ok) {
                     alert(result.error || 'Registration failed.');
                     return;
                 }
 
-                // Registration successful
-                alert('Account created successfully! Please login.');
+                // Signup successful: backend has created the session
+                alert('Account created successfully! Welcome to Gareebi Tracker.');
 
-                window.location.href = '/login';
+                window.location.href = result.redirect || '/dashboard';
 
             } catch (error) {
-                // Handle network or server errors
+
                 console.error('Signup error:', error);
                 alert('Unable to connect to the server. Please try again.');
 
             } finally {
-                // Restore button if still on signup page
+
                 submitButton.disabled = false;
                 submitButton.textContent = 'Create Account';
+
             }
         });
     }

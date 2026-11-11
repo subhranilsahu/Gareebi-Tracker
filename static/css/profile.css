@@ -358,3 +358,8 @@
         width: 100%;
     }
 }
+
+/* Keep the integrated profile view hidden when another dashboard view is active. */
+#profile-view[hidden] {
+    display: none !important;
+}

@@ -1,5 +1,5 @@
 from pathlib import Path
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 from flask import (
     Flask,
@@ -16,7 +16,10 @@ from database import (
     add_transaction,
     get_user_transactions,
     update_transaction,
-    delete_transaction
+    delete_transaction,
+    get_user_profile,
+    update_user_name,
+    update_user_preferences
 )
 
 from auth import login_user, register_user
@@ -170,10 +173,11 @@ def save_transaction():
     tx_type = data.get("type")
     amount = data.get("amount")
 
-    category = data.get("category", "").strip()
-    note = data.get("note", "").strip()
+    category = (data.get("category") or "").strip()
+    note = (data.get("note") or "").strip()
     account = ""
-    date = data.get("date", "").strip()
+    date = (data.get("date") or "").strip()
+    transaction_time = (data.get("time") or "").strip()
 
     if tx_type not in ("income", "expense"):
         return jsonify({"error": "Invalid transaction type."}), 400
@@ -181,19 +185,20 @@ def save_transaction():
     try:
         if isinstance(amount, bool):
             raise ValueError
-
         amount = float(amount)
-
         if amount <= 0:
             raise ValueError
-
     except (TypeError, ValueError):
         return jsonify({"error": "Please enter a valid amount."}), 400
 
-    if not category or not date:
-        return jsonify({
-            "error": "Category and date are required."
-        }), 400
+    try:
+        datetime.strptime(date, "%Y-%m-%d")
+        datetime.strptime(transaction_time, "%H:%M")
+    except ValueError:
+        return jsonify({"error": "Please enter a valid date and time."}), 400
+
+    if not category:
+        return jsonify({"error": "Category is required."}), 400
 
     transaction_id = add_transaction(
         session["user_id"],
@@ -202,7 +207,8 @@ def save_transaction():
         category,
         note,
         account,
-        date
+        date,
+        transaction_time
     )
 
     return jsonify({
@@ -237,10 +243,11 @@ def edit_transaction(transaction_id):
     tx_type = data.get("type")
     amount = data.get("amount")
 
-    category = data.get("category", "").strip()
-    note = data.get("note", "").strip()
+    category = (data.get("category") or "").strip()
+    note = (data.get("note") or "").strip()
     account = ""
-    date = data.get("date", "").strip()
+    date = (data.get("date") or "").strip()
+    transaction_time = (data.get("time") or "").strip()
 
     if tx_type not in ("income", "expense"):
         return jsonify({"error": "Invalid transaction type."}), 400
@@ -248,19 +255,20 @@ def edit_transaction(transaction_id):
     try:
         if isinstance(amount, bool):
             raise ValueError
-
         amount = float(amount)
-
         if amount <= 0:
             raise ValueError
-
     except (TypeError, ValueError):
         return jsonify({"error": "Invalid amount."}), 400
 
-    if not category or not date:
-        return jsonify({
-            "error": "Category and date are required."
-        }), 400
+    try:
+        datetime.strptime(date, "%Y-%m-%d")
+        datetime.strptime(transaction_time, "%H:%M")
+    except ValueError:
+        return jsonify({"error": "Please enter a valid date and time."}), 400
+
+    if not category:
+        return jsonify({"error": "Category is required."}), 400
 
     updated = update_transaction(
         session["user_id"],
@@ -270,7 +278,8 @@ def edit_transaction(transaction_id):
         category,
         note,
         account,
-        date
+        date,
+        transaction_time
     )
 
     if not updated:
@@ -300,6 +309,99 @@ def remove_transaction(transaction_id):
         "message": "Transaction deleted successfully."
     }), 200
 
+
+
+
+# Protected profile page
+@app.route("/profile")
+def profile_page():
+
+    if "user_id" not in session:
+        return redirect(url_for("login_page"))
+
+    user = get_user_profile(session["user_id"])
+
+    if not user:
+        session.clear()
+        return redirect(url_for("login_page"))
+
+    return render_template(
+        "profile.html",
+        profile=user,
+        user_name=user["full_name"]
+    )
+
+
+# Fetch actual profile and transaction data
+@app.route("/profile/data", methods=["GET"])
+def fetch_profile_data():
+
+    if "user_id" not in session:
+        return jsonify({"error": "Please login first."}), 401
+
+    user = get_user_profile(session["user_id"])
+
+    if not user:
+        return jsonify({"error": "User not found."}), 404
+
+    return jsonify({
+        "profile": user,
+        "transactions": get_user_transactions(session["user_id"])
+    }), 200
+
+
+# Update profile name
+@app.route("/profile/update", methods=["POST"])
+def save_profile():
+
+    if "user_id" not in session:
+        return jsonify({"error": "Please login first."}), 401
+
+    data = request.get_json(silent=True) or {}
+    full_name = (data.get("full_name") or "").strip()
+
+    if not full_name:
+        return jsonify({"error": "Name cannot be empty."}), 400
+
+    if len(full_name) > 80:
+        return jsonify({"error": "Name must be 80 characters or less."}), 400
+
+    currency = data.get("currency", "INR")
+    classification = data.get("classification", "Student Account")
+
+    allowed_currencies = {"INR", "USD", "EUR", "GBP"}
+    allowed_classifications = {
+        "Student Account",
+        "Active Ledger",
+        "Minimalist Tier",
+        "Hostel Reserve"
+    }
+
+    if currency not in allowed_currencies:
+        return jsonify({"error": "Invalid currency."}), 400
+
+    if classification not in allowed_classifications:
+        return jsonify({"error": "Invalid classification."}), 400
+
+    updated = update_user_name(session["user_id"], full_name)
+
+    if not updated:
+        return jsonify({"error": "Profile could not be updated."}), 404
+
+    update_user_preferences(
+        session["user_id"],
+        currency,
+        classification
+    )
+
+    session["user_name"] = full_name
+
+    return jsonify({
+        "message": "Profile updated successfully.",
+        "full_name": full_name,
+        "currency": currency,
+        "classification": classification
+    }), 200
 
 # Logout API
 @app.route("/logout", methods=["POST"])

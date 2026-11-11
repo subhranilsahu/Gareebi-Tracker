@@ -19,10 +19,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (passwordInput.type === 'password') {
                 passwordInput.type = 'text';
-                iconSpan.textContent = '🙈';
+                iconSpan.classList.add('password-visible');
             } else {
                 passwordInput.type = 'password';
-                iconSpan.textContent = '👁️';
+                iconSpan.classList.remove('password-visible');
             }
         });
     });

@@ -1,602 +1,1066 @@
+
 /* ==========================================================================
-   GAREEBI TRACKER — DASHBOARD LOGIC
-   Handles transactions, database connection, metrics and logout.
+   GAREEBI TRACKER — UNIFIED DASHBOARD + TRANSACTIONS
+   Single-page navigation, shared modal, transaction CRUD and live metrics.
    ========================================================================== */
 
 document.addEventListener("DOMContentLoaded", () => {
 
-  /* --------------------------------------------------------------------------
-       1. DOM REFERENCES
-       -------------------------------------------------------------------------- */
+    /* 1. DOM ELEMENTS */
 
-  const modal = document.getElementById("transaction-modal");
-  const btnQuickIncome = document.getElementById("btn-quick-income");
-  const btnQuickExpense = document.getElementById("btn-quick-expense");
-  const modalCloseBtn = document.getElementById("modal-close-btn");
-  const modalCancelBtn = document.getElementById("modal-cancel-btn");
+    const dashboardView = document.getElementById("dashboard-view");
+    const transactionsView = document.getElementById("transactions-view");
+    const navItems = document.querySelectorAll("[data-view]");
 
-  const txForm = document.getElementById("dashboard-tx-form");
-  const txTypeInput = document.getElementById("tx-type");
-  const tabExpense = document.getElementById("tab-expense");
-  const tabIncome = document.getElementById("tab-income");
-  const txAmount = document.getElementById("tx-amount");
-  const txCategory = document.getElementById("tx-category");
-  const txNote = document.getElementById("tx-note");
+    const modal = document.getElementById("transaction-modal");
+    const form = document.getElementById("dashboard-tx-form");
 
-  const metricBalance = document.getElementById("metric-balance");
-  const metricIncome = document.getElementById("metric-income");
-  const metricExpense = document.getElementById("metric-expense");
-  const metricSavings = document.getElementById("metric-savings");
+    const quickIncomeBtn = document.getElementById("btn-quick-income");
+    const quickExpenseBtn = document.getElementById("btn-quick-expense");
+    const ledgerAddBtn = document.getElementById("btn-ledger-add");
 
-  const tableBody = document.getElementById("transactions-table-body");
-  const categoryList = document.getElementById("category-list");
-  const monthFilter = document.getElementById("month-filter");
+    const closeModalBtn = document.getElementById("modal-close-btn");
+    const cancelModalBtn = document.getElementById("modal-cancel-btn");
 
-  const modalTitle = modal.querySelector(".modal-title");
-  const submitBtn = document.getElementById("modal-submit-btn");
+    const expenseTab = document.getElementById("tab-expense");
+    const incomeTab = document.getElementById("tab-income");
 
-  /* --------------------------------------------------------------------------
-       2. TRANSACTIONS STATE
-       -------------------------------------------------------------------------- */
+    const typeInput = document.getElementById("tx-type");
+    const amountInput = document.getElementById("tx-amount");
+    const categoryInput = document.getElementById("tx-category");
+    const noteInput = document.getElementById("tx-note");
+    const dateInput = document.getElementById("tx-date");
+    const timeInput = document.getElementById("tx-time");
 
-  let transactions = [];
-  let editingTransactionId = null;
-  let editingTransactionDate = null;
-  let selectedMonth = "all";
+    const dashboardTableBody = document.getElementById("transactions-table-body");
+    const ledgerBody = document.getElementById("ledger-body");
 
-  /* --------------------------------------------------------------------------
-       3. MODAL CONTROLS
-       -------------------------------------------------------------------------- */
+    const monthFilter = document.getElementById("month-filter");
+    const currentMonthLabel = document.getElementById("current-month");
+    const searchInput = document.getElementById("tx-search-input");
 
-  function openModal(type = "expense") {
-    editingTransactionId = null;
-    editingTransactionDate = null;
-
-    txForm.reset();
-    setType(type);
-
-    modalTitle.textContent = "Log Transaction";
-    submitBtn.textContent = "Save Entry";
-
-    modal.classList.add("open");
-    modal.setAttribute("aria-hidden", "false");
-
-    txAmount.focus();
-  }
-
-  function closeModal() {
-    modal.classList.remove("open");
-    modal.setAttribute("aria-hidden", "true");
-
-    txForm.reset();
-
-    editingTransactionId = null;
-    editingTransactionDate = null;
-
-    modalTitle.textContent = "Log Transaction";
-    submitBtn.textContent = "Save Entry";
-
-    setType("expense");
-  }
-
-  function setType(type) {
-    txTypeInput.value = type;
-
-    if (type === "income") {
-      tabIncome.classList.add("active");
-      tabExpense.classList.remove("active");
-    } else {
-      tabExpense.classList.add("active");
-      tabIncome.classList.remove("active");
-    }
-  }
-
-  function openEditModal(tx) {
-    editingTransactionId = tx.id;
-    editingTransactionDate = tx.date;
-
-    setType(tx.type);
-
-    txAmount.value = tx.amount;
-    txCategory.value = tx.category;
-    txNote.value = tx.note || "";
-
-    modalTitle.textContent = "Edit Transaction";
-    submitBtn.textContent = "Update Entry";
-
-    modal.classList.add("open");
-    modal.setAttribute("aria-hidden", "false");
-
-    txAmount.focus();
-  }
-
-  btnQuickIncome.addEventListener("click", () => openModal("income"));
-  btnQuickExpense.addEventListener("click", () => openModal("expense"));
-
-  modalCloseBtn.addEventListener("click", closeModal);
-  modalCancelBtn.addEventListener("click", closeModal);
-
-  modal.addEventListener("click", (e) => {
-    if (e.target === modal) closeModal();
-  });
-
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && modal.classList.contains("open")) {
-      closeModal();
-    }
-  });
-
-  tabExpense.addEventListener("click", () => setType("expense"));
-  tabIncome.addEventListener("click", () => setType("income"));
-
-  /* --------------------------------------------------------------------------
-       4. CURRENCY FORMATTER
-       -------------------------------------------------------------------------- */
-
-  function formatINR(val) {
-    return (
-      "₹" +
-      Number(val).toLocaleString("en-IN", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      })
-    );
-  }
-
-  /* --------------------------------------------------------------------------
-       5. DATE PARSER
-       -------------------------------------------------------------------------- */
-
-  function parseTransactionDate(date) {
-    if (/^\d{4}-\d{2}-\d{2}$/.test(date)) {
-      const [year, month, day] = date.split("-").map(Number);
-      return new Date(year, month - 1, day);
-    }
-
-    return new Date(date);
-  }
-
-  function getMonthKey(date) {
-    const txDate = parseTransactionDate(date);
-
-    if (isNaN(txDate.getTime())) return null;
-
-    return `${txDate.getFullYear()}-${String(
-      txDate.getMonth() + 1
-    ).padStart(2, "0")}`;
-  }
-
-  /* --------------------------------------------------------------------------
-       6. MONTH FILTER
-       -------------------------------------------------------------------------- */
-
-  function getFilteredTransactions() {
-    if (selectedMonth === "all") {
-      return transactions;
-    }
-
-    return transactions.filter(
-      (tx) => getMonthKey(tx.date) === selectedMonth
-    );
-  }
-
-  function populateMonthFilter() {
-    const previousSelection = selectedMonth;
-
-    const months = [
-      ...new Set(
-        transactions
-          .map((tx) => getMonthKey(tx.date))
-          .filter(Boolean)
-      ),
-    ].sort().reverse();
-
-    monthFilter.innerHTML = "";
-
-    const allOption = document.createElement("option");
-    allOption.value = "all";
-    allOption.textContent = "All Months";
-    monthFilter.appendChild(allOption);
-
-    months.forEach((month) => {
-      const [year, monthNumber] = month.split("-");
-
-      const label = new Date(
-        Number(year),
-        Number(monthNumber) - 1
-      ).toLocaleDateString("en-IN", {
-        month: "long",
-        year: "numeric",
-      });
-
-      const option = document.createElement("option");
-      option.value = month;
-      option.textContent = label;
-
-      monthFilter.appendChild(option);
-    });
-
-    selectedMonth = months.includes(previousSelection)
-      ? previousSelection
-      : "all";
-
-    monthFilter.value = selectedMonth;
-  }
-
-  monthFilter.addEventListener("change", () => {
-    selectedMonth = monthFilter.value;
-
-    renderTable();
-    updateMetrics();
-    updateTopOutflows();
-  });
-
-  /* --------------------------------------------------------------------------
-       7. METRIC COMPUTATIONS
-       -------------------------------------------------------------------------- */
-
-  function updateMetrics() {
-    let totalIncome = 0;
-    let totalExpense = 0;
-
-    transactions.forEach((t) => {
-      const amount = Number(t.amount);
-
-      if (t.type === "income") {
-        totalIncome += amount;
-      } else {
-        totalExpense += amount;
-      }
-    });
-
-    let monthlyIncome = 0;
-    let monthlyExpense = 0;
-
-    getFilteredTransactions().forEach((t) => {
-      const amount = Number(t.amount);
-
-      if (t.type === "income") {
-        monthlyIncome += amount;
-      } else {
-        monthlyExpense += amount;
-      }
-    });
-
-    const netBalance = totalIncome - totalExpense;
-    const savingsStash = netBalance > 0 ? netBalance * 0.15 : 0;
-
-    metricIncome.textContent = "+" + formatINR(monthlyIncome);
-    metricExpense.textContent = "-" + formatINR(monthlyExpense);
-
-    metricBalance.textContent =
-      (netBalance < 0 ? "-" : "") + formatINR(Math.abs(netBalance));
-
-    metricSavings.textContent = formatINR(savingsStash);
-  }
-
-  /* --------------------------------------------------------------------------
-       8. TOP OUTFLOWS
-       -------------------------------------------------------------------------- */
-
-  function updateTopOutflows() {
-    const categoryTotals = {};
-
-    getFilteredTransactions().forEach((tx) => {
-      if (tx.type !== "expense") return;
-
-      categoryTotals[tx.category] =
-        (categoryTotals[tx.category] || 0) + Number(tx.amount);
-    });
-
-    const sortedCategories = Object.entries(categoryTotals)
-      .sort((a, b) => b[1] - a[1]);
-
-    const totalExpense = sortedCategories.reduce(
-      (sum, item) => sum + item[1],
-      0
+    const filterButtons = document.querySelectorAll(
+        ".transactions-view [data-filter]"
     );
 
-    const topCategories = sortedCategories.slice(0, 4);
+    const emptyState = document.getElementById("empty-state");
 
-    categoryList.innerHTML = "";
+    /* 2. STATE */
 
-    if (topCategories.length === 0) {
-      categoryList.textContent = "No expenses for this period yet.";
-      return;
-    }
+    let transactions = [];
+    let editingTransactionId = null;
+    let selectedMonth = "all";
+    let selectedType = "all";
+    let searchQuery = "";
+    let modalOpener = null;
 
-    topCategories.forEach(([category, amount]) => {
-      const percentage = totalExpense
-        ? (amount / totalExpense) * 100
-        : 0;
+    /* 3. HELPERS */
 
-      const item = document.createElement("div");
-      item.className = "category-item";
-
-      item.innerHTML = `
-        <div class="cat-info">
-          <span class="cat-name"></span>
-          <span class="cat-pct font-tabular">${percentage.toFixed(1)}%</span>
-        </div>
-        <div class="progress-track">
-          <div class="progress-fill fill-amber" style="width: ${percentage}%"></div>
-        </div>
-      `;
-
-      item.querySelector(".cat-name").textContent = category;
-      categoryList.appendChild(item);
-    });
-  }
-
-  /* --------------------------------------------------------------------------
-       9. TABLE RENDERING
-       -------------------------------------------------------------------------- */
-
-  function renderTable() {
-    tableBody.innerHTML = "";
-
-    getFilteredTransactions().forEach((tx) => {
-      const tr = document.createElement("tr");
-      const isIncome = tx.type === "income";
-
-      const typeCell = document.createElement("td");
-      const badge = document.createElement("span");
-
-      badge.className = `tx-badge ${isIncome ? "income" : "expense"}`;
-      badge.textContent = isIncome ? "Income" : "Expense";
-      typeCell.appendChild(badge);
-
-      const categoryCell = document.createElement("td");
-      categoryCell.style.cssText =
-        "font-weight: 500; color: var(--text-primary);";
-      categoryCell.textContent = tx.category;
-
-      const noteCell = document.createElement("td");
-      noteCell.style.color = "var(--text-muted)";
-      noteCell.textContent = tx.note || "—";
-
-      const dateCell = document.createElement("td");
-      dateCell.style.color = "var(--text-muted)";
-      dateCell.textContent = tx.date;
-
-      const amountCell = document.createElement("td");
-      amountCell.className =
-        `text-right font-tabular ${isIncome ? "text-success" : "text-danger"}`;
-      amountCell.style.fontWeight = "600";
-      amountCell.textContent =
-        `${isIncome ? "+" : "-"}${formatINR(tx.amount)}`;
-
-      const actionsCell = document.createElement("td");
-
-      const editBtn = document.createElement("button");
-      editBtn.type = "button";
-      editBtn.textContent = "Edit";
-      editBtn.dataset.action = "edit";
-      editBtn.dataset.id = tx.id;
-
-      const deleteBtn = document.createElement("button");
-      deleteBtn.type = "button";
-      deleteBtn.textContent = "Delete";
-      deleteBtn.dataset.action = "delete";
-      deleteBtn.dataset.id = tx.id;
-
-      [editBtn, deleteBtn].forEach((btn) => {
-        btn.style.cssText = `
-          padding: 7px 12px;
-          margin: 2px;
-          border-radius: 7px;
-          border: 1px solid var(--border-color);
-          background: var(--bg-secondary);
-          cursor: pointer;
-          font-family: inherit;
-          font-size: 12px;
-          font-weight: 600;
-          transition: all 0.2s ease;
-        `;
-      });
-
-      editBtn.style.color = "#3B82F6";
-      editBtn.style.borderColor = "rgba(59, 130, 246, 0.25)";
-
-      deleteBtn.style.color = "var(--text-danger, #dc2626)";
-      deleteBtn.style.borderColor = "rgba(239, 68, 68, 0.25)";
-
-      actionsCell.append(editBtn, deleteBtn);
-
-      tr.append(
-        typeCell,
-        categoryCell,
-        noteCell,
-        dateCell,
-        amountCell,
-        actionsCell
-      );
-
-      tableBody.appendChild(tr);
-    });
-  }
-
-  /* --------------------------------------------------------------------------
-       10. EDIT AND DELETE ACTIONS
-       -------------------------------------------------------------------------- */
-
-  tableBody.addEventListener("click", async (e) => {
-    const button = e.target.closest("button[data-action]");
-
-    if (!button) return;
-
-    const transactionId = Number(button.dataset.id);
-    const action = button.dataset.action;
-
-    const tx = transactions.find(
-      (item) => Number(item.id) === transactionId
-    );
-
-    if (!tx) return;
-
-    if (action === "edit") {
-      openEditModal(tx);
-    }
-
-    if (action === "delete") {
-      const confirmed = confirm(
-        `Are you sure you want to delete "${tx.category}" transaction of ${formatINR(tx.amount)}?`
-      );
-
-      if (!confirmed) return;
-
-      button.disabled = true;
-
-      try {
-        const response = await fetch(`/transactions/${transactionId}`, {
-          method: "DELETE",
-        });
-
-        const result = await response.json();
-
-        if (!response.ok) {
-          throw new Error(
-            result.error || "Transaction could not be deleted."
-          );
-        }
-
-        await loadTransactions();
-
-      } catch (error) {
-        console.error("Transaction deletion error:", error);
-        alert(error.message);
-        button.disabled = false;
-      }
-    }
-  });
-
-  /* --------------------------------------------------------------------------
-       11. FETCH TRANSACTIONS FROM DATABASE
-       -------------------------------------------------------------------------- */
-
-  async function loadTransactions() {
-    try {
-      const response = await fetch("/transactions");
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(
-          result.error || "Could not load transactions."
-        );
-      }
-
-      transactions = result.transactions;
-
-      populateMonthFilter();
-      renderTable();
-      updateMetrics();
-      updateTopOutflows();
-
-    } catch (error) {
-      console.error("Transaction loading error:", error);
-      alert("Could not load transactions. Please refresh the page.");
-    }
-  }
-
-  /* --------------------------------------------------------------------------
-       12. SAVE OR UPDATE TRANSACTION
-       -------------------------------------------------------------------------- */
-
-  txForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    const amount = parseFloat(txAmount.value);
-
-    if (isNaN(amount) || amount <= 0) {
-      alert("Please enter a valid amount.");
-      return;
-    }
-
-    const now = new Date();
-
-    const todayDate = [
-      now.getFullYear(),
-      String(now.getMonth() + 1).padStart(2, "0"),
-      String(now.getDate()).padStart(2, "0"),
-    ].join("-");
-
-    const txData = {
-      type: txTypeInput.value,
-      amount: amount,
-      category: txCategory.value.trim(),
-      note: txNote.value.trim(),
-      date: editingTransactionDate || todayDate,
+    const formatINR = (amount) => {
+        return new Intl.NumberFormat("en-IN", {
+            style: "currency",
+            currency: "INR",
+            maximumFractionDigits: 2
+        }).format(Number(amount) || 0);
     };
 
-    const isEditing = editingTransactionId !== null;
+    const escapeHTML = (value) => {
+        return String(value ?? "").replace(/[&<>"']/g, (character) => {
+            const entities = {
+                "&": "&amp;",
+                "<": "&lt;",
+                ">": "&gt;",
+                '"': "&quot;",
+                "'": "&#39;"
+            };
 
-    try {
-      submitBtn.disabled = true;
+            return entities[character];
+        });
+    };
 
-      const url = isEditing
-        ? `/transactions/${editingTransactionId}`
-        : "/transactions";
+    const getLocalDateValue = (date = new Date()) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        return `${year}-${month}-${day}`;
+    };
 
-      const response = await fetch(url, {
-        method: isEditing ? "PUT" : "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(txData),
-      });
+    const getLocalTimeValue = (date = new Date()) => {
+        return `${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
+    };
 
-      const result = await response.json();
+    const getTransactionDate = (transaction) => {
+        if (!transaction.date) return new Date();
+        const [year, month, day] = transaction.date.split("-").map(Number);
+        const date = new Date(year, month - 1, day);
+        return Number.isNaN(date.getTime()) ? new Date() : date;
+    };
 
-      if (!response.ok) {
-        throw new Error(
-          result.error || "Transaction could not be saved."
+    const formatDate = (dateValue) => {
+        return getTransactionDate({ date: dateValue }).toLocaleDateString(
+            "en-IN",
+            { day: "2-digit", month: "short", year: "numeric" }
         );
-      }
+    };
 
-      closeModal();
-      await loadTransactions();
+    const getTransactionCreatedAt = (transaction) => {
+        if (!transaction.created_at) return null;
+        const raw = String(transaction.created_at);
+        const normalized = raw.includes("T") ? raw : raw.replace(" ", "T") + "Z";
+        const date = new Date(normalized);
+        return Number.isNaN(date.getTime()) ? null : date;
+    };
 
-    } catch (error) {
-      console.error("Transaction saving error:", error);
-      alert(error.message);
+    const getTransactionTimeValue = (transaction) => {
+        if (transaction.transaction_time) {
+            return transaction.transaction_time.slice(0, 5);
+        }
+        const createdAt = getTransactionCreatedAt(transaction);
+        return createdAt ? getLocalTimeValue(createdAt) : "00:00";
+    };
 
-    } finally {
-      submitBtn.disabled = false;
-    }
-  });
+    const getTransactionTimestamp = (transaction) => {
+        const date = getTransactionDate(transaction);
+        const [hours, minutes] = getTransactionTimeValue(transaction).split(":").map(Number);
+        date.setHours(hours || 0, minutes || 0, 0, 0);
+        return date.getTime();
+    };
 
-  /* --------------------------------------------------------------------------
-       13. LOGOUT
-       -------------------------------------------------------------------------- */
+    const formatTransactionDateTime = (transaction) => {
+        const date = formatDate(transaction.date);
+        const [hours, minutes] = getTransactionTimeValue(transaction).split(":").map(Number);
+        const time = new Date(2000, 0, 1, hours, minutes).toLocaleTimeString(
+            "en-IN",
+            { hour: "2-digit", minute: "2-digit", hour12: true }
+        );
+        return `${date} · ${time}`;
+    };
 
-  const logoutBtn = document.getElementById("btn-logout");
+    const getMonthKey = (transaction) => {
+        const date = getTransactionDate(transaction);
 
-  if (logoutBtn) {
-    logoutBtn.addEventListener("click", async () => {
-      try {
-        const response = await fetch("/logout", {
-          method: "POST",
+        return `${date.getFullYear()}-${String(
+            date.getMonth() + 1
+        ).padStart(2, "0")}`;
+    };
+
+    const getTransactionId = (transaction) => transaction.id;
+
+    /* 4. SINGLE-PAGE NAVIGATION */
+
+    function switchView(viewName) {
+        const views = {
+            dashboard: dashboardView,
+            transactions: transactionsView,
+            profile: document.getElementById("profile-view")
+        };
+
+        if (!views[viewName]) return;
+
+        sessionStorage.setItem("gareebiActiveView", viewName);
+
+        Object.entries(views).forEach(([name, element]) => {
+            if (element) {
+                element.hidden = name !== viewName;
+            }
         });
 
-        const result = await response.json();
+        navItems.forEach((item) => {
+            const isActive = item.dataset.view === viewName;
 
-        if (response.ok) {
-          window.location.href = result.redirect || "/";
-        } else {
-          alert("Logout failed. Please try again.");
+            item.classList.toggle("active", isActive);
+            item.setAttribute("aria-current", isActive ? "page" : "false");
+        });
+
+        if (viewName === "transactions") {
+            renderLedger();
+        }
+    }
+
+    navItems.forEach((item) => {
+        item.addEventListener("click", (event) => {
+            event.preventDefault();
+
+            const viewName = item.dataset.view;
+
+            if (viewName === "dashboard" || viewName === "transactions" || viewName === "profile") {
+                switchView(viewName);
+            }
+        });
+    });
+
+
+    /* 5. SHARED TRANSACTION MODAL */
+
+    function setType(type) {
+        if (!typeInput) return;
+
+        typeInput.value = type;
+
+        expenseTab?.classList.toggle("active", type === "expense");
+        incomeTab?.classList.toggle("active", type === "income");
+    }
+
+    function openModal(type = "expense") {
+        if (!modal) return;
+
+        modalOpener = document.activeElement;
+
+        editingTransactionId = null;
+
+        form?.reset();
+        setType(type);
+
+        if (dateInput) dateInput.value = getLocalDateValue();
+        if (timeInput) timeInput.value = getLocalTimeValue();
+
+        const submitButton = document.getElementById("modal-submit-btn");
+
+        if (submitButton) {
+            submitButton.textContent = "Save Entry";
         }
 
-      } catch (error) {
-        console.error("Logout error:", error);
-        alert("Something went wrong. Please try again.");
-      }
+        modal.classList.add("open");
+        modal.setAttribute("aria-hidden", "false");
+
+        document.body.classList.add("modal-open");
+
+        requestAnimationFrame(() => {
+            amountInput?.focus();
+        });
+    }
+
+    function closeModal() {
+        if (!modal) return;
+
+        if (modal.contains(document.activeElement)) {
+            document.activeElement.blur();
+        }
+
+        modal.classList.remove("open");
+        modal.setAttribute("aria-hidden", "true");
+
+        document.body.classList.remove("modal-open");
+
+        editingTransactionId = null;
+
+        if (modalOpener && document.contains(modalOpener)) {
+            modalOpener.focus();
+        }
+
+        modalOpener = null;
+    }
+
+    function openEditModal(transaction) {
+        openModal(transaction.type);
+
+        editingTransactionId = getTransactionId(transaction);
+
+        if (dateInput) dateInput.value = transaction.date || getLocalDateValue();
+        if (timeInput) timeInput.value = getTransactionTimeValue(transaction);
+
+        if (amountInput) {
+            amountInput.value = transaction.amount;
+        }
+
+        if (categoryInput) {
+            categoryInput.value = transaction.category || "";
+        }
+
+        if (noteInput) {
+            noteInput.value = transaction.note || "";
+        }
+
+        const submitButton = document.getElementById("modal-submit-btn");
+
+        if (submitButton) {
+            submitButton.textContent = "Update Entry";
+        }
+    }
+
+    quickIncomeBtn?.addEventListener("click", () => openModal("income"));
+    quickExpenseBtn?.addEventListener("click", () => openModal("expense"));
+    ledgerAddBtn?.addEventListener("click", () => openModal("expense"));
+
+    closeModalBtn?.addEventListener("click", closeModal);
+    cancelModalBtn?.addEventListener("click", closeModal);
+
+    expenseTab?.addEventListener("click", () => setType("expense"));
+    incomeTab?.addEventListener("click", () => setType("income"));
+
+    modal?.addEventListener("click", (event) => {
+        if (event.target === modal) {
+            closeModal();
+        }
     });
-  }
 
-  /* --------------------------------------------------------------------------
-       14. INITIALIZATION
-       -------------------------------------------------------------------------- */
+    document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && modal?.classList.contains("open")) {
+            closeModal();
+        }
+    });
 
-  loadTransactions();
+    /* 6. DASHBOARD MONTH FILTER */
+
+    function populateMonthFilter() {
+        if (!monthFilter) return;
+
+        const previousValue = selectedMonth;
+
+        const months = [
+            ...new Set(transactions.map(getMonthKey))
+        ].sort().reverse();
+
+        monthFilter.innerHTML = '<option value="all">All Time</option>';
+
+        months.forEach((month) => {
+            const [year, monthNumber] = month.split("-");
+            const date = new Date(Number(year), Number(monthNumber) - 1);
+
+            const option = document.createElement("option");
+
+            option.value = month;
+            option.textContent = date.toLocaleDateString("en-IN", {
+                month: "long",
+                year: "numeric"
+            });
+
+            monthFilter.appendChild(option);
+        });
+
+        monthFilter.value = months.includes(previousValue)
+            ? previousValue
+            : "all";
+
+        selectedMonth = monthFilter.value;
+        updateCurrentMonthLabel();
+    }
+
+    function updateCurrentMonthLabel() {
+        if (!currentMonthLabel) return;
+
+        let date = new Date();
+
+        if (selectedMonth !== "all") {
+            const [year, month] = selectedMonth.split("-").map(Number);
+            date = new Date(year, month - 1, 1);
+        }
+
+        currentMonthLabel.textContent = date.toLocaleDateString("en-US", {
+            month: "long",
+            year: "numeric"
+        });
+    }
+
+    monthFilter?.addEventListener("change", () => {
+        selectedMonth = monthFilter.value;
+        updateCurrentMonthLabel();
+
+        renderDashboardTable();
+        updateMetrics();
+        updateTopOutflows();
+        updateCashFlowChart();
+    });
+
+    /* 7. DASHBOARD METRICS */
+
+    function getMonthTransactions() {
+        if (selectedMonth === "all") {
+            return transactions;
+        }
+
+        return transactions.filter(
+            (transaction) => getMonthKey(transaction) === selectedMonth
+        );
+    }
+
+    function updateMetrics() {
+        const list = getMonthTransactions();
+
+        const income = list
+            .filter((transaction) => transaction.type === "income")
+            .reduce((total, transaction) =>
+                total + Number(transaction.amount || 0), 0);
+
+        const expense = list
+            .filter((transaction) => transaction.type === "expense")
+            .reduce((total, transaction) =>
+                total + Number(transaction.amount || 0), 0);
+
+        const balance = income - expense;
+        const savings = income > 0 ? Math.max(0, balance * 0.15) : 0;
+
+        const balanceElement = document.getElementById("metric-balance");
+        const incomeElement = document.getElementById("metric-income");
+        const expenseElement = document.getElementById("metric-expense");
+        const savingsElement = document.getElementById("metric-savings");
+
+        if (balanceElement) balanceElement.textContent = formatINR(balance);
+        if (incomeElement) incomeElement.textContent = formatINR(income);
+        if (expenseElement) expenseElement.textContent = formatINR(expense);
+        if (savingsElement) savingsElement.textContent = formatINR(savings);
+    }
+
+    /* 8. CASH FLOW TRAJECTORY GRAPH */
+
+    function updateCashFlowChart() {
+        const chart = document.getElementById("cash-flow-svg");
+
+        if (!chart) return;
+
+        const list = getMonthTransactions();
+        const buckets = [];
+
+        if (selectedMonth === "all") {
+
+            // Show the latest 6 months containing transaction history.
+
+            const latestDate = list.length
+                ? list.map(getTransactionDate).sort((a, b) => b - a)[0]
+                : new Date();
+
+            const anchor = new Date(
+                latestDate.getFullYear(),
+                latestDate.getMonth(),
+                1
+            );
+
+            for (let i = 5; i >= 0; i--) {
+                const date = new Date(
+                    anchor.getFullYear(),
+                    anchor.getMonth() - i,
+                    1
+                );
+
+                const key = `${date.getFullYear()}-${String(
+                    date.getMonth() + 1
+                ).padStart(2, "0")}`;
+
+                buckets.push({
+                    key,
+                    label: date.toLocaleDateString("en-IN", {
+                        month: "short"
+                    }),
+                    income: 0,
+                    expense: 0
+                });
+            }
+
+            list.forEach((tx) => {
+                const bucket = buckets.find(
+                    (item) => item.key === getMonthKey(tx)
+                );
+
+                if (!bucket) return;
+
+                if (tx.type === "income") {
+                    bucket.income += Number(tx.amount || 0);
+                } else if (tx.type === "expense") {
+                    bucket.expense += Number(tx.amount || 0);
+                }
+            });
+
+        } else {
+
+            // Show four weekly periods for the selected month.
+
+            for (let i = 0; i < 4; i++) {
+                buckets.push({
+                    label: `Week ${i + 1}`,
+                    income: 0,
+                    expense: 0
+                });
+            }
+
+            list.forEach((tx) => {
+                const date = getTransactionDate(tx);
+
+                const weekIndex = Math.min(
+                    3,
+                    Math.floor((date.getDate() - 1) / 7)
+                );
+
+                const bucket = buckets[weekIndex];
+
+                if (!bucket) return;
+
+                if (tx.type === "income") {
+                    bucket.income += Number(tx.amount || 0);
+                } else if (tx.type === "expense") {
+                    bucket.expense += Number(tx.amount || 0);
+                }
+            });
+        }
+
+        const left = 58;
+        const right = 675;
+        const top = 22;
+        const bottom = 185;
+
+        const maxValue = Math.max(
+            0,
+            ...buckets.map((b) => Math.max(b.income, b.expense))
+        );
+
+        if (maxValue === 0) {
+            chart.innerHTML = `
+                <text x="350" y="115"
+                    text-anchor="middle"
+                    fill="#85827A"
+                    font-size="14">
+                    Add transactions to see your cash flow
+                </text>
+            `;
+            return;
+        }
+
+        const scaleMax = maxValue * 1.2;
+        const xStep = (right - left) / (buckets.length - 1);
+
+        const getX = (index) => left + index * xStep;
+
+        const getY = (value) =>
+            bottom - (value / scaleMax) * (bottom - top);
+
+        const incomePoints = buckets.map((b, i) => [
+            getX(i),
+            getY(b.income)
+        ]);
+
+        const expensePoints = buckets.map((b, i) => [
+            getX(i),
+            getY(b.expense)
+        ]);
+
+        function makeSmoothPath(points) {
+            if (points.length < 2) return "";
+
+            return points.reduce((path, point, index) => {
+                if (index === 0) {
+                    return `M ${point[0]} ${point[1]}`;
+                }
+
+                const previous = points[index - 1];
+                const midX = (previous[0] + point[0]) / 2;
+
+                return `${path} C ${midX} ${previous[1]}, ${midX} ${point[1]}, ${point[0]} ${point[1]}`;
+            }, "");
+        }
+
+        const incomePath = makeSmoothPath(incomePoints);
+        const expensePath = makeSmoothPath(expensePoints);
+
+        const formatAxis = (value) => {
+            if (value >= 100000) {
+                return `₹${(value / 100000).toFixed(1)}L`;
+            }
+
+            if (value >= 1000) {
+                return `₹${(value / 1000).toFixed(1)}k`;
+            }
+
+            return `₹${Math.round(value)}`;
+        };
+
+        const grid = Array.from({ length: 4 }, (_, i) => {
+            const value = (scaleMax / 3) * (3 - i);
+            const y = getY(value);
+
+            return `
+                <line class="grid-line"
+                    x1="${left}" y1="${y}"
+                    x2="${right}" y2="${y}" />
+
+                <text class="axis-label"
+                    x="${left - 10}" y="${y + 4}"
+                    text-anchor="end">
+                    ${formatAxis(value)}
+                </text>
+            `;
+        }).join("");
+
+        const labels = buckets.map((b, i) => `
+            <text class="axis-label"
+                x="${getX(i)}" y="218"
+                text-anchor="middle">
+                ${escapeHTML(b.label)}
+            </text>
+        `).join("");
+
+        const incomeNodes = incomePoints.map((p, i) => `
+            <circle class="node-circle income-node"
+                cx="${p[0]}" cy="${p[1]}" r="4">
+                <title>
+                    ${escapeHTML(buckets[i].label)} — Income:
+                    ${escapeHTML(formatINR(buckets[i].income))}
+                </title>
+            </circle>
+        `).join("");
+
+        const expenseNodes = expensePoints.map((p, i) => `
+            <circle class="node-circle expense-node"
+                cx="${p[0]}" cy="${p[1]}" r="4">
+                <title>
+                    ${escapeHTML(buckets[i].label)} — Expense:
+                    ${escapeHTML(formatINR(buckets[i].expense))}
+                </title>
+            </circle>
+        `).join("");
+
+        chart.innerHTML = `
+            <defs>
+                <linearGradient id="incomeGlow"
+                    x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%"
+                        stop-color="#D6B56D"
+                        stop-opacity=".25"/>
+                    <stop offset="100%"
+                        stop-color="#D6B56D"
+                        stop-opacity="0"/>
+                </linearGradient>
+
+                <linearGradient id="expenseGlow"
+                    x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%"
+                        stop-color="#F87171"
+                        stop-opacity=".18"/>
+                    <stop offset="100%"
+                        stop-color="#F87171"
+                        stop-opacity="0"/>
+                </linearGradient>
+            </defs>
+
+            ${grid}
+
+            <path
+                d="${incomePath} L ${right} ${bottom} L ${left} ${bottom} Z"
+                fill="url(#incomeGlow)"/>
+
+            <path
+                d="${expensePath} L ${right} ${bottom} L ${left} ${bottom} Z"
+                fill="url(#expenseGlow)"/>
+
+            <path class="chart-line-income" d="${incomePath}"/>
+
+            <path class="chart-line-expense" d="${expensePath}"/>
+
+            ${incomeNodes}
+            ${expenseNodes}
+            ${labels}
+        `;
+    }
+
+    /* 9. DASHBOARD RECENT TRANSACTIONS */
+
+    function renderDashboardTable() {
+        if (!dashboardTableBody) return;
+
+        const list = getMonthTransactions()
+            .slice()
+            .sort((a, b) =>
+                getTransactionTimestamp(b) - getTransactionTimestamp(a)
+            )
+            .slice(0, 5);
+
+        if (list.length === 0) {
+            dashboardTableBody.innerHTML = `
+                <tr>
+                    <td colspan="5" class="empty-table-message">
+                        No transactions found.
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        dashboardTableBody.innerHTML = list.map((transaction) => {
+            const isIncome = transaction.type === "income";
+            const amountClass = isIncome ? "text-success" : "text-danger";
+            const sign = isIncome ? "+" : "-";
+
+            return `
+                <tr>
+                    <td>${escapeHTML(formatTransactionDateTime(transaction))}</td>
+
+                    <td>${escapeHTML(
+                        transaction.note || transaction.category || "Transaction"
+                    )}</td>
+
+                    <td>${escapeHTML(transaction.category || "Other")}</td>
+
+                    <td class="text-right ${amountClass}">
+                        ${sign}${escapeHTML(formatINR(transaction.amount))}
+                    </td>
+
+                    <td class="transaction-actions text-center">
+                        <button type="button" class="btn-icon"
+                            data-action="edit"
+                            data-id="${escapeHTML(getTransactionId(transaction))}"
+                            aria-label="Edit transaction"
+                            title="Edit">✎</button>
+
+                        <button type="button" class="btn-icon delete"
+                            data-action="delete"
+                            data-id="${escapeHTML(getTransactionId(transaction))}"
+                            aria-label="Delete transaction"
+                            title="Delete">×</button>
+                    </td>
+                </tr>
+            `;
+        }).join("");
+    }
+
+    /* 10. TOP OUTFLOW CATEGORIES */
+
+    function updateTopOutflows() {
+        const categoryList = document.getElementById("category-list");
+
+        if (!categoryList) return;
+
+        const categoryTotals = {};
+
+        getMonthTransactions().forEach((tx) => {
+            if (tx.type !== "expense") return;
+
+            const category = tx.category || "Other";
+
+            categoryTotals[category] =
+                (categoryTotals[category] || 0) + Number(tx.amount || 0);
+        });
+
+        const sortedCategories = Object.entries(categoryTotals)
+            .sort((a, b) => b[1] - a[1]);
+
+        const totalExpense = sortedCategories.reduce(
+            (sum, item) => sum + item[1], 0
+        );
+
+        const topCategories = sortedCategories.slice(0, 4);
+
+        categoryList.innerHTML = "";
+
+        if (topCategories.length === 0) {
+            categoryList.textContent = "No expenses for this period yet.";
+            return;
+        }
+
+        topCategories.forEach(([category, amount]) => {
+            const percentage = totalExpense
+                ? (amount / totalExpense) * 100
+                : 0;
+
+            const item = document.createElement("div");
+            item.className = "category-item";
+
+            item.innerHTML = `
+                <div class="cat-info">
+                    <span class="cat-name"></span>
+                    <span class="cat-pct font-tabular">
+                        ${percentage.toFixed(1)}%
+                    </span>
+                </div>
+
+                <div class="progress-track">
+                    <div class="progress-fill fill-amber"
+                        style="width: ${percentage}%"></div>
+                </div>
+            `;
+
+            item.querySelector(".cat-name").textContent = category;
+            categoryList.appendChild(item);
+        });
+    }
+
+    /* 11. TRANSACTIONS LEDGER */
+
+    function getFilteredTransactions() {
+        return transactions
+            .filter((transaction) => {
+                const matchesType =
+                    selectedType === "all" ||
+                    transaction.type === selectedType;
+
+                const searchableText = [
+                    transaction.note,
+                    transaction.category,
+                    transaction.type,
+                    transaction.amount
+                ].join(" ").toLowerCase();
+
+                return matchesType &&
+                    searchableText.includes(searchQuery);
+            })
+            .sort((a, b) =>
+                getTransactionTimestamp(b) - getTransactionTimestamp(a)
+            );
+    }
+
+    function updateLedgerSummary(list) {
+        const income = list
+            .filter((transaction) => transaction.type === "income")
+            .reduce((total, transaction) =>
+                total + Number(transaction.amount || 0), 0);
+
+        const expense = list
+            .filter((transaction) => transaction.type === "expense")
+            .reduce((total, transaction) =>
+                total + Number(transaction.amount || 0), 0);
+
+        const incomeElement = document.getElementById("summary-total-income");
+        const expenseElement = document.getElementById("summary-total-expense");
+        const countElement = document.getElementById("summary-total-count");
+
+        if (incomeElement) incomeElement.textContent = formatINR(income);
+        if (expenseElement) expenseElement.textContent = formatINR(expense);
+        if (countElement) countElement.textContent = list.length;
+    }
+
+    function renderLedger() {
+        if (!ledgerBody) return;
+
+        const list = getFilteredTransactions();
+
+        updateLedgerSummary(list);
+
+        if (emptyState) {
+            emptyState.hidden = list.length !== 0;
+        }
+
+        ledgerBody.innerHTML = list.map((transaction) => {
+            const isIncome = transaction.type === "income";
+            const amountClass = isIncome ? "text-success" : "text-danger";
+            const sign = isIncome ? "+" : "-";
+
+            return `
+                <tr>
+                    <td>${escapeHTML(formatTransactionDateTime(transaction))}</td>
+
+                    <td>${escapeHTML(transaction.note || "—")}</td>
+
+                    <td>${escapeHTML(transaction.category || "Other")}</td>
+
+                    <td>
+                        <span class="tx-badge ${isIncome ? "income" : "expense"}">
+                            ${escapeHTML(transaction.type)}
+                        </span>
+                    </td>
+
+                    <td class="text-right ${amountClass}">
+                        ${sign}${escapeHTML(formatINR(transaction.amount))}
+                    </td>
+
+                    <td class="text-right transaction-actions">
+                        <button type="button" class="btn-icon"
+                            data-action="edit"
+                            data-id="${escapeHTML(getTransactionId(transaction))}"
+                            aria-label="Edit transaction"
+                            title="Edit">✎</button>
+
+                        <button type="button" class="btn-icon delete"
+                            data-action="delete"
+                            data-id="${escapeHTML(getTransactionId(transaction))}"
+                            aria-label="Delete transaction"
+                            title="Delete">×</button>
+                    </td>
+                </tr>
+            `;
+        }).join("");
+    }
+
+    searchInput?.addEventListener("input", () => {
+        searchQuery = searchInput.value.trim().toLowerCase();
+        renderLedger();
+    });
+
+    filterButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+            selectedType = button.dataset.filter;
+
+            filterButtons.forEach((filterButton) => {
+                filterButton.classList.toggle(
+                    "active",
+                    filterButton === button
+                );
+            });
+
+            renderLedger();
+        });
+    });
+
+    /* 12. EDIT AND DELETE */
+
+    async function deleteTransaction(id) {
+        if (!confirm("Are you sure you want to delete this transaction?")) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`/transactions/${id}`, {
+                method: "DELETE"
+            });
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error(
+                    result.error || "Could not delete transaction."
+                );
+            }
+
+            await loadTransactions();
+
+        } catch (error) {
+            alert(error.message || "Something went wrong.");
+        }
+    }
+
+    async function handleTransactionAction(event) {
+        const button = event.target.closest("[data-action]");
+
+        if (!button) return;
+
+        const action = button.dataset.action;
+        const id = button.dataset.id;
+
+        const transaction = transactions.find(
+            (item) => String(getTransactionId(item)) === String(id)
+        );
+
+        if (!transaction) return;
+
+        if (action === "edit") {
+            openEditModal(transaction);
+        }
+
+        if (action === "delete") {
+            await deleteTransaction(id);
+        }
+    }
+
+    dashboardTableBody?.addEventListener(
+        "click",
+        handleTransactionAction
+    );
+
+    ledgerBody?.addEventListener(
+        "click",
+        handleTransactionAction
+    );
+
+    /* 13. LOAD TRANSACTIONS */
+
+    async function loadTransactions() {
+        try {
+            const response = await fetch("/transactions");
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error(
+                    result.error || "Could not load transactions."
+                );
+            }
+
+            transactions = Array.isArray(result.transactions)
+                ? result.transactions
+                : [];
+
+            populateMonthFilter();
+            renderDashboardTable();
+            updateMetrics();
+            updateTopOutflows();
+            updateCashFlowChart();
+            renderLedger();
+
+        } catch (error) {
+            console.error("Transaction loading error:", error);
+        }
+    }
+
+    /* 14. ADD / UPDATE TRANSACTION */
+
+    form?.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const amount = Number(amountInput?.value);
+
+        if (!Number.isFinite(amount) || amount <= 0) {
+            alert("Please enter a valid amount.");
+            return;
+        }
+
+        const payload = {
+            type: typeInput?.value || "expense",
+            amount,
+            category: categoryInput?.value.trim() || "Other",
+            note: noteInput?.value.trim() || "",
+            date: dateInput?.value || getLocalDateValue(),
+            time: timeInput?.value || getLocalTimeValue()
+        };
+
+        const isEditing = editingTransactionId !== null;
+
+        const url = isEditing
+            ? `/transactions/${editingTransactionId}`
+            : "/transactions";
+
+        const submitButton = document.getElementById("modal-submit-btn");
+
+        try {
+            if (submitButton) submitButton.disabled = true;
+
+            const response = await fetch(url, {
+                method: isEditing ? "PUT" : "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error(
+                    result.error || "Could not save transaction."
+                );
+            }
+
+            closeModal();
+            await loadTransactions();
+
+        } catch (error) {
+            alert(error.message || "Something went wrong.");
+
+        } finally {
+            if (submitButton) submitButton.disabled = false;
+        }
+    });
+
+    /* 15. LOGOUT */
+
+    const logoutButton = document.getElementById("btn-logout");
+
+    logoutButton?.addEventListener("click", async (event) => {
+        event.preventDefault();
+
+        try {
+            const response = await fetch("/logout", {
+                method: "POST"
+            });
+
+            const result = await response.json();
+
+            window.location.href = result.redirect || "/";
+
+        } catch (error) {
+            console.error("Logout error:", error);
+            window.location.href = "/";
+        }
+    });
+
+    /* 16. INITIALIZE */
+
+    const savedView = sessionStorage.getItem("gareebiActiveView") || "dashboard";
+    switchView(savedView);
+    loadTransactions();
 
 });

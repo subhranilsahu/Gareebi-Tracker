@@ -9,28 +9,27 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="../static/css/global.css">
-    <link rel="stylesheet" href="../static/css/profile.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/global.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}">
 </head>
 <body class="profile-body">
 
     <div class="app-shell">
 
-        <!-- Sidebar Navigation (Accounts Removed) -->
         <aside class="sidebar">
             <div class="sidebar-top">
-                <a href="dashboard.html" class="sidebar-brand">
+                <a href="{{ url_for('dashboard') }}" class="sidebar-brand">
                     <span class="brand-text">Gareebi<span class="brand-accent"> Tracker</span></span>
                 </a>
 
                 <nav class="sidebar-nav">
-                    <a href="dashboard.html" class="nav-item">
+                    <a href="{{ url_for('dashboard') }}" class="nav-item">
                         <span>Dashboard</span>
                     </a>
-                    <a href="transactions.html" class="nav-item">
+                    <a href="{{ url_for('transactions_page') }}" class="nav-item">
                         <span>Transactions</span>
                     </a>
-                    <a href="profile.html" class="nav-item active">
+                    <a href="{{ url_for('profile_page') }}" class="nav-item active">
                         <span>Profile & Settings</span>
                     </a>
                 </nav>
@@ -38,73 +37,69 @@
 
             <div class="sidebar-footer">
                 <div class="user-pill">
-                    <div class="user-avatar" id="sidebar-avatar">AD</div>
+                    <div class="user-avatar" id="sidebar-avatar">{{ profile.full_name[:2] | upper }}</div>
                     <div class="user-meta">
-                        <span class="user-name" id="sidebar-name">Abhigyan Das</span>
-                        <span class="user-role" id="sidebar-role">Student Account</span>
+                        <span class="user-name" id="sidebar-name">{{ profile.full_name }}</span>
+                        <span class="user-role" id="sidebar-role">Account</span>
                     </div>
                 </div>
-                <a href="landing.html" class="btn-logout" title="Sign Out">Sign Out</a>
+                <button type="button" class="btn-logout" id="btn-logout" title="Sign Out">Sign Out</button>
             </div>
         </aside>
 
-        <!-- Main Profile & Settings Surface -->
         <main class="profile-main">
 
             <header class="profile-header">
                 <div>
                     <h1 class="page-title">Profile & Settings</h1>
-                    <p class="page-subtitle">Manage personal identity, local storage state, and ledger preferences.</p>
+                    <p class="page-subtitle">Manage your account details and preferences.</p>
                 </div>
                 <div class="header-status">
                     <span class="status-indicator-dot"></span>
-                    <span class="status-indicator-text">Session Active: Local Cache Synced</span>
+                    <span class="status-indicator-text">Account Connected</span>
                 </div>
             </header>
 
-            <!-- User Identity Banner -->
             <section class="card persona-hero-card">
                 <div class="persona-layout">
                     <div class="avatar-container">
-                        <div class="avatar-large" id="profile-large-avatar">AD</div>
+                        <div class="avatar-large" id="profile-large-avatar">{{ profile.full_name[:2] | upper }}</div>
                     </div>
 
                     <div class="persona-details">
                         <div class="persona-title-row">
-                            <h2 class="user-fullname" id="profile-display-name">Abhigyan Das</h2>
-                            <span class="persona-tag" id="profile-tier-badge">Tier: Student Account</span>
+                            <h2 class="user-fullname" id="profile-display-name">{{ profile.full_name }}</h2>
+                            <span class="persona-tag" id="profile-tier-badge">Student Account</span>
                         </div>
-                        <p class="user-handle" id="profile-handle">@dasabhigyan &bull; Enrolled August 2026</p>
+                        <p class="user-handle" id="profile-handle">{{ profile.email }} &bull; Joined {{ profile.created_at }}</p>
 
                         <div class="meta-pills-row">
-                            <span class="meta-pill">Client Storage: Active</span>
-                            <span class="meta-pill">Telemetry: Disabled</span>
+                            <span class="meta-pill">Account: Active</span>
+                            <span class="meta-pill">Storage: Database</span>
                             <span class="meta-pill">Default Currency: INR (₹)</span>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- Settings & Configuration Grid -->
             <div class="settings-grid">
-                
-                <!-- General Profile Form -->
+
                 <section class="card settings-card">
                     <div class="card-head-simple">
                         <h3 class="section-title">General Preferences</h3>
-                        <p class="section-subtitle">Personal details configured for your local browser session.</p>
+                        <p class="section-subtitle">Update your account name and personal preferences.</p>
                     </div>
 
                     <form id="profile-form" class="settings-form">
                         <div class="form-grid">
                             <div class="form-group">
                                 <label for="prof-name" class="form-label">Display name</label>
-                                <input type="text" id="prof-name" class="form-input" value="Abhigyan Das" required>
+                                <input type="text" id="prof-name" class="form-input" value="{{ profile.full_name }}" maxlength="80" required>
                             </div>
 
                             <div class="form-group">
                                 <label for="prof-email" class="form-label">Email address</label>
-                                <input type="email" id="prof-email" class="form-input" value="abhigyan@example.com" disabled>
+                                <input type="email" id="prof-email" class="form-input" value="{{ profile.email }}" disabled>
                             </div>
 
                             <div class="form-group">
@@ -135,18 +130,17 @@
                     </form>
                 </section>
 
-                <!-- Data Management & Ledger Actions -->
                 <section class="card data-card">
                     <div class="card-head-simple">
                         <h3 class="section-title">Data & Storage Management</h3>
-                        <p class="section-subtitle">Direct controls over your local browser ledger and cache.</p>
+                        <p class="section-subtitle">Manage your actual account transaction data.</p>
                     </div>
 
                     <div class="data-actions-list">
                         <div class="data-action-row">
                             <div class="action-info">
                                 <h4 class="action-title">Export Ledger Data</h4>
-                                <p class="action-desc">Download a backup JSON export containing your entire transaction history.</p>
+                                <p class="action-desc">Download a JSON backup of your actual transaction history.</p>
                             </div>
                             <button type="button" class="btn btn-secondary" id="btn-export-json">Export JSON</button>
                         </div>
@@ -154,17 +148,17 @@
                         <div class="data-action-row">
                             <div class="action-info">
                                 <h4 class="action-title">Reset Demo Entries</h4>
-                                <p class="action-desc">Restore the default starter transaction entries across the dashboard and ledger.</p>
+                                <p class="action-desc">This feature is not connected yet. Your saved transactions will remain untouched.</p>
                             </div>
-                            <button type="button" class="btn btn-secondary" id="btn-reset-demo">Reset to Default</button>
+                            <button type="button" class="btn btn-secondary" id="btn-reset-demo" disabled>Coming Soon</button>
                         </div>
 
                         <div class="data-action-row danger-row">
                             <div class="action-info">
                                 <h4 class="action-title text-danger">Clear All Ledger Records</h4>
-                                <p class="action-desc">Permanently wipe all cached ledger transactions and reset balances to zero.</p>
+                                <p class="action-desc">Ledger deletion is not enabled yet. Your transaction records are safe.</p>
                             </div>
-                            <button type="button" class="btn btn-danger-outline" id="btn-clear-data">Purge Ledger</button>
+                            <button type="button" class="btn btn-danger-outline" id="btn-clear-data" disabled>Unavailable</button>
                         </div>
                     </div>
                 </section>
@@ -174,6 +168,6 @@
         </main>
     </div>
 
-    <script src="../static/js/profile.js"></script>
+    <script src="{{ url_for('static', filename='js/profile.js') }}"></script>
 </body>
 </html>

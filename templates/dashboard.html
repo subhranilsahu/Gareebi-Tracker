@@ -1,467 +1,735 @@
+
 <!doctype html>
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dashboard — Gareebi Tracker 💸</title>
+    <title>Dashboard — Gareebi Tracker</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet" />
 
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='css/global.css') }}"
-    />
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='css/dashboard.css') }}"
-    />
-  </head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/global.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/transactions.css') }}" />
+</head>
 
-  <body class="dashboard-body">
+<body class="dashboard-body">
+
     <div class="app-shell">
 
-      <!-- SIDEBAR -->
-      <aside class="sidebar">
-        <div class="sidebar-top">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
 
-          <a href="{{ url_for('dashboard') }}" class="sidebar-brand">
-            <span class="brand-emoji">💸</span>
-            <span class="brand-text">
-              Gareebi<span class="brand-accent">Tracker</span>
-            </span>
-          </a>
+            <div class="sidebar-top">
 
-          <nav class="sidebar-nav">
-            <a href="{{ url_for('dashboard') }}" class="nav-item active">
-              <span class="nav-icon">📊</span>
-              <span>Dashboard</span>
-            </a>
+                <a href="{{ url_for('dashboard') }}" class="sidebar-brand">
+                    
 
-            <a href="{{ url_for('transactions_page') }}" class="nav-item">
-              <span class="nav-icon">💳</span>
-              <span>Transactions</span>
-            </a>
+                    <span class="brand-text">
+                        Gareebi<span class="brand-accent">Tracker</span>
+                    </span>
+                </a>
 
-            <a href="profile.html" class="nav-item">
-              <span class="nav-icon">👤</span>
-              <span>Profile & Humor</span>
-            </a>
-          </nav>
-        </div>
+                <nav class="sidebar-nav">
 
-        <!-- USER FOOTER -->
-        <div class="sidebar-footer">
-          <div class="user-pill">
-            <div class="user-avatar">AD</div>
+                    <a href="#" class="nav-item active" data-view="dashboard">
+                        <span class="nav-icon dashboard-icon" aria-hidden="true"></span>
+                        <span>Dashboard</span>
+                    </a>
 
-            <div class="user-meta">
-              <span class="user-name">{{ user_name }}</span>
-              <span class="user-role">Student Tier</span>
-            </div>
-          </div>
+                    <a href="#" class="nav-item" data-view="transactions">
+                        <span class="nav-icon transactions-icon" aria-hidden="true"></span>
+                        <span>Transactions</span>
+                    </a>
 
-          <button
-            type="button"
-            class="btn-logout"
-            id="btn-logout"
-            title="Sign Out"
-          >
-            ↪
-          </button>
-        </div>
-      </aside>
+                    <a href="#" class="nav-item" data-view="profile">
+                        <span class="nav-icon profile-icon" aria-hidden="true"></span>
+                        <span>Profile & User</span>
+                    </a>
 
-      <!-- MAIN DASHBOARD -->
-      <main class="dashboard-main">
-
-        <!-- HEADER -->
-        <header class="dashboard-header">
-          <div>
-            <h1 class="page-title">Dashboard</h1>
-            <p class="page-subtitle">
-              Track your money before it tracks you.
-            </p>
-          </div>
-
-          <div class="header-actions">
-            <div class="status-indicator">
-              <span class="indicator-dot"></span>
-              <span id="current-month">November 2026</span>
-            </div>
-
-            <button
-              type="button"
-              class="btn btn-secondary"
-              id="btn-quick-expense"
-            >
-              <span>−</span> Add Expense
-            </button>
-
-            <button
-              type="button"
-              class="btn btn-primary"
-              id="btn-quick-income"
-            >
-              <span>+</span> Add Income
-            </button>
-          </div>
-        </header>
-
-        <!-- FINANCIAL METRICS -->
-        <section class="metrics-grid">
-
-          <div class="card metric-card">
-            <span class="metric-label">Net Liquid Balance</span>
-            <h2 class="metric-value font-tabular" id="metric-balance">
-              ₹0.00
-            </h2>
-            <span class="metric-hint">Cash + Bank + UPI</span>
-          </div>
-
-          <div class="card metric-card">
-            <span class="metric-label">Income This Month</span>
-            <h2
-              class="metric-value text-success font-tabular"
-              id="metric-income"
-            >
-              +₹0.00
-            </h2>
-            <span class="metric-hint text-success">Total Earnings</span>
-          </div>
-
-          <div class="card metric-card">
-            <span class="metric-label">Spent This Month</span>
-            <h2
-              class="metric-value text-danger font-tabular"
-              id="metric-expense"
-            >
-              -₹0.00
-            </h2>
-            <span class="metric-hint text-danger">Total Outflow</span>
-          </div>
-
-          <div class="card metric-card">
-            <span class="metric-label">Emergency Stash</span>
-            <h2 class="metric-value font-tabular" id="metric-savings">
-              ₹0.00
-            </h2>
-            <span class="metric-hint">Untouchable Reserve</span>
-          </div>
-
-        </section>
-
-        <!-- ANALYTICS -->
-        <section class="analytics-grid">
-
-          <!-- CASH FLOW -->
-          <div class="card chart-card">
-            <div class="card-header">
-              <div>
-                <h3 class="card-title">Cash Flow Trajectory</h3>
-                <p class="card-subtitle">
-                  Income vs Outflow overview
-                </p>
-              </div>
-
-              <div class="chart-legend">
-                <span class="legend-item">
-                  <span class="legend-dot income"></span>
-                  Income
-                </span>
-
-                <span class="legend-item">
-                  <span class="legend-dot expense"></span>
-                  Expense
-                </span>
-              </div>
-            </div>
-
-            <div class="chart-box">
-              <div class="chart-bars-demo">
-
-                <div class="bar-group">
-                  <div class="bar-pair">
-                    <div class="bar bar-income" style="height: 65%"></div>
-                    <div class="bar bar-expense" style="height: 40%"></div>
-                  </div>
-                  <span class="bar-label">Week 1</span>
-                </div>
-
-                <div class="bar-group">
-                  <div class="bar-pair">
-                    <div class="bar bar-income" style="height: 85%"></div>
-                    <div class="bar bar-expense" style="height: 55%"></div>
-                  </div>
-                  <span class="bar-label">Week 2</span>
-                </div>
-
-                <div class="bar-group">
-                  <div class="bar-pair">
-                    <div class="bar bar-income" style="height: 45%"></div>
-                    <div class="bar bar-expense" style="height: 70%"></div>
-                  </div>
-                  <span class="bar-label">Week 3</span>
-                </div>
-
-                <div class="bar-group">
-                  <div class="bar-pair">
-                    <div class="bar bar-income" style="height: 90%"></div>
-                    <div class="bar bar-expense" style="height: 30%"></div>
-                  </div>
-                  <span class="bar-label">Week 4</span>
-                </div>
-
-              </div>
-            </div>
-          </div>
-
-          <!-- CATEGORY BREAKDOWN -->
-          <div class="card category-card">
-            <div class="card-header">
-              <h3 class="card-title">Top Outflows</h3>
-              <span class="card-tag">November</span>
-            </div>
-
-            <div class="category-list" id="category-list">
-
-              <div class="category-item">
-                <div class="cat-info">
-                  <span class="cat-name">Food & Swiggy</span>
-                  <span class="cat-pct font-tabular">45%</span>
-                </div>
-
-                <div class="progress-track">
-                  <div
-                    class="progress-fill fill-amber"
-                    style="width: 45%"
-                  ></div>
-                </div>
-              </div>
-
-              <div class="category-item">
-                <div class="cat-info">
-                  <span class="cat-name">Hostel & Utilities</span>
-                  <span class="cat-pct font-tabular">30%</span>
-                </div>
-
-                <div class="progress-track">
-                  <div
-                    class="progress-fill fill-violet"
-                    style="width: 30%"
-                  ></div>
-                </div>
-              </div>
-
-              <div class="category-item">
-                <div class="cat-info">
-                  <span class="cat-name">Transit & Petrol</span>
-                  <span class="cat-pct font-tabular">15%</span>
-                </div>
-
-                <div class="progress-track">
-                  <div
-                    class="progress-fill fill-cyan"
-                    style="width: 15%"
-                  ></div>
-                </div>
-              </div>
-
-              <div class="category-item">
-                <div class="cat-info">
-                  <span class="cat-name">Subscriptions & Tech</span>
-                  <span class="cat-pct font-tabular">10%</span>
-                </div>
-
-                <div class="progress-track">
-                  <div
-                    class="progress-fill fill-blue"
-                    style="width: 10%"
-                  ></div>
-                </div>
-              </div>
+                </nav>
 
             </div>
-          </div>
 
-        </section>
+            <div class="sidebar-footer">
 
-        <!-- RECENT TRANSACTIONS -->
-        <section class="card table-card">
+                <div class="user-pill">
 
-          <div class="card-header">
-            <div>
-              <h3 class="card-title">Recent Transactions</h3>
-              <p class="card-subtitle">
-                Real-time ledger entries
-              </p>
-            </div>
+                    <div class="user-avatar" id="sidebar-avatar">AD</div>
 
-            <div style="display: flex; align-items: center; gap: 12px">
+                    <div class="user-meta">
+                        <span class="user-name" id="sidebar-name">{{ user_name }}</span>
+                        <span class="user-role" id="sidebar-role">Student Tier</span>
+                    </div>
 
-              <div class="month-filter-wrapper">
-                <select
-                  id="month-filter"
-                  class="form-select month-filter-select"
-                ></select>
-              </div>
+                </div>
 
-              <a
-                href="{{ url_for('transactions_page') }}"
-                class="view-all-link"
-              >
-                View Full Ledger →
-              </a>
+                <button type="button" class="btn-logout" id="btn-logout" title="Logout">
+                    <svg viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="1.8"
+                         stroke-linecap="round" stroke-linejoin="round"
+                         aria-hidden="true">
+                        <path d="M10 17l5-5-5-5"/>
+                        <path d="M15 12H3"/>
+                        <path d="M12 3h6a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-6"/>
+                    </svg>
+                    <span>Logout</span>
+                </button>
 
             </div>
-          </div>
 
-          <div class="table-wrap">
-            <table class="dashboard-table">
+        </aside>
 
-              <thead>
-                <tr>
-                  <th>Type</th>
-                  <th>Category</th>
-                  <th>Note</th>
-                  <th>Date</th>
-                  <th class="text-right">Amount</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
 
-              <tbody id="transactions-table-body">
-                <!-- Populated dynamically by dashboard.js -->
-              </tbody>
+        <!-- DASHBOARD VIEW -->
+        <main class="dashboard-main" id="dashboard-view">
 
-            </table>
-          </div>
+            <!-- HEADER -->
+            <header class="dashboard-header">
 
-        </section>
+                <div>
+                    <h1 class="page-title">Dashboard</h1>
 
-      </main>
+                    <p class="page-subtitle">
+                        Track your money before it tracks you.
+                    </p>
+                </div>
+
+                <div class="header-actions">
+
+                    <div class="status-indicator">
+                        <span class="indicator-dot"></span>
+                        <span id="current-month">November 2026</span>
+                    </div>
+
+                    <button type="button" class="btn btn-secondary" id="btn-quick-expense">
+                        <span>−</span> Add Expense
+                    </button>
+
+                    <button type="button" class="btn btn-primary" id="btn-quick-income">
+                        <span>+</span> Add Income
+                    </button>
+
+                </div>
+
+            </header>
+
+
+            <!-- METRICS -->
+            <section class="metrics-grid">
+
+                <div class="card metric-card">
+                    <span class="metric-label">Net Liquid Balance</span>
+
+                    <h2 class="metric-value font-tabular" id="metric-balance">
+                        ₹0.00
+                    </h2>
+
+                    <span class="metric-hint">Cash + Bank + UPI</span>
+                </div>
+
+
+                <div class="card metric-card">
+                    <span class="metric-label">Income This Month</span>
+
+                    <h2 class="metric-value text-success font-tabular" id="metric-income">
+                        +₹0.00
+                    </h2>
+
+                    <span class="metric-hint text-success">Total Earnings</span>
+                </div>
+
+
+                <div class="card metric-card">
+                    <span class="metric-label">Spent This Month</span>
+
+                    <h2 class="metric-value text-danger font-tabular" id="metric-expense">
+                        -₹0.00
+                    </h2>
+
+                    <span class="metric-hint text-danger">Total Outflow</span>
+                </div>
+
+
+                <div class="card metric-card">
+                    <span class="metric-label">Emergency Stash</span>
+
+                    <h2 class="metric-value font-tabular" id="metric-savings">
+                        ₹0.00
+                    </h2>
+
+                    <span class="metric-hint">Untouchable Reserve</span>
+                </div>
+
+            </section>
+
+
+            <!-- ANALYTICS -->
+            <section class="analytics-grid">
+
+                <!-- CASH FLOW CHART -->
+                <div class="card chart-card">
+
+                    <div class="card-header">
+
+                        <div>
+                            <h3 class="card-title">Cash Flow Trajectory</h3>
+                            <p class="card-subtitle">Income vs Outflow overview</p>
+                        </div>
+
+                        <div class="chart-legend">
+
+                            <span class="legend-item">
+                                <span class="legend-dot income"></span>
+                                Income
+                            </span>
+
+                            <span class="legend-item">
+                                <span class="legend-dot expense"></span>
+                                Expense
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                    <!-- DYNAMIC SVG CHART -->
+                    <div class="chart-viewport" id="cash-flow-chart">
+
+                        <svg
+                            class="chart-svg"
+                            id="cash-flow-svg"
+                            viewBox="0 0 700 240"
+                            preserveAspectRatio="xMidYMid meet"
+                            role="img"
+                            aria-label="Income and expense cash flow chart">
+                        </svg>
+
+                    </div>
+
+                </div>
+
+
+                <!-- TOP OUTFLOWS -->
+                <div class="card category-card">
+
+                    <div class="card-header">
+
+                        <h3 class="card-title">Top Outflows</h3>
+
+                        <span class="card-tag">Spending Share</span>
+
+                    </div>
+
+                    <div class="category-list" id="category-list">
+
+                        <div class="category-item">
+
+                            <div class="cat-info">
+                                <span class="cat-name">Food & Swiggy</span>
+                                <span class="cat-pct font-tabular">45%</span>
+                            </div>
+
+                            <div class="progress-track">
+                                <div class="progress-fill fill-amber" style="width:45%"></div>
+                            </div>
+
+                        </div>
+
+
+                        <div class="category-item">
+
+                            <div class="cat-info">
+                                <span class="cat-name">Hostel & Utilities</span>
+                                <span class="cat-pct font-tabular">30%</span>
+                            </div>
+
+                            <div class="progress-track">
+                                <div class="progress-fill fill-violet" style="width:30%"></div>
+                            </div>
+
+                        </div>
+
+
+                        <div class="category-item">
+
+                            <div class="cat-info">
+                                <span class="cat-name">Transit & Petrol</span>
+                                <span class="cat-pct font-tabular">15%</span>
+                            </div>
+
+                            <div class="progress-track">
+                                <div class="progress-fill fill-cyan" style="width:15%"></div>
+                            </div>
+
+                        </div>
+
+
+                        <div class="category-item">
+
+                            <div class="cat-info">
+                                <span class="cat-name">Subscriptions & Tech</span>
+                                <span class="cat-pct font-tabular">10%</span>
+                            </div>
+
+                            <div class="progress-track">
+                                <div class="progress-fill fill-blue" style="width:10%"></div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- RECENT TRANSACTIONS -->
+            <section class="card table-card">
+
+                <div class="card-header">
+
+                    <div>
+                        <h3 class="card-title">Recent Transactions</h3>
+                        <p class="card-subtitle">Real-time ledger entries</p>
+                    </div>
+
+                    <div style="display:flex;align-items:center;gap:12px">
+
+                        <div class="month-filter-wrapper">
+                            <select id="month-filter" class="form-select month-filter-select"></select>
+                        </div>
+
+                        <a href="#" class="view-all-link" data-view="transactions">
+                            View Full Ledger →
+                        </a>
+
+                    </div>
+
+                </div>
+
+
+                <div class="table-wrap">
+
+                    <table class="dashboard-table">
+
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Note</th>
+                                <th>Category</th>
+                                <th class="text-right">Amount</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="transactions-table-body"></tbody>
+
+                    </table>
+
+                </div>
+
+            </section>
+
+        </main>
+
+
+        <!-- TRANSACTIONS VIEW -->
+        <main class="transactions-view" id="transactions-view" hidden>
+
+            <!-- HEADER -->
+            <header class="transactions-header">
+
+                <div>
+                    <h1 class="page-title">Transactions</h1>
+
+                    <p class="page-subtitle">
+                        Every rupee has a story. Keep track of yours.
+                    </p>
+                </div>
+
+                <button type="button" class="btn btn-primary" id="btn-ledger-add">
+                    + Add Transaction
+                </button>
+
+            </header>
+
+
+            <!-- SUMMARY -->
+            <section class="summary-grid">
+
+                <div class="card summary-card">
+                    <span class="summary-label">Total Income</span>
+
+                    <h2 class="summary-value text-success" id="summary-total-income">
+                        ₹0.00
+                    </h2>
+                </div>
+
+
+                <div class="card summary-card">
+                    <span class="summary-label">Total Expenses</span>
+
+                    <h2 class="summary-value text-danger" id="summary-total-expense">
+                        ₹0.00
+                    </h2>
+                </div>
+
+
+                <div class="card summary-card">
+                    <span class="summary-label">Total Transactions</span>
+
+                    <h2 class="summary-value" id="summary-total-count">0</h2>
+                </div>
+
+            </section>
+
+
+            <!-- SEARCH AND FILTERS -->
+            <section class="card filter-card">
+
+                <div class="search-wrapper">
+
+                    <span class="search-icon">⌕</span>
+
+                    <input
+                        type="text"
+                        id="tx-search-input"
+                        class="form-input"
+                        placeholder="Search transactions..." />
+
+                </div>
+
+
+                <div class="type-filters">
+
+                    <button type="button" class="type-filter-btn active" data-filter="all">
+                        All
+                    </button>
+
+                    <button type="button" class="type-filter-btn" data-filter="income">
+                        Income
+                    </button>
+
+                    <button type="button" class="type-filter-btn" data-filter="expense">
+                        Expense
+                    </button>
+
+                </div>
+
+            </section>
+
+
+            <!-- ALL TRANSACTIONS -->
+            <section class="card table-card">
+
+                <div class="card-header">
+
+                    <div>
+                        <h3 class="card-title">All Transactions</h3>
+                        <p class="card-subtitle">Your complete financial history</p>
+                    </div>
+
+                </div>
+
+
+                <div class="table-wrap">
+
+                    <table class="transactions-table">
+
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Note</th>
+                                <th>Category</th>
+                                <th>Type</th>
+                                <th class="text-right">Amount</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="ledger-body"></tbody>
+
+                    </table>
+
+
+                    <div class="empty-state" id="empty-state" hidden>
+
+                        
+
+                        <h3>No transactions found</h3>
+
+                        <p>Your transactions will appear here.</p>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+        </main>
+
+
+        <!-- PROFILE VIEW -->
+        <main class="profile-main" id="profile-view" hidden>
+
+            <header class="profile-header">
+                <div>
+                    <h1 class="page-title">Profile & Settings</h1>
+                    <p class="page-subtitle">Manage your account details and preferences.</p>
+                </div>
+                <div class="header-status">
+                    <span class="status-indicator-dot"></span>
+                    <span class="status-indicator-text">Account Connected</span>
+                </div>
+            </header>
+
+            <section class="card persona-hero-card">
+                <div class="persona-layout">
+                    <div class="avatar-container">
+                        <div class="avatar-large" id="profile-large-avatar">{{ user_name[:2] | upper }}</div>
+                    </div>
+
+                    <div class="persona-details">
+                        <div class="persona-title-row">
+                            <h2 class="user-fullname" id="profile-display-name">{{ user_name }}</h2>
+                            <span class="persona-tag" id="profile-tier-badge">Student Account</span>
+                        </div>
+                        <p class="user-handle" id="profile-handle">
+                            <span id="profile-email"></span> &bull; Joined
+                            <span id="profile-joined"></span>
+                        </p>
+
+                        <div class="meta-pills-row">
+                            <span class="meta-pill">Account: Active</span>
+                            <span class="meta-pill">Storage: Database</span>
+                            <span class="meta-pill">Default Currency: <span id="profile-currency-label">INR (₹)</span></span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="settings-grid">
+
+                <section class="card settings-card">
+                    <div class="card-head-simple">
+                        <h3 class="section-title">General Preferences</h3>
+                        <p class="section-subtitle">Update your account name and personal preferences.</p>
+                    </div>
+
+                    <form id="profile-form" class="settings-form">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="prof-name" class="form-label">Display name</label>
+                                <input type="text" id="prof-name" class="form-input" value="{{ user_name }}" maxlength="80" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="prof-email" class="form-label">Email address</label>
+                                <input type="email" id="prof-email" class="form-input" value="" disabled>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="prof-currency" class="form-label">Primary currency</label>
+                                <select id="prof-currency" class="form-select">
+                                    <option value="INR" selected>INR (₹): Indian Rupee</option>
+                                    <option value="USD">USD ($): US Dollar</option>
+                                    <option value="EUR">EUR (€): Euro</option>
+                                    <option value="GBP">GBP (£): British Pound</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="prof-persona" class="form-label">Classification tier</label>
+                                <select id="prof-persona" class="form-select">
+                                    <option value="Student Account" selected>Student Account</option>
+                                    <option value="Active Ledger">Active Ledger</option>
+                                    <option value="Minimalist Tier">Minimalist Tier</option>
+                                    <option value="Hostel Reserve">Hostel Reserve</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="settings-actions">
+                            <span class="save-status" id="save-status-msg"></span>
+                            <button type="submit" class="btn btn-primary">Save preferences</button>
+                        </div>
+                    </form>
+                </section>
+
+                <section class="card data-card">
+                    <div class="card-head-simple">
+                        <h3 class="section-title">Data & Storage Management</h3>
+                        <p class="section-subtitle">Manage your actual account transaction data.</p>
+                    </div>
+
+                    <div class="data-actions-list">
+                        <div class="data-action-row">
+                            <div class="action-info">
+                                <h4 class="action-title">Export Ledger Data</h4>
+                                <p class="action-desc">Download a JSON backup of your actual transaction history.</p>
+                            </div>
+                            <button type="button" class="btn btn-secondary" id="btn-export-json">Export JSON</button>
+                        </div>
+
+                        <div class="data-action-row">
+                            <div class="action-info">
+                                <h4 class="action-title">Reset Demo Entries</h4>
+                                <p class="action-desc">This feature is not connected yet. Your saved transactions will remain untouched.</p>
+                            </div>
+                            <button type="button" class="btn btn-secondary" id="btn-reset-demo" disabled>Coming Soon</button>
+                        </div>
+
+                        <div class="data-action-row danger-row">
+                            <div class="action-info">
+                                <h4 class="action-title text-danger">Clear All Ledger Records</h4>
+                                <p class="action-desc">Ledger deletion is not enabled yet. Your transaction records are safe.</p>
+                            </div>
+                            <button type="button" class="btn btn-danger-outline" id="btn-clear-data" disabled>Unavailable</button>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+
+        </main>
+
     </div>
 
-    <!-- ADD TRANSACTION MODAL -->
-    <div
-      class="modal-overlay"
-      id="transaction-modal"
-      aria-hidden="true"
-    >
-      <div class="modal-box">
 
-        <div class="modal-head">
-          <h3 class="modal-title">Log Transaction</h3>
+    <!-- SHARED TRANSACTION MODAL -->
+    <div class="modal-overlay" id="transaction-modal" aria-hidden="true">
 
-          <button
-            type="button"
-            class="btn-modal-close"
-            id="modal-close-btn"
-          >
-            &times;
-          </button>
+        <div class="modal-box">
+
+            <div class="modal-head">
+
+                <h3 class="modal-title">Log Transaction</h3>
+
+                <button type="button" class="btn-modal-close" id="modal-close-btn">
+                    &times;
+                </button>
+
+            </div>
+
+
+            <form id="dashboard-tx-form" class="modal-form">
+
+                <input type="hidden" id="tx-type" value="expense" />
+
+
+                <div class="type-toggle-group">
+
+                    <button type="button" class="toggle-choice active" id="tab-expense">
+                        Expense
+                    </button>
+
+                    <button type="button" class="toggle-choice" id="tab-income">
+                        Income
+                    </button>
+
+                </div>
+
+
+                <div class="form-row">
+
+                    <label for="tx-amount" class="form-label">
+                        Amount (₹)
+                    </label>
+
+                    <input
+                        type="number"
+                        id="tx-amount"
+                        class="form-input font-tabular"
+                        placeholder="0.00"
+                        step="0.01"
+                        required />
+
+                </div>
+
+
+                <div class="form-row">
+
+                    <label for="tx-category" class="form-label">
+                        Category
+                    </label>
+
+                    <input
+                        type="text"
+                        id="tx-category"
+                        class="form-input"
+                        placeholder="e.g. Swiggy, Mess Bill, Project Payout"
+                        required />
+
+                </div>
+
+
+                <div class="form-row">
+                    <label for="tx-date" class="form-label">
+                        Transaction Date
+                    </label>
+                    <input
+                        type="date"
+                        id="tx-date"
+                        class="form-input"
+                        required />
+                </div>
+
+                <div class="form-row">
+                    <label for="tx-time" class="form-label">
+                        Transaction Time
+                    </label>
+                    <input
+                        type="time"
+                        id="tx-time"
+                        class="form-input"
+                        required />
+                </div>
+
+                <div class="form-row">
+
+                    <label for="tx-note" class="form-label">
+                        Note (Optional)
+                    </label>
+
+                    <input
+                        type="text"
+                        id="tx-note"
+                        class="form-input"
+                        placeholder="What was this for?" />
+
+                </div>
+
+
+                <div class="modal-actions">
+
+                    <button type="button" class="btn btn-secondary" id="modal-cancel-btn">
+                        Cancel
+                    </button>
+
+                    <button type="submit" class="btn btn-primary" id="modal-submit-btn">
+                        Save Entry
+                    </button>
+
+                </div>
+
+            </form>
+
         </div>
 
-        <form id="dashboard-tx-form" class="modal-form">
-
-          <input type="hidden" id="tx-type" value="expense" />
-
-          <!-- TYPE SELECTOR -->
-          <div class="type-toggle-group">
-            <button
-              type="button"
-              class="toggle-choice active"
-              id="tab-expense"
-            >
-              Expense
-            </button>
-
-            <button
-              type="button"
-              class="toggle-choice"
-              id="tab-income"
-            >
-              Income
-            </button>
-          </div>
-
-          <!-- AMOUNT -->
-          <div class="form-row">
-            <label for="tx-amount" class="form-label">
-              Amount (₹)
-            </label>
-
-            <input
-              type="number"
-              id="tx-amount"
-              class="form-input font-tabular"
-              placeholder="0.00"
-              step="0.01"
-              required
-            />
-          </div>
-
-          <!-- CATEGORY -->
-          <div class="form-row">
-            <label for="tx-category" class="form-label">
-              Category
-            </label>
-
-            <input
-              type="text"
-              id="tx-category"
-              class="form-input"
-              placeholder="e.g. Swiggy, Mess Bill, Project Payout"
-              required
-            />
-          </div>
-
-          <!-- NOTE -->
-          <div class="form-row">
-            <label for="tx-note" class="form-label">
-              Note (Optional)
-            </label>
-
-            <input
-              type="text"
-              id="tx-note"
-              class="form-input"
-              placeholder="What was this for?"
-            />
-          </div>
-
-          <!-- MODAL ACTIONS -->
-          <div class="modal-actions">
-
-            <button
-              type="button"
-              class="btn btn-secondary"
-              id="modal-cancel-btn"
-            >
-              Cancel
-            </button>
-
-            <button
-              type="submit"
-              class="btn btn-primary"
-              id="modal-submit-btn"
-            >
-              Save Entry
-            </button>
-
-          </div>
-
-        </form>
-      </div>
     </div>
+
 
     <!-- DASHBOARD SCRIPT -->
     <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/profile.js') }}"></script>
 
-  </body>
+</body>
 </html>

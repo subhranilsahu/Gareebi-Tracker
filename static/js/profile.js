@@ -1,143 +1,213 @@
-/* ==========================================================================
-   GAREEBI TRACKER — PROFILE & SETTINGS SCRIPT (static/js/profile.js)
-   Handles persistent profile preferences, JSON export, and ledger cache controls.
-   ========================================================================== */
+document.addEventListener("DOMContentLoaded", () => {
 
-window.onbeforeunload = null;
+    const profileForm = document.getElementById("profile-form");
+    const nameInput = document.getElementById("prof-name");
+    const emailInput = document.getElementById("prof-email");
+    const profileEmail = document.getElementById("profile-email");
+    const profileJoined = document.getElementById("profile-joined");
+    const currencyLabel = document.getElementById("profile-currency-label");
+    const currencyInput = document.getElementById("prof-currency");
+    const personaInput = document.getElementById("prof-persona");
+    const saveStatus = document.getElementById("save-status-msg");
 
-document.addEventListener('DOMContentLoaded', () => {
+    const displayName = document.getElementById("profile-display-name");
+    const largeAvatar = document.getElementById("profile-large-avatar");
+    const sidebarName = document.getElementById("sidebar-name");
+    const sidebarAvatar = document.getElementById("sidebar-avatar");
+    const tierBadge = document.getElementById("profile-tier-badge");
 
-    /* --------------------------------------------------------------------------
-       1. DOM REFERENCES
-       -------------------------------------------------------------------------- */
-    const profileForm = document.getElementById('profile-form');
-    const profName = document.getElementById('prof-name');
-    const profEmail = document.getElementById('prof-email');
-    const profCurrency = document.getElementById('prof-currency');
-    const profPersona = document.getElementById('prof-persona');
-    const saveStatusMsg = document.getElementById('save-status-msg');
+    const exportButton = document.getElementById("btn-export-json");
+    const logoutButton = document.getElementById("btn-logout");
 
-    // UI Header & Avatar elements
-    const profileDisplayName = document.getElementById('profile-display-name');
-    const profileLargeAvatar = document.getElementById('profile-large-avatar');
-    const profileTierBadge = document.getElementById('profile-tier-badge');
-    const sidebarName = document.getElementById('sidebar-name');
-    const sidebarAvatar = document.getElementById('sidebar-avatar');
-    const sidebarRole = document.getElementById('sidebar-role');
-
-    // Data Management Buttons
-    const btnExportJson = document.getElementById('btn-export-json');
-    const btnResetDemo = document.getElementById('btn-reset-demo');
-    const btnClearData = document.getElementById('btn-clear-data');
-
-    /* --------------------------------------------------------------------------
-       2. INITIAL STATE & LOCALSTORAGE SYNC
-       -------------------------------------------------------------------------- */
-    function loadSavedProfile() {
-        const savedName = localStorage.getItem('gt_profile_name') || 'Abhigyan Das';
-        const savedCurrency = localStorage.getItem('gt_profile_currency') || 'INR';
-        const savedPersona = localStorage.getItem('gt_profile_persona') || 'Student Account';
-
-        if (profName) profName.value = savedName;
-        if (profCurrency) profCurrency.value = savedCurrency;
-        if (profPersona) profPersona.value = savedPersona;
-
-        updateVisualIdentity(savedName, savedPersona);
-    }
-
-    function updateVisualIdentity(name, persona) {
-        // Derive clean 2-letter monogram
-        const initials = name
-            .split(' ')
-            .map(n => n.charAt(0))
+    function getInitials(name) {
+        return name
+            .trim()
+            .split(/\s+/)
             .slice(0, 2)
-            .join('')
-            .toUpperCase() || 'AD';
+            .map(part => part.charAt(0))
+            .join("")
+            .toUpperCase();
+    }
 
-        if (profileDisplayName) profileDisplayName.textContent = name;
-        if (profileLargeAvatar) profileLargeAvatar.textContent = initials;
-        if (profileTierBadge) profileTierBadge.textContent = `Tier: ${persona}`;
+    function updateVisualIdentity(name) {
+        const cleanName = name.trim() || "User";
+        const initials = getInitials(cleanName);
 
-        if (sidebarName) sidebarName.textContent = name;
+        if (displayName) displayName.textContent = cleanName;
+        if (largeAvatar) largeAvatar.textContent = initials;
+        if (sidebarName) sidebarName.textContent = cleanName;
         if (sidebarAvatar) sidebarAvatar.textContent = initials;
-        if (sidebarRole) sidebarRole.textContent = persona;
+        if (tierBadge) tierBadge.textContent = personaInput.value;
     }
 
-    /* --------------------------------------------------------------------------
-       3. PREFERENCES FORM SUBMISSION
-       -------------------------------------------------------------------------- */
-    if (profileForm) {
-        profileForm.addEventListener('submit', (e) => {
-            e.preventDefault();
+    function showStatus(message, isError = false) {
+        if (!saveStatus) return;
 
-            const name = profName.value.trim() || 'Abhigyan Das';
-            const currency = profCurrency.value;
-            const persona = profPersona.value;
+        saveStatus.textContent = message;
+        saveStatus.style.color = isError ? "#e07070" : "#70bd8b";
+    }
 
-            localStorage.setItem('gt_profile_name', name);
-            localStorage.setItem('gt_profile_currency', currency);
-            localStorage.setItem('gt_profile_persona', persona);
+    // Load saved preferences from the database.
+    async function loadProfilePreferences() {
+        try {
+            const response = await fetch("/profile/data");
+            const result = await response.json();
 
-            updateVisualIdentity(name, persona);
-
-            if (saveStatusMsg) {
-                saveStatusMsg.textContent = 'Saved successfully';
-                setTimeout(() => {
-                    saveStatusMsg.textContent = '';
-                }, 2500);
+            if (!response.ok) {
+                throw new Error(result.error || "Could not load preferences.");
             }
-        });
+
+            const profile = result.profile;
+
+            nameInput.value = profile.full_name || nameInput.value;
+            if (emailInput) emailInput.value = profile.email || "";
+            if (profileEmail) profileEmail.textContent = profile.email || "";
+            if (profileJoined) profileJoined.textContent = profile.created_at || "";
+
+            currencyInput.value = profile.currency || "INR";
+            personaInput.value = profile.classification || "Student Account";
+
+            if (currencyLabel) {
+                const symbols = { INR: "₹", USD: "$", EUR: "€", GBP: "£" };
+                currencyLabel.textContent = `${currencyInput.value} (${symbols[currencyInput.value] || ""})`;
+            }
+
+            updateVisualIdentity(nameInput.value);
+
+        } catch (error) {
+            showStatus(error.message, true);
+        }
     }
 
-    /* --------------------------------------------------------------------------
-       4. DATA MANAGEMENT ACTIONS (Export, Reset, Purge)
-       -------------------------------------------------------------------------- */
-    // Export Ledger to JSON
-    if (btnExportJson) {
-        btnExportJson.addEventListener('click', () => {
-            const sampleData = {
-                user: localStorage.getItem('gt_profile_name') || 'Abhigyan Das',
-                currency: localStorage.getItem('gt_profile_currency') || 'INR',
-                exportedAt: new Date().toISOString(),
-                transactions: [
-                    { id: 1, type: 'income', amount: 15000.00, category: 'Stipend / Freelance', note: 'Monthly milestone payout', date: 'Nov 05, 2026' },
-                    { id: 2, type: 'expense', amount: 450.00, category: 'Food & Mess', note: 'Hostel mess night snack', date: 'Nov 04, 2026' },
-                    { id: 3, type: 'expense', amount: 300.00, category: 'Transit & Fuel', note: 'Metro card recharge', date: 'Nov 03, 2026' },
-                    { id: 4, type: 'income', amount: 2500.00, category: 'Consulting', note: 'Bug fix bounty reward', date: 'Nov 02, 2026' },
-                    { id: 5, type: 'expense', amount: 899.00, category: 'Tech & Gear', note: 'Cloud server hosting invoice', date: 'Nov 01, 2026' }
-                ]
+    loadProfilePreferences();
+
+    // Save profile name to the Flask database.
+    profileForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const fullName = nameInput.value.trim();
+
+        if (!fullName) {
+            showStatus("Name cannot be empty.", true);
+            return;
+        }
+
+        if (fullName.length > 80) {
+            showStatus("Name must be 80 characters or less.", true);
+            return;
+        }
+
+        const submitButton = profileForm.querySelector('button[type="submit"]');
+        submitButton.disabled = true;
+        showStatus("Saving...");
+
+        try {
+            const response = await fetch("/profile/update", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    full_name: fullName,
+                    currency: currencyInput.value,
+                    classification: personaInput.value
+                })
+            });
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error(result.error || "Could not update profile.");
+            }
+
+            updateVisualIdentity(fullName);
+            showStatus("Profile saved successfully.");
+
+        } catch (error) {
+            showStatus(error.message || "Something went wrong.", true);
+        } finally {
+            submitButton.disabled = false;
+        }
+    });
+
+    // Update the tier and currency previews when changed.
+    personaInput.addEventListener("change", () => {
+        updateVisualIdentity(nameInput.value);
+    });
+
+    currencyInput.addEventListener("change", () => {
+        const symbols = { INR: "₹", USD: "$", EUR: "€", GBP: "£" };
+        if (currencyLabel) {
+            currencyLabel.textContent = `${currencyInput.value} (${symbols[currencyInput.value] || ""})`;
+        }
+    });
+
+    // Export actual account and transaction data.
+    exportButton.addEventListener("click", async () => {
+        exportButton.disabled = true;
+        exportButton.textContent = "Preparing...";
+
+        try {
+            const response = await fetch("/profile/data");
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error(result.error || "Could not fetch account data.");
+            }
+
+            const exportData = {
+                profile: result.profile,
+                currency: currencyInput.value,
+                classification: personaInput.value,
+                exported_at: new Date().toISOString(),
+                transactions: result.transactions
             };
 
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(sampleData, null, 2));
-            const downloadAnchor = document.createElement('a');
-            downloadAnchor.setAttribute("href", dataStr);
-            downloadAnchor.setAttribute("download", `gareebi_tracker_ledger_${Date.now()}.json`);
-            document.body.appendChild(downloadAnchor);
-            downloadAnchor.click();
-            downloadAnchor.remove();
-        });
-    }
+            const blob = new Blob(
+                [JSON.stringify(exportData, null, 4)],
+                { type: "application/json" }
+            );
 
-    // Reset Demo Records
-    if (btnResetDemo) {
-        btnResetDemo.addEventListener('click', () => {
-            if (confirm('Reset transactions to default demo entries?')) {
-                localStorage.removeItem('gt_transactions');
-                alert('Default transactions restored.');
+            const downloadUrl = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+
+            link.href = downloadUrl;
+            link.download = "gareebi-tracker-backup.json";
+
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+
+            URL.revokeObjectURL(downloadUrl);
+
+        } catch (error) {
+            alert(error.message || "Export failed.");
+        } finally {
+            exportButton.disabled = false;
+            exportButton.textContent = "Export JSON";
+        }
+    });
+
+    // Sign out through Flask.
+    logoutButton.addEventListener("click", async () => {
+        logoutButton.disabled = true;
+
+        try {
+            const response = await fetch("/logout", {
+                method: "POST"
+            });
+
+            if (!response.ok) {
+                throw new Error("Could not sign out. Please try again.");
             }
-        });
-    }
 
-    // Purge Ledger Records
-    if (btnClearData) {
-        btnClearData.addEventListener('click', () => {
-            if (confirm('Are you sure you want to purge all stored transactions? This action cannot be undone.')) {
-                localStorage.setItem('gt_transactions', JSON.stringify([]));
-                alert('All ledger records have been purged.');
-            }
-        });
-    }
+            window.location.href = "/";
 
-    // Initialize state
-    loadSavedProfile();
+        } catch (error) {
+            alert(error.message);
+            logoutButton.disabled = false;
+        }
+    });
+
 });

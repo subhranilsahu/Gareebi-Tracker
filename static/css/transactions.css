@@ -1,48 +1,30 @@
+
 /* ==========================================================================
-   GAREEBI TRACKER — GOLD & CHARCOAL TRANSACTIONS LEDGER
-   static/css/transactions.css
-   Full-window fluid layout (100% viewport coverage, Accounts removed)
+   GAREEBI TRACKER — UNIFIED TRANSACTIONS VIEW
+   Scoped styles: Dashboard remains unaffected.
    ========================================================================== */
 
-*, *::before, *::after {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
-
-/* --------------------------------------------------------------------------
-   BASE
-   -------------------------------------------------------------------------- */
-
-.transactions-body {
-    background-color: var(--bg-base, #101113);
-    color: var(--text-secondary, #D6D8DC);
-    font-family: var(--font-sans, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif);
-    min-height: 100vh;
-    width: 100vw;
-    max-width: 100%;
-    margin: 0;
-    padding: 0;
-    overflow-x: hidden;
-    line-height: 1.5;
-}
-
-.transactions-main {
+/* MAIN VIEW */
+.transactions-view {
     flex: 1;
     width: 100%;
     max-width: 100%;
     min-width: 0;
     padding: 2rem 2.5rem;
+
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
+
     box-sizing: border-box;
 }
 
-/* --------------------------------------------------------------------------
-   HEADER
-   -------------------------------------------------------------------------- */
+.transactions-view[hidden],
+#dashboard-view[hidden] {
+    display: none !important;
+}
 
+/* HEADER */
 .transactions-header {
     display: flex;
     align-items: center;
@@ -52,307 +34,311 @@
     width: 100%;
 }
 
-.page-title {
-    font-size: 1.65rem;
-    font-weight: 600;
-    letter-spacing: -0.025em;
-    color: var(--text-primary, #F2F3F5);
-}
-
-.page-subtitle {
-    color: var(--text-muted, #92908A);
-    font-size: 0.85rem;
-    margin-top: 0.2rem;
-}
-
-/* --------------------------------------------------------------------------
-   LEDGER STATISTICS
-   -------------------------------------------------------------------------- */
-
-.ledger-stats-grid {
+/* SUMMARY CARDS */
+.transactions-view .summary-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 1rem;
     width: 100%;
 }
 
-.stat-card {
+.transactions-view .summary-card {
     display: flex;
     flex-direction: column;
-    gap: 0.35rem;
-    padding: 1.25rem 1.5rem;
+    gap: 0.45rem;
+    padding: 1.4rem 1.5rem;
+
+    background:
+        linear-gradient(145deg, rgba(214, 181, 109, 0.045), transparent 70%),
+        #1D2024;
+
+    border: 1px solid rgba(214, 181, 109, 0.16);
+    border-radius: 12px;
+
+    transition: border-color 0.2s ease, transform 0.2s ease;
 }
 
-.stat-label {
+.transactions-view .summary-card:hover {
+    border-color: rgba(214, 181, 109, 0.35);
+    transform: translateY(-2px);
+}
+
+.transactions-view .summary-label {
+    color: #92908A;
     font-size: 0.72rem;
+    font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: var(--text-muted, #92908A);
-    font-weight: 600;
+    letter-spacing: 0.06em;
 }
 
-.stat-value {
+.transactions-view .summary-value {
+    color: #F2F3F5;
     font-size: 1.65rem;
-    font-weight: 600;
-    letter-spacing: -0.02em;
-    color: var(--text-primary, #F2F3F5);
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    overflow-wrap: anywhere;
+    font-variant-numeric: tabular-nums;
 }
 
-/* --------------------------------------------------------------------------
-   FILTER TOOLBAR
-   -------------------------------------------------------------------------- */
-
-.filter-card {
-    padding: 0.85rem 1.25rem;
-    width: 100%;
+.transactions-view .text-success {
+    color: #D6B56D;
 }
 
-.filter-toolbar {
+.transactions-view .text-danger {
+    color: #F87171;
+}
+
+/* SEARCH AND FILTERS */
+.transactions-view .filter-card {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 1rem;
     flex-wrap: wrap;
+    gap: 1rem;
+
     width: 100%;
+    padding: 1rem 1.25rem;
+
+    background: #1D2024;
+    border: 1px solid rgba(214, 181, 109, 0.16);
+    border-radius: 12px;
 }
 
-.search-wrap {
-    flex: 1;
-    min-width: 260px;
+.transactions-view .search-wrapper {
     position: relative;
-    display: flex;
-    align-items: center;
+    flex: 1;
+    min-width: 220px;
 }
 
-.search-icon-svg {
+.transactions-view .search-icon {
     position: absolute;
-    left: 0.85rem;
-    color: var(--text-muted, #92908A);
+    left: 0.9rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #92908A;
     pointer-events: none;
+    font-size: 1.2rem;
 }
 
-.search-input {
+.transactions-view .form-input {
     width: 100%;
-    background-color: var(--bg-surface, #17191C);
-    border: 1px solid var(--border-strong, #38352D);
-    border-radius: var(--radius-sm, 4px);
-    padding: 0.6rem 0.85rem 0.6rem 2.3rem;
-    color: var(--text-primary, #F2F3F5);
-    font-size: 0.85rem;
+    padding: 0.7rem 0.9rem 0.7rem 2.5rem;
+
+    background: #17191C;
+    border: 1px solid #3A352A;
+    border-radius: 7px;
+
+    color: #F2F3F5;
     font-family: inherit;
+    font-size: 0.85rem;
     outline: none;
-    transition: border-color 0.12s ease, background-color 0.12s ease, box-shadow 0.12s ease;
+
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.search-input::placeholder {
-    color: var(--text-subtle, #625F58);
+.transactions-view .form-input::placeholder {
+    color: #77746D;
 }
 
-.search-input:focus {
-    border-color: var(--color-accent-dark, #A88A4A);
-    background-color: var(--bg-card, #1D2024);
+.transactions-view .form-input:focus {
+    border-color: #D6B56D;
     box-shadow: 0 0 0 3px rgba(214, 181, 109, 0.08);
 }
 
-/* --------------------------------------------------------------------------
-   TYPE FILTER TABS
-   -------------------------------------------------------------------------- */
-
-.filter-type-tabs {
+/* FILTER BUTTONS */
+.transactions-view .type-filters {
     display: flex;
-    background-color: var(--bg-surface, #17191C);
-    border: 1px solid var(--border-strong, #38352D);
-    border-radius: var(--radius-sm, 4px);
-    padding: 3px;
-    gap: 3px;
+    align-items: center;
+    gap: 0.3rem;
+
+    padding: 4px;
+    background: #141517;
+    border: 1px solid #363332;
+    border-radius: 8px;
 }
 
-.type-filter-btn {
+.transactions-view .type-filter-btn {
+    padding: 0.48rem 0.9rem;
+
     background: transparent;
-    border: none;
-    color: var(--text-muted, #92908A);
-    padding: 0.45rem 0.85rem;
-    border-radius: 3px;
-    font-size: 0.8rem;
-    font-weight: 500;
+    border: 1px solid transparent;
+    border-radius: 6px;
+
+    color: #92908A;
+    font-size: 0.78rem;
+    font-weight: 600;
+
     cursor: pointer;
-    transition: all 0.12s ease;
+    transition: all 0.2s ease;
 }
 
-.type-filter-btn:hover {
-    color: var(--color-accent-light, #E8D5A3);
+.transactions-view .type-filter-btn:hover {
+    color: #E8D5A3;
 }
 
-.type-filter-btn.active {
-    background-color: var(--color-accent-muted, rgba(214, 181, 109, 0.12));
-    color: var(--color-accent-light, #E8D5A3);
-    border: 1px solid rgba(214, 181, 109, 0.25);
+.transactions-view .type-filter-btn.active {
+    background: rgba(214, 181, 109, 0.13);
+    border-color: rgba(214, 181, 109, 0.25);
+    color: #E8D5A3;
 }
 
-/* --------------------------------------------------------------------------
-   LEDGER TABLE
-   -------------------------------------------------------------------------- */
-
-.table-card {
-    padding: 1.25rem 1.5rem;
+/* TRANSACTIONS TABLE */
+.transactions-view .table-card {
     width: 100%;
+    min-width: 0;
+    padding: 1.4rem 1.5rem;
+
+    background: linear-gradient(145deg, #1D2024, #191A1C);
+    border: 1px solid rgba(214, 181, 109, 0.16);
+    border-radius: 12px;
 }
 
-.table-wrap {
+.transactions-view .table-wrap {
     width: 100%;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
 }
 
-.ledger-table {
+.transactions-view .transactions-table {
     width: 100%;
-    border-collapse: collapse;
-    font-size: 0.85rem;
-    text-align: left;
     min-width: 580px;
+
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 0.84rem;
 }
 
-.ledger-table th {
-    padding: 0.75rem 0.85rem;
-    color: var(--text-muted, #92908A);
-    font-size: 0.72rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    font-weight: 600;
-    border-bottom: 1px solid var(--border-subtle, #292720);
-}
-
-.ledger-table td {
+.transactions-view .transactions-table th {
     padding: 0.85rem;
-    border-bottom: 1px solid var(--border-subtle, #292720);
-    color: var(--text-secondary, #D6D8DC);
+
+    color: #92908A;
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.055em;
+
+    border-bottom: 1px solid #363332;
+    white-space: nowrap;
 }
 
-.ledger-table tbody tr {
-    transition: background-color 0.12s ease;
+.transactions-view .transactions-table td {
+    padding: 1rem 0.85rem;
+    color: #D6D8DC;
+    border-bottom: 1px solid #292A2C;
 }
 
-.ledger-table tbody tr:hover {
-    background-color: rgba(214, 181, 109, 0.045);
+.transactions-view .transactions-table tbody tr {
+    transition: background 0.2s ease;
 }
 
-.text-right {
+.transactions-view .transactions-table tbody tr:hover {
+    background: rgba(214, 181, 109, 0.045);
+}
+
+.transactions-view .transactions-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.transactions-view .text-right {
     text-align: right;
 }
 
-.text-center {
-    text-align: center;
-}
-
-/* --------------------------------------------------------------------------
-   DELETE ROW BUTTON
-   -------------------------------------------------------------------------- */
-
-.btn-delete-row {
-    background: transparent;
-    border: none;
-    color: var(--text-muted, #92908A);
-    cursor: pointer;
-    font-size: 0.88rem;
-    padding: 0.2rem 0.45rem;
-    border-radius: var(--radius-sm, 4px);
-    transition: all 0.12s ease;
-}
-
-.btn-delete-row:hover {
-    color: var(--color-expense, #F87171);
-    background-color: var(--color-expense-muted, rgba(248, 113, 113, 0.12));
-}
-
-/* --------------------------------------------------------------------------
-   EMPTY STATE
-   -------------------------------------------------------------------------- */
-
-.empty-state {
+/* EMPTY STATE */
+.transactions-view .empty-state {
     text-align: center;
     padding: 3.5rem 1.5rem;
 }
 
-.empty-title {
-    font-size: 1.1rem;
-    font-weight: 600;
-    margin-bottom: 0.25rem;
-    color: var(--text-primary, #F2F3F5);
+.transactions-view .empty-state[hidden] {
+    display: none !important;
 }
 
-.empty-desc {
-    font-size: 0.85rem;
-    color: var(--text-muted, #92908A);
+.transactions-view .empty-state .empty-icon {
+    display: block;
+    font-size: 2rem;
+    margin-bottom: 0.75rem;
 }
 
-/* --------------------------------------------------------------------------
-   CATEGORY QUICK PRESET PILLS
-   -------------------------------------------------------------------------- */
-
-.quick-tags {
-    display: flex;
-    gap: 0.4rem;
-    flex-wrap: wrap;
-    margin-top: 0.35rem;
+.transactions-view .empty-state h3 {
+    color: #F2F3F5;
+    font-size: 1rem;
+    margin-bottom: 0.35rem;
 }
 
-.tag-pill {
-    background: var(--bg-surface, #17191C);
-    border: 1px solid var(--border-strong, #38352D);
-    color: var(--text-muted, #92908A);
-    padding: 0.2rem 0.5rem;
-    border-radius: var(--radius-sm, 4px);
-    font-size: 0.72rem;
-    cursor: pointer;
-    transition: all 0.12s ease;
+.transactions-view .empty-state p {
+    color: #92908A;
+    font-size: 0.84rem;
 }
 
-.tag-pill:hover {
-    color: var(--color-accent-light, #E8D5A3);
-    border-color: var(--color-accent-dark, #A88A4A);
-    background-color: var(--color-accent-muted, rgba(214, 181, 109, 0.12));
-}
-
-/* --------------------------------------------------------------------------
-   TABLET RESPONSIVENESS
-   -------------------------------------------------------------------------- */
-
+/* RESPONSIVE */
 @media (max-width: 900px) {
-    .ledger-stats-grid {
-        grid-template-columns: 1fr;
+    .transactions-view .summary-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
 
-/* --------------------------------------------------------------------------
-   MOBILE RESPONSIVENESS
-   -------------------------------------------------------------------------- */
-
 @media (max-width: 768px) {
-    .transactions-main {
+    .transactions-view {
         padding: 1.25rem 1rem 5.5rem;
         gap: 1.25rem;
     }
 
-    .transactions-header button {
+    .transactions-header {
+        align-items: flex-start;
+    }
+
+    .transactions-header .btn {
         width: 100%;
     }
 
-    .filter-toolbar {
-        flex-direction: column;
+    .transactions-view .summary-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.75rem;
+    }
+
+    .transactions-view .summary-card {
+        padding: 1.1rem;
+    }
+
+    .transactions-view .summary-value {
+        font-size: 1.35rem;
+    }
+
+    .transactions-view .filter-card {
         align-items: stretch;
+        flex-direction: column;
+        padding: 1rem;
     }
 
-    .search-wrap,
-    .filter-type-tabs {
+    .transactions-view .search-wrapper {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .transactions-view .type-filters {
         width: 100%;
     }
 
-    .type-filter-btn {
+    .transactions-view .type-filter-btn {
         flex: 1;
-        text-align: center;
     }
 
-    .table-card {
+    .transactions-view .table-card {
         padding: 1rem;
+    }
+}
+
+@media (max-width: 420px) {
+    .transactions-view .summary-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* REDUCED MOTION */
+@media (prefers-reduced-motion: reduce) {
+    .transactions-view *,
+    .transactions-view *::before,
+    .transactions-view *::after {
+        transition-duration: 0.01ms !important;
     }
 }

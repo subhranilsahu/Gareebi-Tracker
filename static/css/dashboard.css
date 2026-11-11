@@ -780,3 +780,60 @@ a:focus-visible {
         transition-duration: 0.01ms !important;
     }
 }
+
+.month-filter-wrapper {
+    position: relative;
+}
+
+.month-filter-select {
+    -webkit-appearance: none;
+    appearance: none;
+    padding-right: 0.85rem !important;
+}
+
+.month-filter-wrapper::after {
+    content: "";
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    width: 7px;
+    height: 7px;
+    border-right: 1.5px solid var(--text-muted);
+    border-bottom: 1.5px solid var(--text-muted);
+    transform: translateY(-70%) rotate(45deg);
+    pointer-events: none;
+}
+
+
+
+/* RECENT TRANSACTIONS — COLUMN ALIGNMENT */
+.dashboard-table {
+    table-layout: auto;
+}
+
+.dashboard-table th:nth-child(4),
+.dashboard-table td:nth-child(4) {
+    text-align: right;
+    white-space: nowrap;
+}
+
+.dashboard-table th:nth-child(5),
+.dashboard-table td:nth-child(5) {
+    text-align: center;
+    white-space: nowrap;
+}
+
+.dashboard-table td.transaction-actions {
+    white-space: nowrap;
+}
+
+.dashboard-table td.text-center {
+    text-align: center;
+}
+
+.dashboard-table .transaction-actions .btn-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    vertical-align: middle;
+}

@@ -454,3 +454,112 @@ input:focus-visible {
 .toggle-icon.password-visible .toggle-icon-svg path {
     d: path("M3 3L21 21 M10.6 5.1C11.05 5.03 11.52 5 12 5c6.4 0 10 7 10 7s-1.4 2.7-4 4.7 M6.2 6.2C3.5 8.1 2 12 2 12s3.6 7 10 7c1.4 0 2.7-.3 3.9-.8");
 }
+/* ==========================================================
+   UNSLOP — AUTH VISUAL REFINEMENT
+   Existing functionality and animation timings preserved.
+   ========================================================== */
+
+.auth-body {
+    background: #101113;
+}
+
+/* Auth card */
+.auth-card {
+    background: #191B1E;
+    border: 1px solid #303236;
+    border-radius: 12px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.22);
+}
+
+/* Brand */
+.auth-brand .brand-accent {
+    background: none;
+    color: #D6B56D;
+}
+
+/* Heading */
+.auth-title {
+    color: #F2F3F5;
+    font-weight: 650;
+    letter-spacing: -0.035em;
+}
+
+.auth-subtitle {
+    color: #92949A;
+}
+
+/* Form labels and inputs */
+.auth-card .form-label {
+    color: #B8BABE;
+}
+
+.auth-card .form-input {
+    background: #151719;
+    border-color: #383A3E;
+    border-radius: 8px;
+}
+
+.auth-card .form-input:hover {
+    border-color: #55504A;
+}
+
+.auth-card .form-input:focus {
+    background: #191B1E;
+    border-color: #A88A4A;
+    box-shadow: 0 0 0 2px rgba(214, 181, 109, 0.08);
+}
+
+.auth-card .form-input::placeholder {
+    color: #777B82;
+}
+
+/* Password toggle */
+.auth-card .btn-toggle-password {
+    color: #92949A;
+}
+
+.auth-card .btn-toggle-password:hover {
+    color: #D6B56D;
+}
+
+/* Submit button */
+.auth-card .btn-auth-submit {
+    background: #D6B56D;
+    border-color: #D6B56D;
+    color: #171717;
+}
+
+.auth-card .btn-auth-submit:hover {
+    background: #E2C783;
+    border-color: #E2C783;
+    box-shadow: none;
+}
+
+/* Footer */
+.auth-footer {
+    border-top-color: #303236;
+    color: #92949A;
+}
+
+.auth-switch-link {
+    color: #D6B56D;
+}
+
+.auth-switch-link:hover {
+    color: #E8D5A3;
+}
+
+/* Back link */
+.auth-back-link {
+    color: #92949A;
+}
+
+.auth-back-link:hover {
+    color: #E8D5A3;
+}
+
+/* Focus */
+.auth-card :focus-visible {
+    outline-color: #D6B56D;
+}
+

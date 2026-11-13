@@ -1,0 +1,12 @@
+
+/* GAREEBI TRACKER — SHARED CINEMATIC PAGE MOTION */
+
+@media (prefers-reduced-motion: reduce) {
+    .page-motion-ready *,
+    .page-motion-ready *::before,
+    .page-motion-ready *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}

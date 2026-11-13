@@ -64,6 +64,57 @@ document.addEventListener("DOMContentLoaded", () => {
         }).format(Number(amount) || 0);
     };
 
+    /* SMOOTH NUMBER COUNT + SLIDE ANIMATION */
+
+    function animateNumeric(element, targetValue, formatter) {
+        if (!element) return;
+
+        const target = Number(targetValue) || 0;
+        const previous = Number(element.dataset.animatedValue ?? 0);
+
+        if (element._numberFrame) {
+            cancelAnimationFrame(element._numberFrame);
+        }
+
+        if (element._numberAnimation) {
+            element._numberAnimation.cancel();
+        }
+
+        const animation = element.animate(
+            [
+                { opacity: 0.35, transform: "translateY(12px)" },
+                { opacity: 1, transform: "translateY(0)" }
+            ],
+            {
+                duration: 850,
+                easing: "cubic-bezier(0.22, 1, 0.36, 1)"
+            }
+        );
+
+        element._numberAnimation = animation;
+
+        const startTime = performance.now();
+        const duration = 850;
+
+        function updateNumber(currentTime) {
+            const progress = Math.min((currentTime - startTime) / duration, 1);
+            const eased = 1 - Math.pow(1 - progress, 4);
+            const currentValue = previous + (target - previous) * eased;
+
+            element.textContent = formatter(currentValue);
+
+            if (progress < 1) {
+                element._numberFrame = requestAnimationFrame(updateNumber);
+            } else {
+                element.textContent = formatter(target);
+                element.dataset.animatedValue = String(target);
+                element._numberFrame = null;
+            }
+        }
+
+        element._numberFrame = requestAnimationFrame(updateNumber);
+    }
+
     const escapeHTML = (value) => {
         return String(value ?? "").replace(/[&<>"']/g, (character) => {
             const entities = {
@@ -148,6 +199,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     /* 4. SINGLE-PAGE NAVIGATION */
 
+    let transitionRun = 0;
+
     function switchView(viewName) {
         const views = {
             dashboard: dashboardView,
@@ -155,25 +208,134 @@ document.addEventListener("DOMContentLoaded", () => {
             profile: document.getElementById("profile-view")
         };
 
-        if (!views[viewName]) return;
+        const nextView = views[viewName];
+        const stage = document.getElementById("content-stage");
+
+        if (!nextView || !stage) return;
+
+        const run = ++transitionRun;
+
+        stage.getAnimations().forEach((animation) => animation.cancel());
+        stage.style.height = "";
+        stage.style.overflow = "";
+
+        const currentView = Object.values(views).find(
+            (element) => element && !element.hidden
+        );
 
         sessionStorage.setItem("gareebiActiveView", viewName);
 
-        Object.entries(views).forEach(([name, element]) => {
-            if (element) {
-                element.hidden = name !== viewName;
+        function activateView() {
+            if (run !== transitionRun) return;
+
+            const startHeight = stage.getBoundingClientRect().height;
+            const shouldMorph = currentView && currentView !== nextView;
+
+            if (shouldMorph) {
+                stage.style.height = `${startHeight}px`;
+                stage.style.overflow = "hidden";
             }
-        });
 
-        navItems.forEach((item) => {
-            const isActive = item.dataset.view === viewName;
+            Object.entries(views).forEach(([name, element]) => {
+                if (element) element.hidden = name !== viewName;
+            });
 
-            item.classList.toggle("active", isActive);
-            item.setAttribute("aria-current", isActive ? "page" : "false");
-        });
+            navItems.forEach((item) => {
+                const isActive = item.dataset.view === viewName;
+                item.classList.toggle("active", isActive);
+                item.setAttribute("aria-current", isActive ? "page" : "false");
+            });
 
-        if (viewName === "transactions") {
-            renderLedger();
+            if (viewName === "transactions") {
+                renderLedger();
+            }
+
+            if (shouldMorph) {
+                stage.offsetHeight;
+
+                const minHeight = parseFloat(
+                    getComputedStyle(stage).minHeight
+                ) || 0;
+
+                const targetHeight = Math.max(
+                    stage.scrollHeight,
+                    nextView.scrollHeight,
+                    minHeight
+                );
+
+                const morphAnimation = stage.animate(
+                    [
+                        { height: `${startHeight}px` },
+                        { height: `${targetHeight}px` }
+                    ],
+                    {
+                        duration: 1100,
+                        easing: "cubic-bezier(0.65, 0, 0.35, 1)",
+                        fill: "forwards"
+                    }
+                );
+
+                morphAnimation.onfinish = () => {
+                    if (run !== transitionRun) return;
+                    stage.style.height = "";
+                    stage.style.overflow = "";
+                };
+            }
+
+            nextView.getAnimations().forEach((animation) => animation.cancel());
+
+            nextView.animate(
+                [
+                    { opacity: 0, transform: "translateY(14px) scale(0.99)", filter: "blur(7px)" },
+                    { opacity: 1, transform: "translateY(0) scale(1)", filter: "blur(0)" }
+                ],
+                {
+                    duration: 650,
+                    easing: "cubic-bezier(0.22, 1, 0.36, 1)",
+                    fill: "both"
+                }
+            );
+
+            const items = nextView.querySelectorAll(
+                ".metric-card, .card, .chart-card, .analytics-card, .transactions-table-wrapper, .profile-card"
+            );
+
+            items.forEach((item, index) => {
+                item.getAnimations().forEach((animation) => animation.cancel());
+
+                item.animate(
+                    [
+                        { opacity: 0, transform: "translateY(18px)", filter: "blur(5px)" },
+                        { opacity: 1, transform: "translateY(0)", filter: "blur(0)" }
+                    ],
+                    {
+                        duration: 550,
+                        delay: Math.min(index * 65, 520),
+                        easing: "cubic-bezier(0.22, 1, 0.36, 1)",
+                        fill: "both"
+                    }
+                );
+            });
+        }
+
+        if (currentView && currentView !== nextView) {
+            currentView.getAnimations().forEach((animation) => animation.cancel());
+
+            const exitAnimation = currentView.animate(
+                [
+                    { opacity: 1, transform: "translateY(0)", filter: "blur(0)" },
+                    { opacity: 0, transform: "translateY(-8px)", filter: "blur(5px)" }
+                ],
+                {
+                    duration: 180,
+                    easing: "ease-in",
+                    fill: "forwards"
+                }
+            );
+
+            exitAnimation.onfinish = activateView;
+        } else {
+            activateView();
         }
     }
 
@@ -395,10 +557,10 @@ document.addEventListener("DOMContentLoaded", () => {
         const expenseElement = document.getElementById("metric-expense");
         const savingsElement = document.getElementById("metric-savings");
 
-        if (balanceElement) balanceElement.textContent = formatINR(balance);
-        if (incomeElement) incomeElement.textContent = formatINR(income);
-        if (expenseElement) expenseElement.textContent = formatINR(expense);
-        if (savingsElement) savingsElement.textContent = formatINR(savings);
+        animateNumeric(balanceElement, balance, formatINR);
+        animateNumeric(incomeElement, income, formatINR);
+        animateNumeric(expenseElement, expense, formatINR);
+        animateNumeric(savingsElement, savings, formatINR);
     }
 
     /* 8. CASH FLOW TRAJECTORY GRAPH */
@@ -810,9 +972,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const expenseElement = document.getElementById("summary-total-expense");
         const countElement = document.getElementById("summary-total-count");
 
-        if (incomeElement) incomeElement.textContent = formatINR(income);
-        if (expenseElement) expenseElement.textContent = formatINR(expense);
-        if (countElement) countElement.textContent = list.length;
+        animateNumeric(incomeElement, income, formatINR);
+        animateNumeric(expenseElement, expense, formatINR);
+        animateNumeric(countElement, list.length, value => Math.round(value).toLocaleString("en-IN"));
     }
 
     function renderLedger() {

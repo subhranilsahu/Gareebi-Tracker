@@ -363,3 +363,164 @@
 #profile-view[hidden] {
     display: none !important;
 }
+
+
+/* PROFILE DROPDOWN ARROW ALIGNMENT FIX */
+#profile-view #prof-currency,
+#profile-view #prof-persona {
+    -webkit-appearance: none;
+    appearance: none;
+    padding-right: 2.5rem !important;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' fill='none' stroke='%2392908A' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    background-size: 12px;
+}
+
+/* ==========================================================
+   UNSLOP — PROFILE VISUAL REFINEMENT
+   Existing functionality and animations preserved.
+   ========================================================== */
+
+/* Profile header */
+.profile-header .page-title {
+    color: #F2F3F5;
+    font-weight: 650;
+    letter-spacing: -0.035em;
+}
+
+.profile-header .page-subtitle {
+    color: #92949A;
+}
+
+/* Status */
+.header-status {
+    background: rgba(214, 181, 109, 0.055);
+    border-color: rgba(214, 181, 109, 0.16);
+}
+
+.status-indicator-dot {
+    box-shadow: none;
+}
+
+.status-indicator-text {
+    color: #B8BABE;
+}
+
+/* Profile hero */
+.persona-hero-card,
+.settings-card,
+.data-card {
+    background: #191B1E;
+    border: 1px solid #303236;
+    border-radius: 12px;
+    box-shadow: none;
+}
+
+.persona-hero-card {
+    padding: 1.75rem 2rem;
+}
+
+.avatar-large {
+    background: #222428;
+    border: 1px solid rgba(214, 181, 109, 0.25);
+    border-radius: 12px;
+    color: #E8D5A3;
+    font-weight: 650;
+}
+
+.user-fullname {
+    color: #F2F3F5;
+    font-weight: 650;
+    letter-spacing: -0.03em;
+}
+
+.user-handle {
+    color: #92949A;
+}
+
+.persona-tag {
+    background: rgba(214, 181, 109, 0.09);
+    border-color: rgba(214, 181, 109, 0.18);
+    color: #E8D5A3;
+}
+
+.meta-pill {
+    background: #151719;
+    border-color: #303236;
+    color: #A6A8AD;
+}
+
+/* Settings cards */
+.settings-card,
+.data-card {
+    padding: 1.6rem 1.75rem;
+}
+
+.card-head-simple {
+    border-bottom-color: #303236;
+}
+
+.section-title {
+    color: #F2F3F5;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+}
+
+.section-subtitle {
+    color: #92949A;
+}
+
+/* Form fields */
+#profile-view .form-input,
+#profile-view .form-select {
+    background-color: #151719;
+    border-color: #383A3E;
+    color: #F2F3F5;
+}
+
+#profile-view .form-input:focus,
+#profile-view .form-select:focus {
+    border-color: #A88A4A;
+    box-shadow: 0 0 0 2px rgba(214, 181, 109, 0.08);
+}
+
+#profile-view .form-input:disabled {
+    background-color: #191B1E;
+    color: #85878D;
+}
+
+/* Settings actions */
+.settings-actions {
+    border-top-color: #303236;
+}
+
+.save-status {
+    color: #D6B56D;
+}
+
+/* Data management */
+.data-action-row {
+    border-bottom-color: #303236;
+}
+
+.action-title {
+    color: #F2F3F5;
+    font-weight: 600;
+}
+
+.action-desc {
+    color: #92949A;
+}
+
+/* Danger action remains clearly distinguishable */
+.btn-danger-outline {
+    color: #E88B8B;
+    border-color: rgba(232, 139, 139, 0.3);
+}
+
+.btn-danger-outline:hover {
+    background: rgba(232, 139, 139, 0.08);
+    border-color: #E88B8B;
+}
+

@@ -342,3 +342,263 @@
         transition-duration: 0.01ms !important;
     }
 }
+
+
+
+/* UNIFIED DASHBOARD + TRANSACTIONS DESIGN */
+
+/* Same typography as Dashboard */
+.transactions-view {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text",
+        "Segoe UI", Roboto, sans-serif;
+    color: #D6D8DC;
+}
+
+.transactions-view .transactions-header h1,
+.transactions-view .transactions-header h2 {
+    color: #F2F3F5;
+    font-weight: 700;
+    letter-spacing: -0.04em;
+}
+
+/* Matching glass cards */
+.transactions-view .summary-card,
+.transactions-view .filter-card,
+.transactions-view .table-card {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+
+    background:
+        radial-gradient(circle at 100% 0%, rgba(214, 181, 109, 0.12), transparent 48%),
+        linear-gradient(145deg, rgba(35, 36, 38, 0.96), rgba(23, 25, 28, 0.98));
+
+    border: 1px solid rgba(214, 181, 109, 0.19);
+    border-radius: 16px;
+
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.035),
+        0 8px 24px rgba(0, 0, 0, 0.16);
+
+    transition:
+        transform 0.25s ease,
+        border-color 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+.transactions-view .summary-card {
+    gap: 0.85rem;
+    padding: 1.4rem;
+}
+
+.transactions-view .summary-card:hover,
+.transactions-view .filter-card:hover,
+.transactions-view .table-card:hover {
+    border-color: rgba(214, 181, 109, 0.42);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.045),
+        0 16px 35px rgba(0, 0, 0, 0.27),
+        0 0 22px rgba(214, 181, 109, 0.055);
+}
+
+.transactions-view .summary-card:hover {
+    transform: translateY(-5px);
+}
+
+/* Matching typography */
+.transactions-view .summary-label {
+    color: rgba(242, 243, 245, 0.62);
+    font-size: 0.70rem;
+    font-weight: 650;
+    letter-spacing: 0.075em;
+}
+
+.transactions-view .summary-value {
+    color: #F2F3F5;
+    font-size: clamp(1.35rem, 2vw, 1.85rem);
+    font-weight: 750;
+    letter-spacing: -0.045em;
+    line-height: 1.25;
+}
+
+.transactions-view .filter-card,
+.transactions-view .table-card {
+    padding: 1.4rem;
+}
+
+.transactions-view .form-input,
+.transactions-view .type-filter-btn,
+.transactions-view .transactions-table {
+    font-family: inherit;
+}
+
+.transactions-view .transactions-table {
+    font-size: 0.84rem;
+}
+
+.transactions-view .transactions-table th {
+    color: rgba(242, 243, 245, 0.62);
+    font-weight: 650;
+}
+
+.transactions-view .transactions-table td {
+    color: #D6D8DC;
+}
+
+@media (max-width: 768px) {
+    .transactions-view .summary-card {
+        padding: 1.1rem;
+        border-radius: 13px;
+    }
+
+    .transactions-view .filter-card,
+    .transactions-view .table-card {
+        padding: 1rem;
+        border-radius: 13px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .transactions-view .summary-card,
+    .transactions-view .filter-card,
+    .transactions-view .table-card {
+        transition: none;
+    }
+
+    .transactions-view .summary-card:hover {
+        transform: none;
+    }
+}
+
+/* ==========================================================
+   UNSLOP — TRANSACTIONS VISUAL REFINEMENT
+   Existing functionality and animation timings preserved.
+   ========================================================== */
+
+.transactions-view {
+    color: #D6D8DC;
+}
+
+/* Summary cards */
+.transactions-view .summary-card {
+    background: #191B1E;
+    border: 1px solid #303236;
+    border-radius: 12px;
+    box-shadow: none;
+}
+
+.transactions-view .summary-card::before {
+    display: none;
+}
+
+.transactions-view .summary-card:hover {
+    border-color: rgba(214, 181, 109, 0.38);
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.16);
+}
+
+.transactions-view .summary-label {
+    color: #92949A;
+    font-weight: 600;
+    letter-spacing: 0.055em;
+}
+
+.transactions-view .summary-value {
+    color: #F2F3F5;
+    font-weight: 650;
+    letter-spacing: -0.035em;
+    font-variant-numeric: tabular-nums;
+}
+
+.transactions-view .text-success {
+    color: #D6B56D;
+}
+
+.transactions-view .text-danger {
+    color: #E88B8B;
+}
+
+/* Search and filter panel */
+.transactions-view .filter-card {
+    background: #191B1E;
+    border: 1px solid #303236;
+    border-radius: 12px;
+    box-shadow: none;
+}
+
+.transactions-view .filter-card:hover {
+    border-color: #3A3C40;
+    box-shadow: none;
+}
+
+.transactions-view .form-input {
+    background: #151719;
+    border-color: #383A3E;
+}
+
+.transactions-view .form-input:focus {
+    border-color: #A88A4A;
+    box-shadow: 0 0 0 2px rgba(214, 181, 109, 0.08);
+}
+
+/* Filter buttons */
+.transactions-view .type-filters {
+    background: #141517;
+    border-color: #303236;
+}
+
+.transactions-view .type-filter-btn {
+    transition: all 0.2s ease;
+}
+
+.transactions-view .type-filter-btn.active {
+    background: rgba(214, 181, 109, 0.10);
+    border-color: rgba(214, 181, 109, 0.20);
+    color: #E8D5A3;
+}
+
+/* Transactions table */
+.transactions-view .table-card {
+    background: #191B1E;
+    border: 1px solid #303236;
+    border-radius: 12px;
+    box-shadow: none;
+}
+
+.transactions-view .table-card:hover {
+    border-color: #3A3C40;
+    box-shadow: none;
+}
+
+.transactions-view .transactions-table th {
+    color: #92949A;
+    border-bottom-color: #35363A;
+    font-weight: 600;
+}
+
+.transactions-view .transactions-table td {
+    color: #D6D8DC;
+    border-bottom-color: #292B2F;
+}
+
+.transactions-view .transactions-table tbody tr:hover {
+    background: rgba(214, 181, 109, 0.035);
+}
+
+/* Empty state */
+.transactions-view .empty-state h3 {
+    color: #F2F3F5;
+}
+
+.transactions-view .empty-state p {
+    color: #92949A;
+}
+
+/* Mobile consistency */
+@media (max-width: 768px) {
+    .transactions-view .summary-card,
+    .transactions-view .filter-card,
+    .transactions-view .table-card {
+        border-radius: 12px;
+    }
+}
+

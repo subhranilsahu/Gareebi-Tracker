@@ -907,3 +907,183 @@ button:focus-visible {
         transform: none;
     }
 }
+/* ==========================================================
+   UNSLOP — LANDING PAGE VISUAL REFINEMENT
+   Existing layout, functionality and animations preserved.
+   ========================================================== */
+
+/* Navbar */
+.navbar-wrapper {
+    background: rgba(16, 17, 19, 0.96);
+    border-bottom-color: #292C30;
+}
+
+.nav-link {
+    color: #A6A8AD;
+}
+
+/* Buttons */
+.btn-primary {
+    background: #D6B56D;
+    border-color: #D6B56D;
+    color: #171717;
+    box-shadow: none;
+}
+
+.btn-primary:hover {
+    background: #E2C783;
+    border-color: #E2C783;
+    box-shadow: none;
+}
+
+.btn-secondary {
+    background: #1B1D20;
+    border-color: #383A3E;
+    color: #D6D8DC;
+}
+
+.btn-secondary:hover {
+    background: #24262A;
+    border-color: #A88A4A;
+    color: #E8D5A3;
+}
+
+/* Hero */
+.hero-section {
+    background: #101113;
+}
+
+.hero-badge {
+    background: rgba(214, 181, 109, 0.06);
+    border-color: rgba(214, 181, 109, 0.18);
+}
+
+.badge-dot {
+    box-shadow: none;
+}
+
+.gradient-text {
+    background: none;
+    color: #D6B56D;
+}
+
+/* Dashboard preview */
+.hero-currency {
+    display: none;
+}
+
+.hero-preview-card {
+    background: #191B1E;
+    border-color: #34363A;
+    border-radius: 12px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.22);
+}
+
+.mockup-header,
+.mockup-grid {
+    border-bottom-color: #303236;
+}
+
+.mockup-title {
+    color: #B8BABE;
+}
+
+.mockup-status {
+    color: #D6B56D;
+}
+
+.mockup-row {
+    background: #151719;
+    border-color: #303236;
+    border-radius: 8px;
+}
+
+.tx-desc {
+    color: #D6D8DC;
+}
+
+/* Features */
+.bento-card {
+    background: #191B1E;
+    border-color: #303236;
+    border-radius: 12px;
+    box-shadow: none;
+}
+
+.bento-card::before {
+    display: none;
+}
+
+.bento-card:hover {
+    border-color: rgba(214, 181, 109, 0.38);
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.16);
+}
+
+.bento-desc {
+    color: #A6A8AD;
+}
+
+.pill {
+    background: rgba(214, 181, 109, 0.07);
+    border-color: rgba(214, 181, 109, 0.17);
+    color: #D6B56D;
+}
+
+/* Why section */
+.why-section {
+    background: #141619;
+}
+
+.why-card {
+    background: #191B1E;
+    border-color: #303236;
+    border-radius: 12px;
+    box-shadow: none;
+}
+
+.comp-list li {
+    color: #B8BABE;
+}
+
+.comp-list li::before {
+    color: #777B82;
+}
+
+.new-way .comp-list li::before {
+    color: #D6B56D;
+}
+
+.new-way {
+    border-left-color: #39352B;
+}
+
+/* Final CTA */
+.cta-box {
+    background: #191B1E;
+    border-color: #34363A;
+    border-radius: 12px;
+    box-shadow: none;
+}
+
+/* Footer */
+.footer-wrapper {
+    background: #141619;
+    border-top-color: #292C30;
+}
+
+.footer-bottom {
+    border-top-color: #303236;
+}
+
+/* Consistent text hierarchy */
+.hero-subtitle,
+.cta-subtitle {
+    color: #A6A8AD;
+}
+
+.hero-footnote,
+.footer-tagline,
+.footer-bottom {
+    color: #85878D;
+}
+
